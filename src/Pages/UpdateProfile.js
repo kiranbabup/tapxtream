@@ -9,14 +9,15 @@ import {
   Typography,
   Grid,
   Avatar,
+  Modal,
+  CircularProgress,
 } from "@mui/material";
 import { getAuth, updateProfile } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { useDropzone } from "react-dropzone";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../services/firebase";
-
-// Adjust the import based on your project structure
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 const schema = z.object({
   firstName: z.string().min(1, { message: "First name is required" }),
@@ -34,11 +35,13 @@ const schema = z.object({
   about: z.string().optional(),
   profileImage: z.any().optional(),
   companyLogo: z.any().optional(),
+  companyName: z.string().min(1, { message: "Company name is required" }),
+  designation: z.string().min(1, { message: "Designation is required" }),
 });
 
 const UpdateProfile = () => {
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  // const auth = getAuth();
   const user = JSON.parse(localStorage.getItem("user"));
 
   const {
@@ -50,14 +53,17 @@ const UpdateProfile = () => {
     resolver: zodResolver(schema),
   });
 
+  const [profileImage, setProfileImage] = useState(null);
+  const [companyLogo, setCompanyLogo] = useState(null);
+  const [newProfileImage, setNewProfileImage] = useState(null);
+  const [newCompanyLogo, setNewCompanyLogo] = useState(null);
+  const [openModal, setOpenModal] = useState(false);
+
   useEffect(() => {
     const fetchUserData = async () => {
       if (user) {
-        console.log("user", user);
-        console.log("user-uid", user.uid);
         const userDoc = doc(db, "users", user.uid);
         const userData = await getDoc(userDoc);
-        console.log("userData", userData.data())
 
         if (userData.exists()) {
           const data = userData.data();
@@ -74,6 +80,12 @@ const UpdateProfile = () => {
           setValue("websiteUrl", data.websiteUrl || "");
           setValue("whatsAppNumber", data.whatsAppNumber || "");
           setValue("about", data.about || "");
+          setValue("companyName", data.companyName || "");
+          setValue("designation", data.designation || "");
+
+          // Set the initial state for profileImage and companyLogo
+          setProfileImage(data.profileImage || null);
+          setCompanyLogo(data.companyLogo || null);
         }
       }
     };
@@ -81,30 +93,57 @@ const UpdateProfile = () => {
     fetchUserData();
   }, [user, setValue]);
 
+  const storage = getStorage();
+
+  const uploadImage = async (file, path) => {
+    const storageRef = ref(storage, path);
+    await uploadBytes(storageRef, file);
+    return getDownloadURL(storageRef);
+  };
+
   const onSubmit = async (data) => {
+    setLoading(true);
     try {
-      await updateProfile(user, {
-        displayName: `${data.firstName} ${data.middleName} ${data.lastName}`,
-        photoURL: data.profileImage[0]
-          ? URL.createObjectURL(data.profileImage[0])
-          : user.photoURL,
-      });
-      alert("Profile updated successfully!");
-      navigate("/update-profile");
+      let profileImageUrl = profileImage;
+      let companyLogoUrl = companyLogo;
+
+      if (newProfileImage) {
+        profileImageUrl = await uploadImage(newProfileImage, `profileImages/${user.uid}`);
+      }
+
+      if (newCompanyLogo) {
+        companyLogoUrl = await uploadImage(newCompanyLogo, `companyLogos/${user.uid}`);
+      }
+
+      const userDocRef = doc(db, "users", user.uid);
+      const updatedData = {
+        ...data,
+        profileImage: profileImageUrl,
+        companyLogo: companyLogoUrl,
+      };
+
+      await updateDoc(userDocRef, updatedData);
+      setOpenModal(true);
+      setLoading(false);
     } catch (error) {
       console.error("Error updating profile:", error);
+    } finally {
+      setLoading(false);
+      
     }
   };
 
-  const [profileImage, setProfileImage] = useState(null);
-  const [companyLogo, setCompanyLogo] = useState(null);
+  const handleCloseModal = () => {
+    setOpenModal(false);
+    navigate(`/profile/${user.uid}`);
+  };
 
   const onDropProfileImage = useCallback((acceptedFiles) => {
-    setProfileImage(acceptedFiles[0]);
+    setNewProfileImage(acceptedFiles[0]);
   }, []);
 
   const onDropCompanyLogo = useCallback((acceptedFiles) => {
-    setCompanyLogo(acceptedFiles[0]);
+    setNewCompanyLogo(acceptedFiles[0]);
   }, []);
 
   const {
@@ -137,7 +176,7 @@ const UpdateProfile = () => {
       </Typography>
       <Avatar
         alt="Profile Picture"
-        src={profileImage ? URL.createObjectURL(profileImage) : user?.photoURL || ""}
+        src={newProfileImage ? URL.createObjectURL(newProfileImage) : profileImage || user?.photoURL || ""}
         sx={{ width: 100, height: 100, mb: 2 }}
       />
       <form
@@ -195,6 +234,69 @@ const UpdateProfile = () => {
               helperText={errors.email ? errors.email.message : ""}
             />
           </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="Company Name"
+              variant="outlined"
+              fullWidth
+              {...register("companyName")}
+              error={!!errors.companyName}
+              helperText={errors.companyName ? errors.companyName.message : ""}
+            />
+          </Grid>
+          <Grid item xs={12} sm={6}>
+            <TextField
+              label="Designation"
+              variant="outlined"
+              fullWidth
+              {...register("designation")}
+              error={!!errors.designation}
+              helperText={errors.designation ? errors.designation.message : ""}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <Typography variant="h6">Previously Uploaded Images</Typography>
+            {profileImage && typeof profileImage === "string" && !newProfileImage && (
+              <Box
+                sx={{
+                  border: "2px dashed #d3d3d3",
+                  padding: "20px",
+                  textAlign: "center",
+                  mb: 2,
+                }}
+              >
+                <img
+                  src={profileImage}
+                  alt="Profile Preview"
+                  style={{
+                    width: "100%",
+                    maxHeight: "200px",
+                    objectFit: "cover",
+                  }}
+                />
+              </Box>
+            )}
+            {companyLogo && typeof companyLogo === "string" && !newCompanyLogo && (
+              <Box
+                sx={{
+                  border: "2px dashed #d3d3d3",
+                  padding: "20px",
+                  textAlign: "center",
+                  mb: 2,
+                }}
+              >
+                <img
+                  src={companyLogo}
+                  alt="Company Logo Preview"
+                  style={{
+                    width: "100%",
+                    maxHeight: "200px",
+                    objectFit: "cover",
+                  }}
+                />
+              </Box>
+            )}
+          </Grid>
           <Grid item xs={12}>
             <Typography variant="h6">Profile Image</Typography>
             <Box
@@ -207,9 +309,9 @@ const UpdateProfile = () => {
               }}
             >
               <input {...getInputPropsProfile()} />
-              {profileImage ? (
+              {newProfileImage ? (
                 <img
-                  src={URL.createObjectURL(profileImage)}
+                  src={URL.createObjectURL(newProfileImage)}
                   alt="Profile Preview"
                   style={{
                     width: "100%",
@@ -234,9 +336,9 @@ const UpdateProfile = () => {
               }}
             >
               <input {...getInputPropsLogo()} />
-              {companyLogo ? (
+              {newCompanyLogo ? (
                 <img
-                  src={URL.createObjectURL(companyLogo)}
+                  src={URL.createObjectURL(newCompanyLogo)}
                   alt="Company Logo Preview"
                   style={{
                     width: "100%",
@@ -266,9 +368,7 @@ const UpdateProfile = () => {
               fullWidth
               {...register("instagramUrl")}
               error={!!errors.instagramUrl}
-              helperText={
-                errors.instagramUrl ? errors.instagramUrl.message : ""
-              }
+              helperText={errors.instagramUrl ? errors.instagramUrl.message : ""}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -298,9 +398,7 @@ const UpdateProfile = () => {
               fullWidth
               {...register("mobileNumber")}
               error={!!errors.mobileNumber}
-              helperText={
-                errors.mobileNumber ? errors.mobileNumber.message : ""
-              }
+              helperText={errors.mobileNumber ? errors.mobileNumber.message : ""}
             />
           </Grid>
           <Grid item xs={12} sm={6}>
@@ -320,9 +418,7 @@ const UpdateProfile = () => {
               fullWidth
               {...register("whatsAppNumber")}
               error={!!errors.whatsAppNumber}
-              helperText={
-                errors.whatsAppNumber ? errors.whatsAppNumber.message : ""
-              }
+              helperText={errors.whatsAppNumber ? errors.whatsAppNumber.message : ""}
             />
           </Grid>
           <Grid item xs={12}>
@@ -349,12 +445,40 @@ const UpdateProfile = () => {
             >
               Cancel
             </Button>
-            <Button type="submit" variant="contained" color="primary">
-              Update Profile
+            <Button type="submit" variant="contained" color="primary" disabled={loading}>
+              {loading ? <CircularProgress size={24} /> : "Update Profile"}
             </Button>
           </Grid>
         </Grid>
       </form>
+      <Modal
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+        aria-labelledby="modal-title"
+        aria-describedby="modal-description"
+      >
+        <Box
+          sx={{
+            position: 'absolute',
+            top: '50%',
+            left: '50%',
+            transform: 'translate(-50%, -50%)',
+            width: 400,
+            bgcolor: 'background.paper',
+            borderRadius: '8px',
+            boxShadow: 24,
+            p: 4,
+            textAlign: 'center',
+          }}
+        >
+          <Typography id="modal-title" variant="h6" component="h2" gutterBottom>
+            Profile updated successfully
+          </Typography>
+          <Button onClick={handleCloseModal} variant="contained" color="primary" sx={{ mt: 2 }}>
+            See your profile
+          </Button>
+        </Box>
+      </Modal>
     </Box>
   );
 };
