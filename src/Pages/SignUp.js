@@ -24,7 +24,7 @@ const SignUp = () => {
   const user = localStorage.getItem("user");
   useEffect(() => {
     if (user) {
-      navigate("/profile");
+      navigate("/update-profile");
     }
   }, [user, navigate]);
   const {

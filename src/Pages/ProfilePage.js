@@ -21,67 +21,28 @@ const ProfilePage = () => {
     const downloadVCard = () => {
         // Create a new VCard object using vcf
         const card = new vCard();
+        // card.set('version', '4.0' );
 
-        // Set VCard fields
-        card.set('fn', 'Landa Chandra Sekhar');
-        card.set('n', { first: 'Landa', last: 'Sekhar', middle: 'Chandra' });
+        card.set('n', 'pani;kiran;babu;pkb;' );
+        // card.set('n', 'panigrahi;kiran;babu;pkb;' ); --- fields
+        // below are the field names ad display
+        // card.set('n', 'last_name;first_name;middle_name;name_prefix;' ); --- example (pkb kiran babu panigrahi)
+
         card.set('org', 'INV Technologies');
         card.set('title', 'Founder & CEO');
-        card.set('tel', { type: 'work', value: '+919704808143' });
         card.set('email', 'info@invtechnologies.in');
+        card.set('tel', { 'type': ['home','voice'], 'value': 'uri'}, {'uri':'tel:+918179593300' });
+        
+        // card.set('photo', { 'mediatype':  'image/gif'}, "text", `https://img.freepik.com/free-photo/photorealistic-view-tree-nature-with-branches-trunk_23-2151478040.jpg`);
 
-        // Convert VCard to string format
         const vcfText = card.toString();
-
-        // Create and download the VCard file
         const element = document.createElement("a");
         const file = new Blob([vcfText], { type: "text/vcard" });
         element.href = URL.createObjectURL(file);
-        element.download = "contact.vcf";
+        element.download = "name.vcf";
         document.body.appendChild(element);
         element.click();
     };
-
-    // const downloadVcfFile = () => {
-    //     const vcfContent = `
-    //     BEGIN:VCARD
-    // VERSION:3.0
-    // FN:Landa Chandra Sekhar
-    // N:Sekhar;Landa;Chandra;;
-    // ORG:INV Technologies
-    // TITLE:Founder & CEO
-    // TEL;TYPE=WORK,VOICE:+919704808143
-    // EMAIL:chandu@example.com
-    // END:VCARD`.trim();
-    // const element = document.createElement("a");
-    // const file = new Blob([vcfContent], { type: "text/vcard" });
-    // element.href = URL.createObjectURL(file);
-    // element.download = "contact.vcf";
-    // document.body.appendChild(element);
-    // element.click();
-    //     URL.revokeObjectURL(element.href);
-    // };
-
-    //     const downloadVCard = () => {
-    //         const vcfText = `
-    // BEGIN:VCARD
-    // VERSION:3.0
-    // FN:Landa Chandra Sekhar
-    // N:Sekhar;Landa;Chandra;;
-    // ORG:INV Technologies
-    // TITLE:Founder & CEO
-    // TEL;TYPE=WORK,VOICE:+919704808143
-    // EMAIL:info@invtechnologies.in
-    // END:VCARD
-    //         `.trim();
-
-    //         const element = document.createElement("a");
-    //         const file = new Blob([vcfText], { type: "text/vcard" });
-    //         element.href = URL.createObjectURL(file);
-    //         element.download = "contact.vcf";
-    //         document.body.appendChild(element);
-    //         element.click();
-    //     };
 
     const handlePhoneClick = () => {
         window.open("tel:+919704808143", "_self");  // Opens phone dialer on mobile devices

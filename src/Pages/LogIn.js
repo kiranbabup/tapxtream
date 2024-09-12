@@ -12,7 +12,7 @@ import {
   Link,
 } from "@mui/material";
 // import GoogleIcon from "@mui/icons-material/Google";
-import { collection, addDoc, getDocs, query, where } from "firebase/firestore";
+import { collection, addDoc, getDocs, query, where, doc, setDoc } from "firebase/firestore";
 import { db } from "../services/firebase";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
@@ -39,7 +39,7 @@ const LogIn = () => {
 
   useEffect(() => {
     if (user) {
-      navigate("/profile");
+      navigate("/update-profile");
     }
   }, [user, navigate]);
 
@@ -59,7 +59,8 @@ const LogIn = () => {
       if (user.emailVerified) {
         console.log("Email verified!");
         localStorage.setItem("user", JSON.stringify(user));
-        await checkAndStoreUser(user.email);
+        console.log(user);
+        await checkAndStoreUser(user.email, user.emailVerified, user.uid);
       } else {
         alert("Please verify your email before proceeding.");
       }
@@ -76,7 +77,7 @@ const LogIn = () => {
     }
   };
 
-  const checkAndStoreUser = async (email) => {
+  const checkAndStoreUser = async (email, emailVerified, uid) => {
     try {
       // Check if user already exists in Firestore
       const userQuery = query(
@@ -84,15 +85,15 @@ const LogIn = () => {
         where("email", "==", email)
       );
       const userSnapshot = await getDocs(userQuery);
-
       if (userSnapshot.empty) {
         // User does not exist in Firestore, so add new user
-        await addDoc(collection(db, "users"), { email });
+        const userDocRef = doc(collection(db, "users"), uid);
+        await setDoc(userDocRef, { email, emailVerified, uid });
         console.log("User data stored in Firestore");
-        navigate("/profile");
+        navigate("/update-profile");
       } else {
         console.log("User already exists in Firestore");
-        navigate("/profile");
+        navigate("/update-profile");
       }
     } catch (error) {
       console.error("Error storing user data in Firestore:", error);
