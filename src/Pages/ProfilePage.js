@@ -11,7 +11,7 @@ import WhatsAppIcon from '@mui/icons-material/WhatsApp';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import vCard from "vcf";
 
-const Profile = () => {
+const ProfilePage = () => {
 
     const socialIconStyle = {
         width: "60px", height: "60px", backgroundColor: "#f5f5f5", borderRadius: "15px",
@@ -21,27 +21,10 @@ const Profile = () => {
     const downloadVCard = () => {
         // Create a new VCard object using vcf
         const card = new vCard();
-        // n: [String: 'Gump;Forrest;;;'],
-        // fn: [String: 'Forrest Gump'],
-        // photo: { [String: 'http://www.example.com/dir_photos/my_photo.gif'] mediatype: 'image/gif' },
-        // tel: [
-        //   { [String: 'tel:+11115551212'] type: [ 'work', 'voice' ], value: 'uri' },
-        //   { [String: 'tel:+14045551212'] type: [ 'home', 'voice' ], value: 'uri' }
-        // ],
-        // adr: [
-        //   { [String: ';;100 Waters Edge;Baytown;LA;30314;United States of America']
-        //     type: 'work',
-        //     label: '"100 Waters Edge\\nBaytown, LA 30314\\nUnited States of America"' },
-        //   { [String: ';;42 Plantation St.;Baytown;LA;30314;United States of America']
-        //     type: 'home',
-        //     label: '"42 Plantation St.\\nBaytown, LA 30314\\nUnited States ofAmerica"' }
-        // ],
-        // email: [String: 'forrestgump@example.com'],
-        // rev: [String: '20080424T195243Z']
-        // Set VCard fields
-        card.set('n', 'Landa;Chandra;Sekhar;;' );
-        card.set('fn', 'Landa Chandra Sekhar');
 
+        // Set VCard fields
+        card.set('fn', 'Landa Chandra Sekhar');
+        card.set('n', { first: 'Landa', last: 'Sekhar', middle: 'Chandra' });
         card.set('org', 'INV Technologies');
         card.set('title', 'Founder & CEO');
         card.set('tel', { type: 'work', value: '+919704808143' });
@@ -58,6 +41,47 @@ const Profile = () => {
         document.body.appendChild(element);
         element.click();
     };
+
+    // const downloadVcfFile = () => {
+    //     const vcfContent = `
+    //     BEGIN:VCARD
+    // VERSION:3.0
+    // FN:Landa Chandra Sekhar
+    // N:Sekhar;Landa;Chandra;;
+    // ORG:INV Technologies
+    // TITLE:Founder & CEO
+    // TEL;TYPE=WORK,VOICE:+919704808143
+    // EMAIL:chandu@example.com
+    // END:VCARD`.trim();
+    // const element = document.createElement("a");
+    // const file = new Blob([vcfContent], { type: "text/vcard" });
+    // element.href = URL.createObjectURL(file);
+    // element.download = "contact.vcf";
+    // document.body.appendChild(element);
+    // element.click();
+    //     URL.revokeObjectURL(element.href);
+    // };
+
+    //     const downloadVCard = () => {
+    //         const vcfText = `
+    // BEGIN:VCARD
+    // VERSION:3.0
+    // FN:Landa Chandra Sekhar
+    // N:Sekhar;Landa;Chandra;;
+    // ORG:INV Technologies
+    // TITLE:Founder & CEO
+    // TEL;TYPE=WORK,VOICE:+919704808143
+    // EMAIL:info@invtechnologies.in
+    // END:VCARD
+    //         `.trim();
+
+    //         const element = document.createElement("a");
+    //         const file = new Blob([vcfText], { type: "text/vcard" });
+    //         element.href = URL.createObjectURL(file);
+    //         element.download = "contact.vcf";
+    //         document.body.appendChild(element);
+    //         element.click();
+    //     };
 
     const handlePhoneClick = () => {
         window.open("tel:+919704808143", "_self");  // Opens phone dialer on mobile devices
@@ -256,4 +280,4 @@ const Profile = () => {
     );
 }
 
-export default Profile;
+export default ProfilePage;

@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { styled } from "@mui/material/styles";
 import { Button, Typography, Container, Box } from "@mui/material";
-import Page from "../components/shortComponents/Page";
+// import Page from "../components/shortComponents/Page";
 
 const ContentStyle = styled("div")(({ theme }) => ({
   maxWidth: 480,
@@ -19,7 +19,7 @@ export default function PageNotFound() {
   };
 
   return (
-    <Page title="404 Page Not Found">
+    // <Page title="404 Page Not Found">
       <Container>
         <ContentStyle sx={{ textAlign: "center", alignItems: "center" }}>
           <Typography variant="h3" paragraph>
@@ -40,6 +40,6 @@ export default function PageNotFound() {
           <Button size="large" variant="contained" onClick={handleBack}>Go back</Button>
         </ContentStyle>
       </Container>
-    </Page>
+    // </Page>
   );
 }
