@@ -1,5 +1,8 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import Profile from "./Pages/Profile";
+import SignUp from "./Pages/SignUp";
+import LogIn from "./Pages/SignUp";
+import HomePage from "./Pages/HomePage";
 // import HomeLayout from "./layouts/HomeLayout";
 // import PageNotFound from "./layouts/PageNotFound";
 // import ProtectedRoute from "./layouts/ProtectedRoute";
@@ -17,15 +20,18 @@ const Router = () => {
     return (
         <Routes>
             {/* <Route path="/" element={<Navigate to="/profile/:id" replace />} /> */}
-            <Route path="/" element={<Navigate to="/profile" replace />} />
+            <Route path="/" element={<Navigate to="/" replace />} />
 
-            {/* <Route path="/" element={<HomePage />} /> */}
+            <Route path="/" element={<HomePage />} />
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="/login" element={<LogIn />} />
+            <Route path="/profile" element={<Profile />} />
             {/* <Route path="/profile/:id" element={<ProfileId />} /> */}
             {/* <Route path="/404" element={<PageNotFound />} /> */}
             {/* <Route path="/adminmnwlogin" element={<AdminLogin />} /> */}
             {/* <Route path="/event/:id" element={<EventPage />} /> */}
             {/* <Route path="/pro" element={<ProfilePage />} /> */}
-            <Route path="/profile" element={<Profile />} />
+
 
             {/* <Route path="/admin" element={<ProtectedRoute type="admin" />}>
                 <Route path="" element={<AdminSidebarLayout type="admin" />}>
