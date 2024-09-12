@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -11,13 +11,17 @@ import {
   FormControlLabel,
   Link,
 } from "@mui/material";
-import GoogleIcon from "@mui/icons-material/Google";
+// import GoogleIcon from "@mui/icons-material/Google";
+import { collection, addDoc, getDocs, query, where } from "firebase/firestore";
+import { db } from "../services/firebase"; 
+import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
 
 const schema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
   password: z
     .string()
-    .min(6, { message: "Password must be at least 6 characters" }),
+    .min(8, { message: "Password must be at least 8 characters" }),
 });
 
 const LogIn = () => {
@@ -29,8 +33,59 @@ const LogIn = () => {
     resolver: zodResolver(schema),
   });
 
-  const onSubmit = (data) => {
-    console.log(data);
+  const navigate = useNavigate();
+  const [loginError, setLoginError] = useState("");
+
+  const onSubmit = async (data) => {
+    const auth = getAuth();
+    setLoginError(""); // Clear previous errors
+    try {
+      // Sign in user
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        data.email,
+        data.password
+      );
+      const user = userCredential.user;
+
+      // Check if email is verified
+      if (user.emailVerified) {
+        console.log("Email verified!");
+        await checkAndStoreUser(user.email);
+      } else {
+        alert("Please verify your email before proceeding.");
+      }
+    } catch (error) {
+      // Check for wrong password error
+      if (error.code === "auth/wrong-password") {
+        setLoginError("Password is incorrect.");
+      } else if (error.code === "auth/user-not-found") {
+        setLoginError("User not found. Please check your email.");
+      } else {
+        setLoginError("An error occurred during login.");
+      }
+      console.error("Error during login:", error);
+    }
+  };
+
+  const checkAndStoreUser = async (email) => {
+    try {
+      // Check if user already exists in Firestore
+      const userQuery = query(collection(db, "users"), where("email", "==", email));
+      const userSnapshot = await getDocs(userQuery);
+
+      if (userSnapshot.empty) {
+        // User does not exist in Firestore, so add new user
+        await addDoc(collection(db, "users"), { email });
+        console.log("User data stored in Firestore");
+        navigate("/profile");
+      } else {
+        console.log("User already exists in Firestore");
+        navigate("/profile");
+      }
+    } catch (error) {
+      console.error("Error storing user data in Firestore:", error);
+    }
   };
 
   return (
@@ -43,13 +98,23 @@ const LogIn = () => {
     >
       <Box
         sx={{
+          width: { xs: "100%", md: "70%" },
+          backgroundColor: "#3f51b5",
+          display: { xs: "none", md: "block" },
+        }}
+      >
+        {/* Add your background image or design here */}
+      </Box>
+
+      <Box
+        sx={{
           width: { md: "30%" },
           p: { xs: 2, md: 4 },
           height: "100%",
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
-          border: "2px solid red",  
+          // border: "2px solid red",  
         }}
       >
         <Typography
@@ -66,6 +131,7 @@ const LogIn = () => {
         >
           Enter to get unlimited access to data & information.
         </Typography>
+
         <form onSubmit={handleSubmit(onSubmit)}>
           <TextField
             label="Email"
@@ -88,18 +154,23 @@ const LogIn = () => {
             helperText={errors.password ? errors.password.message : ""}
             sx={{ fontSize: { xs: "0.875rem", md: "1rem" } }}
           />
+          {loginError && (
+            <Typography color="error" sx={{ fontSize: "0.875rem", mt: 1 }}>
+              {loginError}
+            </Typography>
+          )}
           <FormControlLabel
             control={<Checkbox {...register("rememberMe")} />}
             label="Remember me"
             sx={{ fontSize: { xs: "0.875rem", md: "1rem" } }}
           />
-          <Link
+          {/* <Link
             href="#"
             variant="body2"
             sx={{ fontSize: { xs: "0.75rem", md: "0.875rem" } }}
           >
             Forgot your password?
-          </Link>
+          </Link> */}
           <Button
             type="submit"
             variant="contained"
@@ -110,22 +181,14 @@ const LogIn = () => {
             Log In
           </Button>
         </form>
+
         <Typography
           variant="body2"
           align="center"
           sx={{ mt: 2, fontSize: { xs: "0.75rem", md: "0.875rem" } }}
         >
-          Don’t have an account? <Link href="#">Register here</Link>
+          Don’t have an account? <Link href="/signup">Register here</Link>
         </Typography>
-      </Box>
-      <Box
-        sx={{
-          width: { xs: "100%", md: "70%" },
-          backgroundColor: "#3f51b5",
-          display: { xs: "none", md: "block" },
-        }}
-      >
-        {/* Add your background image or design here */}
       </Box>
     </Box>
   );

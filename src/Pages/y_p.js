@@ -52,4 +52,21 @@ const Profile = () => {
     );
 }
 
-export default Profile;
+// export default Profile;
+
+import { Routes, Route } from "react-router-dom";
+import Profile from "./Pages/Profile";
+import SignUp from "./Pages/SignUp";
+import LogIn from "./Pages/LogIn";
+const Router = () => {
+    return (
+        <Routes>
+            <Route path="/" element={<LogIn />} />
+            <Route path="/signup" element={<SignUp />} />
+            <Route path="/profile" element={<Profile />} />
+        </Routes>
+    );
+};
+
+// export default Router;
+

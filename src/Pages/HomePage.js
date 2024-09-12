@@ -8,6 +8,9 @@ const HomePage = () => {
             height:"100vh",
         }}>
             <HeaderComponent />
+            <Box>
+                
+            </Box>
         </Box>
     )
 }
