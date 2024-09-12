@@ -1,8 +1,9 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import Profile from "./Pages/Profile";
-import SignUp from "./Pages/SignUp";
-import LogIn from "./Pages/SignUp";
 import HomePage from "./Pages/HomePage";
+import SignUp from "./Pages/SignUp";
+import LogIn from "./Pages/LogIn";
+
 // import HomeLayout from "./layouts/HomeLayout";
 // import PageNotFound from "./layouts/PageNotFound";
 // import ProtectedRoute from "./layouts/ProtectedRoute";

@@ -1,8 +1,8 @@
 import { Box } from "@mui/material"
 
-const LogIn = () => {
+const SignUp = () => {
     return(
-        <Box>HI</Box>
+        <Box>SignUp</Box>
     )
 }
-export default LogIn;
+export default SignUp;
