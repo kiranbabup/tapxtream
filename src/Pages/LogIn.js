@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 // import GoogleIcon from "@mui/icons-material/Google";
 import { collection, addDoc, getDocs, query, where } from "firebase/firestore";
-import { db } from "../services/firebase"; 
+import { db } from "../services/firebase";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 
@@ -25,6 +25,7 @@ const schema = z.object({
 });
 
 const LogIn = () => {
+  const user = localStorage.getItem("user");
   const {
     register,
     handleSubmit,
@@ -35,6 +36,12 @@ const LogIn = () => {
 
   const navigate = useNavigate();
   const [loginError, setLoginError] = useState("");
+
+  useEffect(() => {
+    if (user) {
+      navigate("/profile");
+    }
+  }, [user, navigate]);
 
   const onSubmit = async (data) => {
     const auth = getAuth();
@@ -51,6 +58,7 @@ const LogIn = () => {
       // Check if email is verified
       if (user.emailVerified) {
         console.log("Email verified!");
+        localStorage.setItem("user", JSON.stringify(user));
         await checkAndStoreUser(user.email);
       } else {
         alert("Please verify your email before proceeding.");
@@ -71,7 +79,10 @@ const LogIn = () => {
   const checkAndStoreUser = async (email) => {
     try {
       // Check if user already exists in Firestore
-      const userQuery = query(collection(db, "users"), where("email", "==", email));
+      const userQuery = query(
+        collection(db, "users"),
+        where("email", "==", email)
+      );
       const userSnapshot = await getDocs(userQuery);
 
       if (userSnapshot.empty) {
@@ -114,7 +125,7 @@ const LogIn = () => {
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
-          // border: "2px solid red",  
+          // border: "2px solid red",
         }}
       >
         <Typography

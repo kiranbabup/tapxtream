@@ -1,11 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Box, Button, TextField, Typography, Link } from "@mui/material";
 import { collection, addDoc } from "firebase/firestore";
-import { getAuth, createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
+import {
+  getAuth,
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+} from "firebase/auth";
 import { db } from "../services/firebase";
+import { useNavigate } from "react-router-dom";
 
 const schema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -15,6 +20,13 @@ const schema = z.object({
 });
 
 const SignUp = () => {
+  const navigate = useNavigate();
+  const user = localStorage.getItem("user");
+  useEffect(() => {
+    if (user) {
+      navigate("/profile");
+    }
+  }, [user, navigate]);
   const {
     register,
     handleSubmit,
@@ -43,7 +55,9 @@ const SignUp = () => {
       console.log("Verification email sent!");
 
       // Notify the user to check their email and verify
-      alert("Please check your email for verification. After verifying, log-in to complete registration.");
+      alert(
+        "Please check your email for verification. After verifying, log-in to complete registration."
+      );
     } catch (error) {
       setVerificationError(error.message);
       console.error("Error during signup:", error);
@@ -75,7 +89,7 @@ const SignUp = () => {
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
-          // border: "2px solid red",  
+          // border: "2px solid red",
         }}
       >
         <Typography
@@ -93,8 +107,16 @@ const SignUp = () => {
           Get registered for an unique Profile.
         </Typography>
         {verificationSent ? (
-          <Typography variant="body1" gutterBottom sx={{ boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px", padding: "10px" }}>
-            A verification email has been sent. Please verify your email before continuing.
+          <Typography
+            variant="body1"
+            gutterBottom
+            sx={{
+              boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
+              padding: "10px",
+            }}
+          >
+            A verification email has been sent. Please verify your email before
+            continuing.
           </Typography>
         ) : (
           <form onSubmit={handleSubmit(onSubmit)}>
@@ -124,7 +146,7 @@ const SignUp = () => {
               variant="contained"
               color="primary"
               fullWidth
-              sx={{ mt: 2, fontSize: { xs: "0.875rem", md: "1rem" }, }}
+              sx={{ mt: 2, fontSize: { xs: "0.875rem", md: "1rem" } }}
             >
               Sign Up
             </Button>
@@ -141,8 +163,7 @@ const SignUp = () => {
           Already have an account? <Link href="/">Login</Link>.
         </Typography>
       </Box>
-
-    </Box >
+    </Box>
   );
 };
 
