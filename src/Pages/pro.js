@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Button, Typography } from "@mui/material";
-import profileImage from "../data/sir_Image.jpeg";
+// import profileImage from "../data/sir_Image.jpeg";
 import companyLogo from "../data/Inv_logo-Horizontal.png";
 import fb from "../data/facebook.svg";
 import insta from "../data/instagram.svg";
@@ -54,8 +54,8 @@ class Pro extends React.Component {
     };
     handleEmailClick = (email) => {
         window.location.href = `mailto:${email}`;
-      };
-      
+    };
+
     handleWebsiteClick = (wu) => {
         window.open(wu, "_blank");  // Opens website in a new tab
     };
@@ -110,14 +110,14 @@ class Pro extends React.Component {
 
                                     }}
                                 >
-                                    <Typography sx={{ color: "white", fontWeight: "bold", fontSize: { xs: "22px", md: "38px" } }}>{user.firstName}</Typography>
-                                    <Typography sx={{ color: "white", fontWeight: "bold", fontSize: { xs: "22px", md: "38px" } }}>{user.middleName}</Typography>
-                                    <Typography sx={{ color: "white", fontWeight: "bold", fontSize: { xs: "22px", md: "38px" } }}>{user.lastName}</Typography>
-                                    <Typography sx={{ color: "white", fontSize: { xs: "14px", md: "24px" } }}>{user.designation}</Typography>
+                                    <Typography sx={{ color: "white", fontWeight: "bold", fontSize: { xs: "20px", md: "28px" } }}>{user.firstName}</Typography>
+                                    <Typography sx={{ color: "white", fontWeight: "bold", fontSize: { xs: "20px", md: "28px" } }}>{user.middleName}</Typography>
+                                    <Typography sx={{ color: "white", fontWeight: "bold", fontSize: { xs: "20px", md: "28px" } }}>{user.lastName}</Typography>
+                                    <Typography sx={{ color: "white", fontSize: { xs: "14px", md: "22px" } }}>{user.designation}</Typography>
                                     {
-                                        user.companyName && <Typography sx={{ color: "white", fontSize: { xs: "10px", md: "18px" } }}>@ {user.companyName}</Typography>
+                                        user.companyName && <Typography sx={{ color: "white", fontSize: { xs: "12px", md: "18px" } }}>@ {user.companyName}</Typography>
                                     }
-                                    
+
                                     <Box p={1} />
                                     <Box
                                         sx={{
@@ -130,6 +130,7 @@ class Pro extends React.Component {
                                             src={user.companyLogo}
                                             sx={{
                                                 width: { xs: "100px", md: "150px" },
+                                                maxHeight: { xs: "60px", md: "80px" },
                                             }}
                                         />
                                     </Box>
@@ -139,7 +140,7 @@ class Pro extends React.Component {
                         </Box>
 
                         <Box sx={{ display: "flex", justifyContent: "space-evenly" }}>
-                            <Button variant="outlined" onClick={()=>this.downloadVCard(user.firstName, user.middleName, user.lastName, user.email, user.mobileNumber, user.companyName, user.designation)} sx={{ fontWeight: 'normal', fontSize: { xs: '0.7rem', sm: '1rem' }, width: '45%', color: "black", borderColor: "black" }}>Save Contact</Button>
+                            <Button variant="outlined" onClick={() => this.downloadVCard(user.firstName, user.middleName, user.lastName, user.email, user.mobileNumber, user.companyName, user.designation)} sx={{ fontWeight: 'normal', fontSize: { xs: '0.7rem', sm: '1rem' }, width: '45%', color: "black", borderColor: "black" }}>Save Contact</Button>
 
                             <Button variant="outlined" sx={{
                                 fontWeight: 'normal', fontSize: { xs: '0.7rem', sm: '1rem' }, width: '45%', background: "#02042a", color: "white", '&:hover': { color: "black" }
@@ -210,28 +211,28 @@ class Pro extends React.Component {
                         <Typography style={headingssx} >Contact info</Typography>
                         <Box p={1} />
 
-                        <Box style={contactInfosx} onClick={()=>this.handlePhoneClick(user.mobileNumber)} >
+                        <Box style={contactInfosx} onClick={() => this.handlePhoneClick(user.mobileNumber)} >
                             <i class="fa-2xl fas fa-mobile-alt fa-thin" aria-hidden="true" ></i>
                             <Box style={contactInnersx} sx={{ width: "80%", }}>
                                 <Typography sx={{ fontWeight: "bold" }}>+91{user.mobileNumber}</Typography>
                                 <ArrowForwardIosIcon sx={{ color: "lightgray" }} />
                             </Box>
                         </Box>
-                        <Box style={contactInfosx} onClick={()=>this.handleEmailClick(user.email)} >
+                        <Box style={contactInfosx} onClick={() => this.handleEmailClick(user.email)} >
                             <i class="fa fa-envelope fa-2xl" aria-hidden="true" ></i>
                             <Box style={contactInnersx} sx={{ width: "78%", }}>
                                 <Typography sx={{ fontWeight: "bold" }}>{user.email}</Typography>
                                 <ArrowForwardIosIcon sx={{ color: "lightgray" }} />
                             </Box>
                         </Box>
-                        <Box style={contactInfosx} onClick={()=>this.handleWebsiteClick(user.websiteUrl)}>
+                        <Box style={contactInfosx} onClick={() => this.handleWebsiteClick(user.websiteUrl)}>
                             <i class="fa-2xl fas fa-link fa-thin" aria-hidden="true" ></i>
                             <Box style={contactInnersx} sx={{ width: "76%" }}>
                                 <Typography sx={{ fontWeight: "bold" }}>{user.websiteUrl}</Typography>
                                 <ArrowForwardIosIcon sx={{ color: "lightgray" }} />
                             </Box>
                         </Box>
-                        <Box style={contactInfosx} onClick={()=>this.handleWhatsappClick(user.whatsAppNumber)}>
+                        <Box style={contactInfosx} onClick={() => this.handleWhatsappClick(user.whatsAppNumber)}>
                             <WhatsAppIcon sx={{ fontSize: '2rem' }} />
                             <Box style={contactInnersx} sx={{ width: "78%" }}>
                                 <Typography sx={{ fontWeight: "bold" }}>WhatsApp Chat</Typography>
@@ -241,9 +242,18 @@ class Pro extends React.Component {
 
                         <Box p={1.5} />
                         <Typography style={headingssx} >About</Typography>
-                        <Typography sx={{ padding: "14px", textAlign: "justify" }}>
+                        <Typography sx={{
+                            padding: "14px", textAlign: "justify", 
+                            display: "block", 
+                            overflowWrap: "break-word",
+                            wordBreak: "break-word",
+                            whiteSpace: "normal",  
+                            wordWrap: "break-word",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis"
+                        }}>
                             {user.about}
-                            {/* INV Te  chnologies Holds a remarkable place in IT Services AR, VR AND MR - INNOVATIONS and a leading organisation in the field of industrial Embedded Systems, Security Systems, Virtual Reality, Augmented Reality, Mixed Reality and Robotics currently focuses on Virtual Environment Protocols .We at INV emphasise on technical Innovations in IT sector. INV has its own R&D lab at its incubation centre were we encourage research and development for more than 10 companies. INV was founded on August 2014 and is currently incubated at Visakhapatnam, Andhra Pradesh (state), India. */}
+                            {/* INV Technologies Holds a remarkable place in IT Services AR, VR AND MR - INNOVATIONS and a leading organisation in the field of industrial Embedded Systems, Security Systems, Virtual Reality, Augmented Reality, Mixed Reality and Robotics currently focuses on Virtual Environment Protocols. We at INV emphasise on technical Innovations in IT sector. INV has its own R&D lab at its incubation centre were we encourage research and development for more than 10 companies. INV was founded on August 2014 and is currently incubated at Visakhapatnam, Andhra Pradesh (state), India. */}
                         </Typography>
                         <Box p={2.5} />
                         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center" }}>

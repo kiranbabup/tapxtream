@@ -11,21 +11,18 @@ import CreateNFC from "./Pages/CreateNFC";
 const Router = () => {
   return (
     <Routes>
-      {/* Public Routes */}
       <Route path="/" element={<LogIn />} />
       <Route path="/signup" element={<SignUp />} />
       <Route path="/404" element={<PageNotFound />} />
       <Route path="/profile/:id" element={<Pro />} />
 
-      {/* Protected Routes */}
       <Route element={<ProtectedRoute />}>
-        {/* Nested Protected Components */}
         <Route path="/update-profile" element={<UpdateProfile />} />
         <Route path="/create-nfc-design" element={<CreateNFC />} />
       </Route>
 
       {/* Catch-all route to handle 404 */}
-      <Route path="*" element={<PageNotFound />} />
+      {/* <Route path="*" element={<PageNotFound />} /> */}
     </Routes>
   );
 };
