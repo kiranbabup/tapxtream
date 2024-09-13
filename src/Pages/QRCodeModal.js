@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/material";
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Typography } from "@mui/material";
 import QRCode from 'react-qr-code';
 import { useNavigate } from "react-router-dom";
 
@@ -37,16 +37,21 @@ const QRCodeModal = ({ open, onClose }) => {
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-      <DialogTitle>Scan QR Code to View Profile</DialogTitle>
+      <DialogTitle>
+        <Box sx={{display: "flex", justifyContent: "end"}}>
+        <IconButton sx={{color:"red", width:'2.5rem'}} onClick={onClose}>x</IconButton>
+        </Box>
+        <Typography sx={{color:"green", textAlign:"center"}}>Scan QR Code to View Profile</Typography>
+      </DialogTitle>
       <DialogContent>
-        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "1rem", padding: "1rem", height: "auto" }}>
+        <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", height: "auto" }}>
           <QRCode id="QRCode" value={qrData} />
         </Box>
       </DialogContent>
-      <DialogActions>
+      <DialogActions sx={{ display: "flex", justifyContent: "center", }}>
         <Button variant="outlined" onClick={onImageDownload}>Download QR</Button>
-        <Button variant="outlined" onClick={onClose}>Close</Button>
       </DialogActions>
+      <Box p={1} />
     </Dialog>
   );
 };

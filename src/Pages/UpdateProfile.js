@@ -2,18 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import {
-  Box,
-  Button,
-  TextField,
-  Typography,
-  Grid,
-  Avatar,
-  Modal,
-  CircularProgress,
-  IconButton,
-} from "@mui/material";
-import { getAuth, updateProfile } from "firebase/auth";
+import { Box, Button, TextField, Typography, Grid, Avatar, Modal, CircularProgress, IconButton } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useDropzone } from "react-dropzone";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
@@ -26,8 +15,6 @@ const schema = z.object({
   firstName: z.string().min(1, { message: "First name is required" }),
   middleName: z.string().optional(),
   lastName: z.string().min(1, { message: "Last name is required" }),
-  userName: z.string().min(1, { message: "Username is required" }),
-  email: z.string().email({ message: "Invalid email address" }),
   facebookUrl: z.string().url({ message: "Invalid URL" }).optional(),
   instagramUrl: z.string().url({ message: "Invalid URL" }).optional(),
   twitterUrl: z.string().url({ message: "Invalid URL" }).optional(),
@@ -48,13 +35,9 @@ const UpdateProfile = () => {
   const user = JSON.parse(localStorage.getItem("user"));
 
   const {
-    register,
-    handleSubmit,
-    setValue,
+    register, watch, handleSubmit, setValue,
     formState: { errors },
-  } = useForm({
-    resolver: zodResolver(schema),
-  });
+  } = useForm({ resolver: zodResolver(schema) });
 
   const [profileImage, setProfileImage] = useState(null);
   const [companyLogo, setCompanyLogo] = useState(null);
@@ -73,7 +56,6 @@ const UpdateProfile = () => {
           setValue("firstName", data.firstName || "");
           setValue("middleName", data.middleName || "");
           setValue("lastName", data.lastName || "");
-          setValue("userName", data.userName || "");
           setValue("email", data.email || "");
           setValue("facebookUrl", data.facebookUrl || "");
           setValue("instagramUrl", data.instagramUrl || "");
@@ -132,7 +114,6 @@ const UpdateProfile = () => {
       console.error("Error updating profile:", error);
     } finally {
       setLoading(false);
-
     }
   };
 
@@ -179,6 +160,7 @@ const UpdateProfile = () => {
   const handleCloseQR = () => {
     setOpenQR(false);
   };
+
   return (
     <Box>
       <Box sx={{ display: "flex", justifyContent: "end", m: 1 }}>
@@ -189,10 +171,8 @@ const UpdateProfile = () => {
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          mt: 4,
         }}
       >
-
         <Typography variant="h4" gutterBottom>
           Update Profile
         </Typography>
@@ -201,16 +181,19 @@ const UpdateProfile = () => {
           src={newProfileImage ? URL.createObjectURL(newProfileImage) : profileImage || user?.photoURL || ""}
           sx={{ width: 100, height: 100, mb: 2 }}
         />
+        <Typography sx={{ mb: 2, mt: 2 }} >
+          {watch("email")}
+        </Typography>
+
         <form
           onSubmit={handleSubmit(onSubmit)}
-          style={{ width: "100%", maxWidth: "600px" }}
+          style={{ width: "100%", maxWidth: "600px", display: "flex", flexDirection: "column", alignItems: "center" }}
         >
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6}>
               <TextField
                 label="First Name"
                 variant="filled"
-                
                 fullWidth
                 {...register("firstName")}
                 error={!!errors.firstName}
@@ -235,26 +218,6 @@ const UpdateProfile = () => {
                 {...register("lastName")}
                 error={!!errors.lastName}
                 helperText={errors.lastName ? errors.lastName.message : ""}
-              />
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <TextField
-                label="Username"
-                variant="filled"
-                fullWidth
-                {...register("userName")}
-                error={!!errors.userName}
-                helperText={errors.userName ? errors.userName.message : ""}
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                label="Email"
-                variant="filled"
-                fullWidth
-                {...register("email")}
-                error={!!errors.email}
-                helperText={errors.email ? errors.email.message : ""}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
@@ -459,24 +422,30 @@ const UpdateProfile = () => {
             <Grid
               item
               xs={12}
-              sx={{ display: "flex", justifyContent: "space-between" }}
+              sx={{ display: "flex", justifyContent: "space-evenly" }}
             >
               <Button
                 variant="outlined"
                 color="secondary"
                 onClick={() => navigate("/update-profile")}
+                sx={{fontSize:{xs:"10px", md:"1rem"}}}
               >
                 Cancel
               </Button>
 
-              <Button variant="outlined" onClick={() => handleShowQRClick()}>Show QR</Button>
+              <Button variant="outlined" onClick={() => handleShowQRClick()}
+                sx={{fontSize:{xs:"10px", md:"1rem"}}}
+                >Show QR</Button>
               <QRCodeModal open={openQR} onClose={handleCloseQR} />
 
-              <Button type="submit" variant="contained" color="primary" disabled={loading}>
+              <Button type="submit" variant="contained" color="primary" disabled={loading}
+                sx={{fontSize:{xs:"10px", md:"1rem"}}}
+                >
                 {loading ? <CircularProgress size={24} /> : "Update Profile"}
               </Button>
             </Grid>
           </Grid>
+            <Box p={1}/>
         </form>
 
         <Modal
@@ -491,18 +460,18 @@ const UpdateProfile = () => {
               top: '50%',
               left: '50%',
               transform: 'translate(-50%, -50%)',
-              width: 400,
+              width: 300,
               bgcolor: 'background.paper',
-              borderRadius: '8px',
+              borderRadius: '10px',
               boxShadow: 24,
-              p: 4,
+              p: 2,
               textAlign: 'center',
             }}
           >
-            <Typography id="modal-title" variant="h6" component="h2" gutterBottom>
+            <Typography id="modal-title" variant="h6" component="h3" gutterBottom>
               Profile updated successfully
             </Typography>
-            <Button onClick={handleCloseModal} variant="contained" color="primary" sx={{ mt: 2 }}>
+            <Button onClick={()=>handleCloseModal()} variant="contained" color="primary" sx={{ mt: 2 }}>
               See your profile
             </Button>
           </Box>
