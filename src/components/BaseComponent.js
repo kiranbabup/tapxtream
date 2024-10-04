@@ -34,8 +34,9 @@ class BaseComponent extends React.Component {
 
     if (!data) {
       return (
-        <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "99vh" }}>
-          <Typography>{this.state.codeData}</Typography>
+        <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "auto" }}>
+          <Typography> </Typography>
+          {/* <Typography>{this.state.codeData}</Typography> */}
         </Box>
       );
     }

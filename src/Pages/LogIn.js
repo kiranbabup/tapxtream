@@ -57,9 +57,9 @@ const LogIn = () => {
 
       // Check if email is verified
       if (user.emailVerified) {
-        console.log("Email verified!");
+        // console.log("Email verified!");
         localStorage.setItem("user", JSON.stringify(user));
-        console.log(user);
+        // console.log(user);
         await checkAndStoreUser(user.email, user.emailVerified, user.uid);
       } else {
         alert("Please verify your email before proceeding.");
@@ -89,10 +89,10 @@ const LogIn = () => {
         // User does not exist in Firestore, so add new user
         const userDocRef = doc(collection(db, "users"), uid);
         await setDoc(userDocRef, { email, emailVerified, uid });
-        console.log("User data stored in Firestore");
+        // console.log("User data stored in Firestore");
         navigate("/update-profile");
       } else {
-        console.log("User already exists in Firestore");
+        // console.log("User already exists in Firestore");
         navigate("/update-profile");
       }
     } catch (error) {
@@ -171,11 +171,11 @@ const LogIn = () => {
               {loginError}
             </Typography>
           )}
-          <FormControlLabel
+          {/* <FormControlLabel
             control={<Checkbox {...register("rememberMe")} />}
             label="Remember me"
             sx={{ fontSize: { xs: "0.875rem", md: "1rem" } }}
-          />
+          /> */}
           {/* <Link
             href="#"
             variant="body2"

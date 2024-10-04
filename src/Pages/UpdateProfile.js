@@ -2,48 +2,56 @@ import React, { useEffect, useState, useCallback } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Box, Button, TextField, Typography, Grid, Avatar, Modal, CircularProgress, IconButton } from "@mui/material";
+import { Box, Button, TextField, Typography, Grid, Avatar, Modal, CircularProgress, IconButton, Skeleton, Drawer } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { useDropzone } from "react-dropzone";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../services/firebase";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import OutputIcon from '@mui/icons-material/Output';
 import QRCodeModal from "./QRCodeModal";
+import LogoutButtonComp from "../components/LogoutButtonComp";
+import MenuIcon from "@mui/icons-material/Menu";
 
 const schema = z.object({
   firstName: z.string().min(1, { message: "First name is required" }),
   middleName: z.string().optional(),
   lastName: z.string().min(1, { message: "Last name is required" }),
-  facebookUrl: z.string().url({ message: "Invalid URL" }).optional(),
-  instagramUrl: z.string().url({ message: "Invalid URL" }).optional(),
-  twitterUrl: z.string().url({ message: "Invalid URL" }).optional(),
-  linkedInUrl: z.string().url({ message: "Invalid URL" }).optional(),
+  facebookUrl: z.string().optional(),
+  instagramUrl: z.string().optional(),
+  twitterUrl: z.string().optional(),
+  linkedInUrl: z.string().optional(),
   mobileNumber: z.string().min(10, { message: "Invalid mobile number" }),
-  websiteUrl: z.string().url({ message: "Invalid URL" }).optional(),
+  websiteUrl: z.string().optional(),
   whatsAppNumber: z.string().min(10, { message: "Invalid WhatsApp number" }),
+  displayEmail: z.string().email({ message: "Invalid email address" }),
   about: z.string().optional(),
   profileImage: z.any().optional(),
   companyLogo: z.any().optional(),
+  clientImage: z.any().optional(),
   companyName: z.string().min(1, { message: "Company name is required" }),
   designation: z.string().min(1, { message: "Designation is required" }),
 });
 
 const UpdateProfile = () => {
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem("user"));
-
-  const {
-    register, watch, handleSubmit, setValue,
-    formState: { errors },
-  } = useForm({ resolver: zodResolver(schema) });
+  const [openQR, setOpenQR] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
+  const [loadingAvatar, setLoadingAvatar] = useState(true);
 
   const [profileImage, setProfileImage] = useState(null);
   const [companyLogo, setCompanyLogo] = useState(null);
   const [newProfileImage, setNewProfileImage] = useState(null);
   const [newCompanyLogo, setNewCompanyLogo] = useState(null);
-  const [openModal, setOpenModal] = useState(false);
+
+  const [clientImages, setClientImages] = useState([]);
+  const [newClientImages, setNewClientImages] = useState([]);
+
+  const navigate = useNavigate();
+  const user = JSON.parse(localStorage.getItem("user"));
+
+  const { register, watch, handleSubmit, setValue, formState: { errors } } = useForm({ resolver: zodResolver(schema) });
+
+  const [drawerOpen, setDrawerOpen] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -67,16 +75,24 @@ const UpdateProfile = () => {
           setValue("about", data.about || "");
           setValue("companyName", data.companyName || "");
           setValue("designation", data.designation || "");
-
           // Set the initial state for profileImage and companyLogo
           setProfileImage(data.profileImage || null);
           setCompanyLogo(data.companyLogo || null);
+          setClientImages(data.clientImages || []);
         }
       }
+      setLoadingAvatar(false);
     };
 
     fetchUserData();
-  }, [user, setValue]);
+  }, []);
+
+  const toggleDrawer = (open) => (event) => {
+    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+      return;
+    }
+    setDrawerOpen(open);
+  };
 
   const storage = getStorage();
 
@@ -91,6 +107,7 @@ const UpdateProfile = () => {
     try {
       let profileImageUrl = profileImage;
       let companyLogoUrl = companyLogo;
+      let clientImageUrls = [...clientImages];
 
       if (newProfileImage) {
         profileImageUrl = await uploadImage(newProfileImage, `profileImages/${user.uid}`);
@@ -99,17 +116,23 @@ const UpdateProfile = () => {
       if (newCompanyLogo) {
         companyLogoUrl = await uploadImage(newCompanyLogo, `companyLogos/${user.uid}`);
       }
-
+      if (newClientImages.length > 0) {
+        const uploadPromises = newClientImages.map((image, index) =>
+          uploadImage(image, `clientImages/${user.uid}/${clientImageUrls.length + index}`)
+        );
+        const newUrls = await Promise.all(uploadPromises);
+        clientImageUrls = [...clientImageUrls, ...newUrls];
+      }
       const userDocRef = doc(db, "users", user.uid);
       const updatedData = {
         ...data,
         profileImage: profileImageUrl,
         companyLogo: companyLogoUrl,
+        clientImages: clientImageUrls,
       };
 
       await updateDoc(userDocRef, updatedData);
       setOpenModal(true);
-      setLoading(false);
     } catch (error) {
       console.error("Error updating profile:", error);
     } finally {
@@ -130,6 +153,18 @@ const UpdateProfile = () => {
     setNewCompanyLogo(acceptedFiles[0]);
   }, []);
 
+  const onDropClientImages = useCallback((acceptedFiles) => {
+    setNewClientImages((prevImages) => [...prevImages, ...acceptedFiles]);
+  }, []);
+
+  const {
+    getRootProps: getRootClientImages,
+    getInputProps: getInputClientImages,
+  } = useDropzone({
+    onDrop: onDropClientImages,
+    accept: "image/*",
+  });
+
   const {
     getRootProps: getRootPropsProfile,
     getInputProps: getInputPropsProfile,
@@ -146,15 +181,31 @@ const UpdateProfile = () => {
     accept: "image/*",
   });
 
-  const onLogoutClick = () => {
-    localStorage.removeItem("user");
-    navigate('/');
-  };
+  const handleShowQRClick = async () => {
+    setLoading(true);
+    try {
+      const userDoc = doc(db, "users", user.uid);
+      const userData = await getDoc(userDoc);
 
-  const [openQR, setOpenQR] = useState(false);
+      if (userData.exists()) {
+        const data = userData.data();
+        const requiredFields = ["firstName", "lastName", "mobileNumber", "companyName", "designation"];
+        const missingFields = requiredFields.filter(field => !data[field]);
 
-  const handleShowQRClick = () => {
-    setOpenQR(true);
+        if (missingFields.length > 0) {
+          alert(`Please fill the following fields: ${missingFields.join(", ")}`);
+        } else {
+          setOpenQR(true);
+        }
+      } else {
+        alert("User data not found.");
+      }
+    } catch (error) {
+      console.error("Error fetching user data:", error);
+      alert("An error occurred while fetching user data.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleCloseQR = () => {
@@ -162,9 +213,68 @@ const UpdateProfile = () => {
   };
 
   return (
-    <Box>
+    <Box sx={{ pl: 2, pr: 2, }}>
+      {/* <Box sx={{ display: "flex", justifyContent: "end", m: 1 }}>
+      <Button variant="contained"
+          color="primary"
+          sx={{ fontSize: { xs: "10px", md: "1rem" } }}
+          onClick={() => navigate("/view-enquiry")}>View Enquiry</Button>
+        <Box p={1} />
+        <Button variant="contained"
+          color="primary"
+          sx={{ fontSize: { xs: "10px", md: "1rem" } }}
+          onClick={() => navigate("/add-products-and-services")}>Add P & S</Button>
+        <Box p={1} />
+        <Button variant="outlined" onClick={() => handleShowQRClick()}
+          sx={{ fontSize: { xs: "10px", md: "1rem" } }} disabled={loading}
+        >
+          {loading ? <CircularProgress size={24} /> : "Show QR"}
+          </Button>
+          <QRCodeModal open={openQR} onClose={handleCloseQR} />
+
+        <Box p={1} />
+        <LogoutButtonComp />
+      </Box> */}
       <Box sx={{ display: "flex", justifyContent: "end", m: 1 }}>
-        <IconButton onClick={() => onLogoutClick()}><OutputIcon large /></IconButton>
+        <IconButton onClick={toggleDrawer(true)}>
+          <MenuIcon />
+        </IconButton>
+        <Drawer anchor="left" open={drawerOpen} onClose={toggleDrawer(false)}>
+          <Box
+            sx={{ width: 250 }}
+            role="presentation"
+            onClick={toggleDrawer(false)}
+            onKeyDown={toggleDrawer(false)}
+          >
+            <Box sx={{ width: "90%", textAlign: "end" }}><IconButton sx={{ width: "2.5rem" }} onClick={toggleDrawer(false)}>x</IconButton></Box>
+            <Button
+              // variant="contained"
+              // color="primary"
+              sx={{ width: "100%", mb: 1 }}
+              onClick={() => navigate("/enquiries")}
+            >
+              View Enquiries
+            </Button>
+            <Button
+              // variant="contained"
+              // color="primary"
+              sx={{  width: "100%", mb: 1 }}
+              onClick={() => navigate("/add-products-and-services")}
+            >
+              Add P & S
+            </Button>
+            <Button
+              // variant="outlined"
+              onClick={() => handleShowQRClick()}
+              sx={{  width: "100%", mb: 1 }}
+              disabled={loading}
+            >
+              {loading ? <CircularProgress size={24} /> : "Show QR"}
+            </Button>
+            <Box sx={{ width: "100%", textAlign: "center" }}><LogoutButtonComp /></Box>
+
+          </Box>
+        </Drawer>
       </Box>
       <Box
         sx={{
@@ -176,76 +286,89 @@ const UpdateProfile = () => {
         <Typography variant="h4" gutterBottom>
           Update Profile
         </Typography>
-        <Avatar
-          alt="Profile Picture"
-          src={newProfileImage ? URL.createObjectURL(newProfileImage) : profileImage || user?.photoURL || ""}
-          sx={{ width: 100, height: 100, mb: 2 }}
-        />
+        {loadingAvatar ? (
+          <Skeleton variant="circular" width={100} height={100} />
+        ) : (
+          <Avatar
+            alt="Profile Picture"
+            src={newProfileImage ? URL.createObjectURL(newProfileImage) : profileImage || user?.photoURL || ""}
+            sx={{ width: 100, height: 100, mb: 2 }}
+          />
+        )}
         <Typography sx={{ mb: 2, mt: 2 }} >
           {watch("email")}
         </Typography>
+        <QRCodeModal open={openQR} onClose={handleCloseQR} />
 
         <form
           onSubmit={handleSubmit(onSubmit)}
           style={{ width: "100%", maxWidth: "600px", display: "flex", flexDirection: "column", alignItems: "center" }}
         >
-          <Grid container spacing={2}>
+          <Grid container spacing={2}
+          // sx={{ boxShadow: "rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px" }}
+          >
             <Grid item xs={12} sm={6}>
               <TextField
-                label="First Name"
-                variant="filled"
+                placeholder="First Name"
+                variant="outlined"
                 fullWidth
                 {...register("firstName")}
                 error={!!errors.firstName}
-                helperText={errors.firstName ? errors.firstName.message : ""}
+                // helperText={errors.firstName ? errors.firstName.message : ""}
+                helperText={errors.firstName?.message}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
-                label="Middle Name"
-                variant="filled"
+                placeholder="Middle Name"
+                variant="outlined"
                 fullWidth
                 {...register("middleName")}
                 error={!!errors.middleName}
-                helperText={errors.middleName ? errors.middleName.message : ""}
+                // helperText={errors.middleName ? errors.middleName.message : ""}
+                helperText={errors.middleName?.message}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
-                label="Last Name"
-                variant="filled"
+                placeholder="Last Name"
+                variant="outlined"
                 fullWidth
                 {...register("lastName")}
                 error={!!errors.lastName}
-                helperText={errors.lastName ? errors.lastName.message : ""}
+                // helperText={errors.lastName ? errors.lastName.message : ""}
+                helperText={errors.lastName?.message}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
-                label="Company Name"
-                variant="filled"
+                placeholder="Company Name"
+                variant="outlined"
                 fullWidth
                 {...register("companyName")}
                 error={!!errors.companyName}
-                helperText={errors.companyName ? errors.companyName.message : ""}
+                // helperText={errors.companyName ? errors.companyName.message : ""}
+                helperText={errors.companyName?.message}
               />
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
-                label="Designation"
-                variant="filled"
+                placeholder="Designation"
+                variant="outlined"
                 fullWidth
                 {...register("designation")}
                 error={!!errors.designation}
-                helperText={errors.designation ? errors.designation.message : ""}
+                // helperText={errors.designation ? errors.designation.message : ""}
+                helperText={errors.designation?.message}
               />
             </Grid>
             <Grid item xs={12}>
-              <Typography variant="h6">Previously Uploaded Images</Typography>
+              <Typography variant="h6">Previously Uploaded Profile Images</Typography>
               {profileImage && typeof profileImage === "string" && !newProfileImage && (
                 <Box
                   sx={{
-                    border: "2px dashed #d3d3d3",
+                    boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
+                    borderRadius: "10px",
                     padding: "20px",
                     textAlign: "center",
                     mb: 2,
@@ -255,17 +378,50 @@ const UpdateProfile = () => {
                     src={profileImage}
                     alt="Profile Preview"
                     style={{
-                      width: "100%",
-                      maxHeight: "200px",
+                      width: "50%",
+                      maxHeight: "300px",
                       objectFit: "cover",
                     }}
                   />
                 </Box>
               )}
+              <Grid item xs={12}>
+                <Typography variant="h6">Profile Image</Typography>
+                <Box
+                  {...getRootPropsProfile()}
+                  sx={{
+                    border: "2px dashed #d3d3d3",
+                    padding: "20px",
+                    textAlign: "center",
+                    cursor: "pointer",
+                  }}
+                >
+                  <input {...getInputPropsProfile()} />
+                  {newProfileImage ? (
+                    <img
+                      src={URL.createObjectURL(newProfileImage)}
+                      alt="Profile Preview"
+                      style={{
+                        width: "100%",
+                        maxHeight: "200px",
+                        objectFit: "cover",
+                      }}
+                    />
+                  ) : (
+                    <Typography>Drag & drop to upload or browse</Typography>
+                  )}
+                </Box>
+              </Grid>
+
+            </Grid>
+
+            <Grid item xs={12}>
+              <Typography variant="h6">Previously Uploaded Company Logo</Typography>
               {companyLogo && typeof companyLogo === "string" && !newCompanyLogo && (
                 <Box
                   sx={{
-                    border: "2px dashed #d3d3d3",
+                    boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
+                    borderRadius: "10px",
                     padding: "20px",
                     textAlign: "center",
                     mb: 2,
@@ -282,35 +438,6 @@ const UpdateProfile = () => {
                   />
                 </Box>
               )}
-            </Grid>
-            <Grid item xs={12}>
-              <Typography variant="h6">Profile Image</Typography>
-              <Box
-                {...getRootPropsProfile()}
-                sx={{
-                  border: "2px dashed #d3d3d3",
-                  padding: "20px",
-                  textAlign: "center",
-                  cursor: "pointer",
-                }}
-              >
-                <input {...getInputPropsProfile()} />
-                {newProfileImage ? (
-                  <img
-                    src={URL.createObjectURL(newProfileImage)}
-                    alt="Profile Preview"
-                    style={{
-                      width: "100%",
-                      maxHeight: "200px",
-                      objectFit: "cover",
-                    }}
-                  />
-                ) : (
-                  <Typography>Drag & drop to upload or browse</Typography>
-                )}
-              </Box>
-            </Grid>
-            <Grid item xs={12}>
               <Typography variant="h6">Company Logo</Typography>
               <Box
                 {...getRootPropsLogo()}
@@ -338,9 +465,10 @@ const UpdateProfile = () => {
               </Box>
             </Grid>
             <Grid item xs={12} sm={6}>
+              <Typography>Facebook URL</Typography>
               <TextField
-                label="Facebook URL"
-                variant="filled"
+                placeholder="Facebook URL"
+                variant="outlined"
                 fullWidth
                 {...register("facebookUrl")}
                 error={!!errors.facebookUrl}
@@ -348,9 +476,10 @@ const UpdateProfile = () => {
               />
             </Grid>
             <Grid item xs={12} sm={6}>
+              <Typography>Instagram URL</Typography>
               <TextField
-                label="Instagram URL"
-                variant="filled"
+                placeholder="Instagram URL"
+                variant="outlined"
                 fullWidth
                 {...register("instagramUrl")}
                 error={!!errors.instagramUrl}
@@ -358,9 +487,10 @@ const UpdateProfile = () => {
               />
             </Grid>
             <Grid item xs={12} sm={6}>
+              <Typography>Twitter URL</Typography>
               <TextField
-                label="Twitter URL"
-                variant="filled"
+                placeholder="Twitter URL"
+                variant="outlined"
                 fullWidth
                 {...register("twitterUrl")}
                 error={!!errors.twitterUrl}
@@ -368,9 +498,10 @@ const UpdateProfile = () => {
               />
             </Grid>
             <Grid item xs={12} sm={6}>
+              <Typography>LinkedIn URL</Typography>
               <TextField
-                label="LinkedIn URL"
-                variant="filled"
+                placeholder="LinkedIn URL"
+                variant="outlined"
                 fullWidth
                 {...register("linkedInUrl")}
                 error={!!errors.linkedInUrl}
@@ -378,9 +509,10 @@ const UpdateProfile = () => {
               />
             </Grid>
             <Grid item xs={12} sm={6}>
+              <Typography>Mobile Number</Typography>
               <TextField
-                label="Mobile Number"
-                variant="filled"
+                placeholder="Mobile Number"
+                variant="outlined"
                 fullWidth
                 {...register("mobileNumber")}
                 error={!!errors.mobileNumber}
@@ -388,9 +520,10 @@ const UpdateProfile = () => {
               />
             </Grid>
             <Grid item xs={12} sm={6}>
+              <Typography>Website URL</Typography>
               <TextField
-                label="Website URL"
-                variant="filled"
+                placeholder="Website URL"
+                variant="outlined"
                 fullWidth
                 {...register("websiteUrl")}
                 error={!!errors.websiteUrl}
@@ -398,19 +531,32 @@ const UpdateProfile = () => {
               />
             </Grid>
             <Grid item xs={12} sm={6}>
+              <Typography>WhatsApp Number</Typography>
               <TextField
-                label="WhatsApp Number"
-                variant="filled"
+                placeholder="WhatsApp Number"
+                variant="outlined"
                 fullWidth
                 {...register("whatsAppNumber")}
                 error={!!errors.whatsAppNumber}
                 helperText={errors.whatsAppNumber ? errors.whatsAppNumber.message : ""}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} sm={6}>
+              <Typography>Display Email</Typography>
               <TextField
-                label="About"
-                variant="filled"
+                placeholder="Display Email"
+                variant="outlined"
+                fullWidth
+                {...register("displayEmail")}
+                error={!!errors.displayEmail}
+                helperText={errors.displayEmail ? errors.displayEmail.message : ""}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <Typography variant="h6">About</Typography>
+              <TextField
+                placeholder="About"
+                variant="outlined"
                 fullWidth
                 multiline
                 rows={4}
@@ -419,6 +565,66 @@ const UpdateProfile = () => {
                 helperText={errors.about ? errors.about.message : ""}
               />
             </Grid>
+
+            <Grid item xs={12}>
+              <Typography variant="h6">Upload Client Logos</Typography>
+              <Box
+                {...getRootClientImages()}
+                sx={{
+                  border: "2px dashed #d3d3d3",
+                  padding: "20px",
+                  textAlign: "center",
+                  cursor: "pointer",
+                }}
+              >
+                <input {...getInputClientImages()} />
+                {newClientImages.length > 0 ? (
+                  newClientImages.map((image, index) => (
+                    <img
+                      key={index}
+                      src={URL.createObjectURL(image)}
+                      alt={`Client image Preview ${index}`}
+                      style={{
+                        width: "100%",
+                        maxHeight: "200px",
+                        objectFit: "cover",
+                        marginBottom: "10px",
+                      }}
+                    />
+                  ))
+                ) : (
+                  <Typography>Drag & drop to upload or browse</Typography>
+                )}
+              </Box>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography variant="h6">Existing Client Logos</Typography>
+              <Box sx={{
+                display: "flex", flexWrap: "wrap", justifyContent: "space-evenly",
+                gap: "10px", p: "15px", mt: 1,
+                boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
+                borderRadius: "10px",
+              }}>
+                {(clientImages.length > 0) ?
+                  <Box>
+                    {clientImages.map((url, index) => (
+                      <img
+                        key={index}
+                        src={url}
+                        alt={`Client image ${index}`}
+                        style={{
+                          width: "130px",
+                          height: "130px",
+                        }}
+                      />
+                    ))}
+                  </Box>
+                  :
+                  <Typography>Not yet added</Typography>
+                }
+              </Box>
+            </Grid>
+
             <Grid
               item
               xs={12}
@@ -428,29 +634,24 @@ const UpdateProfile = () => {
                 variant="outlined"
                 color="secondary"
                 onClick={() => navigate("/update-profile")}
-                sx={{fontSize:{xs:"10px", md:"1rem"}}}
+                sx={{ fontSize: { xs: "10px", md: "1rem" } }}
               >
                 Cancel
               </Button>
 
-              <Button variant="outlined" onClick={() => handleShowQRClick()}
-                sx={{fontSize:{xs:"10px", md:"1rem"}}}
-                >Show QR</Button>
-              <QRCodeModal open={openQR} onClose={handleCloseQR} />
-
               <Button type="submit" variant="contained" color="primary" disabled={loading}
-                sx={{fontSize:{xs:"10px", md:"1rem"}}}
-                >
+                sx={{ fontSize: { xs: "10px", md: "1rem" } }}
+              >
                 {loading ? <CircularProgress size={24} /> : "Update Profile"}
               </Button>
             </Grid>
           </Grid>
-            <Box p={1}/>
+          <Box p={1} />
         </form>
 
         <Modal
           open={openModal}
-          onClose={() => setOpenModal(false)}
+          onClose={() => { setOpenModal(false); window.location.reload(); }}
           aria-labelledby="modal-title"
           aria-describedby="modal-description"
         >
@@ -471,7 +672,7 @@ const UpdateProfile = () => {
             <Typography id="modal-title" variant="h6" component="h3" gutterBottom>
               Profile updated successfully
             </Typography>
-            <Button onClick={()=>handleCloseModal()} variant="contained" color="primary" sx={{ mt: 2 }}>
+            <Button onClick={() => handleCloseModal()} variant="contained" color="primary" sx={{ mt: 2 }}>
               See your profile
             </Button>
           </Box>

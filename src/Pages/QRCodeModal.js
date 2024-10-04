@@ -11,6 +11,7 @@ const QRCodeModal = ({ open, onClose }) => {
   useEffect(() => {
     if (user) {
       setQrData(`https://tapxtream.invtechnologies.in/profile/${user.uid}`);
+      // setQrData(`http://localhost:3000/profile/${user.uid}`);
     } else {
       navigate("/404");
     }
@@ -50,6 +51,7 @@ const QRCodeModal = ({ open, onClose }) => {
       </DialogContent>
       <DialogActions sx={{ display: "flex", justifyContent: "center", }}>
         <Button variant="outlined" onClick={onImageDownload}>Download QR</Button>
+        <Button variant="outlined" onClick={()=>window.open(qrData)}>Veiw Profile</Button>
       </DialogActions>
       <Box p={1} />
     </Dialog>

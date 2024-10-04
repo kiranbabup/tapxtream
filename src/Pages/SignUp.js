@@ -52,7 +52,7 @@ const SignUp = () => {
       await sendEmailVerification(user);
       setVerificationSent(true);
 
-      console.log("Verification email sent!");
+      // console.log("Verification email sent!");
 
       // Notify the user to check their email and verify
       alert(
