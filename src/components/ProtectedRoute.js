@@ -6,7 +6,7 @@ const ProtectedRoute = () => {
 
   if (!user) {
     // If there is no authenticated user, redirect to login page
-    return <Navigate to="/" />;
+    return <Navigate to="/login" />;
   }
 
   return <Outlet />;  // Render nested routes here

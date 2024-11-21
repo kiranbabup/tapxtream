@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Button, Typography } from "@mui/material";
 // import profileImage from "../data/sir_Image.jpeg";
-import companyLogo from "../data/Inv_logo-Horizontal.png";
+// import companyLogo from "../data/Inv_logo-Horizontal.png";
 import fb from "../data/facebook.svg";
 import envelope from "../data/envelope.png";
 import phone from "../data/phone.png";
@@ -39,11 +39,13 @@ class Pro extends React.Component {
             openEnquiryModal: false,
         };
     }
+
     toggleTheme = () => {
         this.setState((prevState) => ({
             theme: !prevState.theme,
         }));
     };
+
     downloadVCard = (fn, mn, ln, em, pn, org, de) => {
         // Create a new VCard object using vcf
         const card = new vCard();
@@ -75,6 +77,7 @@ class Pro extends React.Component {
     handlePhoneClick = (ph) => {
         window.open(`tel:+91${ph}`, "_self");  // Opens phone dialer on mobile devices
     };
+
     handleEmailClick = (email) => {
         window.location.href = `mailto:${email}`;
     };
@@ -212,31 +215,35 @@ class Pro extends React.Component {
 
                                     }}
                                 >
-                                    <Typography sx={{ color: "white", fontWeight: "bold", fontSize: { xs: "20px", md: "28px" } }}>{user.firstName}</Typography>
-                                    <Typography sx={{ color: "white", fontWeight: "bold", fontSize: { xs: "20px", md: "28px" } }}>{user.middleName}</Typography>
-                                    <Typography sx={{ color: "white", fontWeight: "bold", fontSize: { xs: "20px", md: "28px" } }}>{user.lastName}</Typography>
-                                    <Typography sx={{ color: "white", fontSize: { xs: "14px", md: "22px" } }}>{user.designation}</Typography>
+                                    <Typography sx={{ color: "white", fontWeight: "bold", fontSize: { xs: "16px", md: "22px" } }}>{user.firstName}</Typography>
+                                    <Typography sx={{ color: "white", fontWeight: "bold", fontSize: { xs: "16px", md: "22px" } }}>{user.middleName}</Typography>
+                                    <Typography sx={{ color: "white", fontWeight: "bold", fontSize: { xs: "16px", md: "22px" } }}>{user.lastName}</Typography>
+                                    <Typography sx={{ color: "white", fontSize: { xs: "14px", md: "20px" } }}>{user.designation}</Typography>
                                     {
-                                        user.companyName && <Typography sx={{ color: "white", fontSize: { xs: "12px", md: "18px" } }}>@ {user.companyName}</Typography>
+                                        user.companyName && <Typography sx={{ color: "white", fontSize: { xs: "11px", md: "16px" } }}>@ {user.companyName}</Typography>
                                     }
-
-                                    <Box p={1} />
-                                    <Box
-                                        sx={{
-                                            display: "flex", justifyContent: "end"
-                                        }}
-                                    >
+                                    {user.companyLogo != null ?
+                                        <Box p={1} /> :
+                                        <Box p={5} />
+                                    }
+                                    {user.companyLogo != null &&
                                         <Box
-                                            component="img"
-                                            alt="Company Logo"
-                                            src={user.companyLogo}
                                             sx={{
-                                                minWidth: { xs: "100px", md: "150px" },
-                                                maxWidth: "90%",
-                                                maxHeight: { xs: "80px", md: "100px" },
+                                                display: "flex", justifyContent: "end"
                                             }}
-                                        />
-                                    </Box>
+                                        >
+                                            <Box
+                                                component="img"
+                                                alt="Company Logo"
+                                                src={user.companyLogo}
+                                                sx={{
+                                                    minWidth: { xs: "100px", md: "150px" },
+                                                    maxWidth: "90%",
+                                                    maxHeight: { xs: "75px", md: "100px" },
+                                                }}
+                                            />
+                                        </Box>
+                                    }
                                     <Box p={1} />
                                 </Box>
                             </Box>
@@ -281,232 +288,269 @@ class Pro extends React.Component {
                         <Box sx={boxStyle(this.state.theme)}>
                             <Typography style={headingssx} >Contact info</Typography>
                             <Box p={2} />
-
-                            <Box style={contactInfosx} onClick={() => this.handlePhoneClick(user.mobileNumber)} >
-                                <Box sx={{ ...contactInneri }}>
-                                    {/* <i class="fa-2xl fas fa-mobile-alt fa-thin" aria-hidden="true" ></i> */}
-                                    <Box component="img" alt="phone" src={phone} sx={{ width: "35px" }} />
+                            {user.mobileNumber != "" &&
+                                <Box style={contactInfosx} onClick={() => this.handlePhoneClick(user.mobileNumber)} >
+                                    <Box sx={{ ...contactInneri }}>
+                                        {/* <i class="fa-2xl fas fa-mobile-alt fa-thin" aria-hidden="true" ></i> */}
+                                        <Box component="img" alt="phone" src={phone} sx={{ width: "35px" }} />
+                                    </Box>
+                                    <Box sx={{ ...contactInnersx }}>
+                                        <Typography sx={{ fontWeight: "bold" }}>+91{user.mobileNumber}</Typography>
+                                        <ArrowForwardIosIcon sx={{ color: "lightgray" }} />
+                                    </Box>
                                 </Box>
-                                <Box sx={{ ...contactInnersx }}>
-                                    <Typography sx={{ fontWeight: "bold" }}>+91{user.mobileNumber}</Typography>
-                                    <ArrowForwardIosIcon sx={{ color: "lightgray" }} />
+                            }
+                            {user.displayEmail != "" &&
+                                <Box style={contactInfosx} onClick={() => this.handleEmailClick(user.displayEmail)} >
+                                    <Box sx={{ ...contactInneri }}>
+                                        {/* <i class="fa fa-envelope fa-2xl" aria-hidden="true" ></i> */}
+                                        <Box component="img" alt="envelope" src={envelope} sx={{ width: "35px" }} />
+                                    </Box>
+                                    <Box sx={{ ...contactInnersx }}>
+                                        <Typography sx={{ fontWeight: "bold", wordBreak: "break-word", overflowWrap: "break-word" }}>{user.displayEmail}</Typography>
+                                        <ArrowForwardIosIcon sx={{ color: "lightgray" }} />
+                                    </Box>
                                 </Box>
-                            </Box>
-                            <Box style={contactInfosx} onClick={() => this.handleEmailClick(user.displayEmail)} >
-                                <Box sx={{ ...contactInneri }}>
-                                    {/* <i class="fa fa-envelope fa-2xl" aria-hidden="true" ></i> */}
-                                    <Box component="img" alt="envelope" src={envelope} sx={{ width: "35px" }} />
+                            }
+                            {user.websiteUrl != "" &&
+                                <Box style={contactInfosx} onClick={() => this.handleWebsiteClick(user.websiteUrl)}>
+                                    <Box sx={{ ...contactInneri }}>
+                                        <i class="fa-2xl fas fa-link fa-thin" aria-hidden="true" style={{ color: 'blue' }} ></i>
+                                    </Box>
+                                    <Box sx={{ ...contactInnersx }}>
+                                        <Typography sx={{ fontWeight: "bold", wordBreak: "break-word", overflowWrap: "break-word" }}>{user.websiteUrl}</Typography>
+                                        <ArrowForwardIosIcon sx={{ color: "lightgray" }} />
+                                    </Box>
                                 </Box>
-                                <Box sx={{ ...contactInnersx }}>
-                                    <Typography sx={{ fontWeight: "bold", wordBreak: "break-word", overflowWrap: "break-word" }}>{user.displayEmail}</Typography>
-                                    <ArrowForwardIosIcon sx={{ color: "lightgray" }} />
+                            }
+                            {user.whatsAppNumber != "" &&
+                                <Box style={contactInfosx} onClick={() => this.handleWhatsappClick(user.whatsAppNumber)}>
+                                    <Box sx={{ ...contactInneri }}>
+                                        <WhatsAppIcon sx={{ fontSize: '2rem', color: 'green' }} />
+                                    </Box>
+                                    <Box sx={{ ...contactInnersx }}>
+                                        <Typography sx={{ fontWeight: "bold" }}>WhatsApp Chat</Typography>
+                                        <ArrowForwardIosIcon sx={{ color: "lightgray" }} />
+                                    </Box>
                                 </Box>
-                            </Box>
-                            <Box style={contactInfosx} onClick={() => this.handleWebsiteClick(user.websiteUrl)}>
-                                <Box sx={{ ...contactInneri }}>
-                                    <i class="fa-2xl fas fa-link fa-thin" aria-hidden="true" style={{ color: 'blue' }} ></i>
-                                </Box>
-                                <Box sx={{ ...contactInnersx }}>
-                                    <Typography sx={{ fontWeight: "bold", wordBreak: "break-word", overflowWrap: "break-word" }}>{user.websiteUrl}</Typography>
-                                    <ArrowForwardIosIcon sx={{ color: "lightgray" }} />
-                                </Box>
-                            </Box>
-                            <Box style={contactInfosx} onClick={() => this.handleWhatsappClick(user.whatsAppNumber)}>
-                                <Box sx={{ ...contactInneri }}>
-                                    <WhatsAppIcon sx={{ fontSize: '2rem', color: 'green' }} />
-                                </Box>
-                                <Box sx={{ ...contactInnersx }}>
-                                    <Typography sx={{ fontWeight: "bold" }}>WhatsApp Chat</Typography>
-                                    <ArrowForwardIosIcon sx={{ color: "lightgray" }} />
-                                </Box>
-                            </Box>
+                            }
                             <Box p={1} />
                         </Box>
+                        {
+                            (user.facebookUrl != "" || user.instagramUrl != "" || user.twitterUrl != "" || user.linkedInUrl != "") && (
+                                <>
+                                    <Box sx={{ border: "1px solid red", mt: 2, mb: 2 }} />
 
-                        <Box sx={{ border: "1px solid red", mt: 2, mb: 2 }} />
-
-                        <Box p={1} />
-                        <Box sx={boxStyle(this.state.theme)}>
-                            <Typography style={headingssx} >Social networks</Typography>
-                            <Box p={2} />
-                            <Box sx={{
-                                display: "flex", justifyContent: "start", alignItems: "center", flexWrap: "wrap",
-                                paddingLeft: "10px", gap: "8px"
-                            }}>
-                                <Box
-                                    component="a"
-                                    href={user.facebookUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    sx={{ ...socialIconStyle, '&:hover': { backgroundColor: 'lightgray' } }}
-                                >
-                                    <Box component="img" alt="Facebook" src={fb} sx={{ width: "50px" }} />
-                                </Box>
-
-                                <Box
-                                    component="a"
-                                    href={user.instagramUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    sx={{ ...socialIconStyle, '&:hover': { backgroundColor: 'lightgray' } }}
-                                >
-                                    <Box
-                                        component="img"
-                                        alt="Instagram"
-                                        src={insta}
-                                        sx={{ width: "50px" }}
-                                    />
-                                </Box>
-                                <Box
-                                    component="a"
-                                    href={user.twitterUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    sx={{ ...socialIconStyle, '&:hover': { backgroundColor: 'lightgray' } }}
-                                >
-                                    <Box
-                                        component="img"
-                                        alt="twitter"
-                                        src={twit}
-                                        sx={{ width: "50px" }}
-                                    />
-                                </Box>
-                                <Box
-                                    component="a"
-                                    href={user.linkedInUrl}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    sx={{ ...socialIconStyle, '&:hover': { backgroundColor: 'lightgray' } }}
-                                >
-                                    <Box
-                                        component="img"
-                                        alt="linkedin"
-                                        src={link}
-                                        sx={{ width: "50px" }}
-                                    />
-                                </Box>
-                            </Box>
-                            <Box p={1} />
-                        </Box>
-                        <Box sx={{ border: "1px solid red", mt: 2, mb: 2 }} />
-                        <Box p={1} />
-                        <Box sx={boxStyle(this.state.theme)}>
-                            <Typography style={headingssx} >About</Typography>
-                            <Box p={2} />
-
-                            <Typography sx={{
-                                padding: "14px", textAlign: "justify",
-                                display: "block",
-                                overflowWrap: "break-word",
-                                wordBreak: "break-word",
-                                whiteSpace: "normal",
-                                // wordWrap: "break-word",
-                                // overflow: "hidden",
-                                // textOverflow: "ellipsis"
-                            }}>
-                                {this.state.isExpandedAbout ? user.about : `${user.about.slice(0, 150)}...`}
-                                <Button sx={{ fontSize: "10px", }} onClick={() => this.toggleText()}>
-                                    {this.state.isExpandedAbout ? "Show Less" : "Show More"}
-                                </Button>
-                            </Typography>
-
-                        </Box>
-
-                        <Box sx={{ border: "1px solid red", mt: 2, mb: 2 }} />
-
-                            <Box p={1} />
-                            <Box sx={boxStyle(this.state.theme)}>
-                            <Typography style={headingssx} >Products & Services</Typography>
-                            <Box p={2} />
-                            <Box sx={{
-                                display: "flex", justifyContent: "space-evenly", flexWrap: "wrap", gap: "10px", p: 2
-                            }}>
-                                {user.productsnservices.map((product, index) => (
-                                    <Box key={index} sx={{
-                                        p: 2, mb: 2, borderRadius: "10px",
-                                        boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
-                                        width: "320px",
-                                        backgroundColor: this.state.theme ? '#333' : 'white',
-                                        // backgroundColor: this.state.theme ? '#333' : '#333',
-                                        color: this.state.theme ? 'white' : 'black',
-                                        // color: this.state.theme ? '#333' : 'white',
-                                    }}>
-                                        <Typography variant="h5" sx={{
-                                            color: this.state.theme ? 'white' : 'black',
-                                        }}>{product.pnsHeader}</Typography>
-                                        <Box sx={{ position: "relative" }}>
-                                            <img src={product.pnsImageUrl} alt={`Product ${index}`} style={{ width: "100%", height: "8rem" }} />
-                                            <Typography sx={{
-                                                backgroundColor: "#333", color: "white", fontSize: "10px", p: 1, borderRadius: "20px", position: "absolute",
-                                                bottom: 10,
-                                                right: 10,
-                                            }}>{getRupee(product.pnsPrice)}/{product.pnsDuration}</Typography>
+                                    <Box p={1} />
+                                    <Box sx={boxStyle(this.state.theme)}>
+                                        <Typography style={headingssx} >Social networks</Typography>
+                                        <Box p={2} />
+                                        <Box sx={{
+                                            display: "flex", justifyContent: "start", alignItems: "center", flexWrap: "wrap",
+                                            paddingLeft: "10px", gap: "8px"
+                                        }}>
+                                            {user.facebookUrl != "" &&
+                                                <Box
+                                                    component="a"
+                                                    href={user.facebookUrl}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    sx={{ ...socialIconStyle, '&:hover': { backgroundColor: 'lightgray' } }}
+                                                >
+                                                    <Box component="img" alt="Facebook" src={fb} sx={{ width: "50px" }} />
+                                                </Box>
+                                            }
+                                            {user.instagramUrl != "" &&
+                                                <Box
+                                                    component="a"
+                                                    href={user.instagramUrl}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    sx={{ ...socialIconStyle, '&:hover': { backgroundColor: 'lightgray' } }}
+                                                >
+                                                    <Box
+                                                        component="img"
+                                                        alt="Instagram"
+                                                        src={insta}
+                                                        sx={{ width: "50px" }}
+                                                    />
+                                                </Box>
+                                            }
+                                            {user.twitterUrl != "" &&
+                                                <Box
+                                                    component="a"
+                                                    href={user.twitterUrl}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    sx={{ ...socialIconStyle, '&:hover': { backgroundColor: 'lightgray' } }}
+                                                >
+                                                    <Box
+                                                        component="img"
+                                                        alt="twitter"
+                                                        src={twit}
+                                                        sx={{ width: "50px" }}
+                                                    />
+                                                </Box>
+                                            }
+                                            {user.linkedInUrl != "" &&
+                                                <Box
+                                                    component="a"
+                                                    href={user.linkedInUrl}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    sx={{ ...socialIconStyle, '&:hover': { backgroundColor: 'lightgray' } }}
+                                                >
+                                                    <Box
+                                                        component="img"
+                                                        alt="linkedin"
+                                                        src={link}
+                                                        sx={{ width: "50px" }}
+                                                    />
+                                                </Box>
+                                            }
                                         </Box>
-
+                                        <Box p={1} />
+                                    </Box>
+                                </>
+                            )
+                        }
+                        {
+                            user.about && (
+                                <>
+                                    <Box sx={{ border: "1px solid red", mt: 2, mb: 2 }} />
+                                    <Box p={1} />
+                                    <Box sx={boxStyle(this.state.theme)}>
+                                        <Typography style={headingssx} >About</Typography>
+                                        <Box p={2} />
 
                                         <Typography sx={{
-                                            textAlign: "justify",
+                                            padding: "14px", textAlign: "justify",
                                             display: "block",
                                             overflowWrap: "break-word",
                                             wordBreak: "break-word",
                                             whiteSpace: "normal",
-                                            color: this.state.theme ? '#EDEADE' : 'black',
+                                            // wordWrap: "break-word",
+                                            // overflow: "hidden",
+                                            // textOverflow: "ellipsis"
                                         }}>
-                                            {this.state.isExpandedProducts[index] ? product.pnsContent : `${product.pnsContent.slice(0, 100)}...`}
-                                            <Button sx={{ fontSize: "10px", }} onClick={() => this.toggleProducts(index)}>
-                                                {this.state.isExpandedProducts[index] ? "Show Less" : "Show More"}
+                                            {this.state.isExpandedAbout ? user.about : `${user.about.slice(0, 150)}...`}
+                                            <Button sx={{ fontSize: "10px", }} onClick={() => this.toggleText()}>
+                                                {this.state.isExpandedAbout ? "Show Less" : "Show More"}
                                             </Button>
                                         </Typography>
-                                        <Box sx={{ display: "flex", justifyContent: "end" }}>
-                                            <Typography sx={{
-                                                color: this.state.theme ? 'white' : '#3498db', fontSize: "10px", cursor: "pointer", p: 1, borderRadius: "20px",
-                                                '&:hover': {
-                                                    background: '#d6eaf8',
-                                                },
-                                            }} onClick={() => this.handleOpenEnquiryModal()}>
-                                                Enquiry <ArrowForwardIosIcon sx={{ fontSize: "10px" }} />
-                                            </Typography>
-                                            <EnquiryModal
-                                                open={this.state.openEnquiryModal}
-                                                onClose={this.handleCloseEnquiryModal}
-                                                uid={user.uid}
-                                            />
+
+                                    </Box>
+                                </>
+                            )
+                        }
+                        {
+                            user.productsnservices && (
+                                <>
+                                    <Box sx={{ border: "1px solid red", mt: 2, mb: 2 }} />
+
+                                    <Box p={1} />
+                                    <Box sx={boxStyle(this.state.theme)}>
+                                        <Typography style={headingssx} >Products & Services</Typography>
+                                        <Box p={2} />
+                                        <Box sx={{
+                                            display: "flex", justifyContent: "space-evenly", flexWrap: "wrap", gap: "10px", p: 2
+                                        }}>
+                                            {user.productsnservices && user.productsnservices.map((product, index) => (
+                                                <Box key={index} sx={{
+                                                    p: 2, mb: 2, borderRadius: "10px",
+                                                    boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
+                                                    width: "320px",
+                                                    backgroundColor: this.state.theme ? '#333' : 'white',
+                                                    // backgroundColor: this.state.theme ? '#333' : '#333',
+                                                    color: this.state.theme ? 'white' : 'black',
+                                                    // color: this.state.theme ? '#333' : 'white',
+                                                }}>
+                                                    <Typography variant="h5" sx={{
+                                                        color: this.state.theme ? 'white' : 'black',
+                                                    }}>{product.pnsHeader}</Typography>
+                                                    <Box sx={{ position: "relative" }}>
+                                                        <img src={product.pnsImageUrl} alt={`Product ${index}`} style={{ width: "100%", height: "8rem" }} />
+                                                        <Typography sx={{
+                                                            backgroundColor: "#333", color: "white", fontSize: "10px", p: 1, borderRadius: "20px", position: "absolute",
+                                                            bottom: 10,
+                                                            right: 10,
+                                                        }}>{getRupee(product.pnsPrice)}/{product.pnsDuration}</Typography>
+                                                    </Box>
+
+
+                                                    <Typography sx={{
+                                                        textAlign: "justify",
+                                                        display: "block",
+                                                        overflowWrap: "break-word",
+                                                        wordBreak: "break-word",
+                                                        whiteSpace: "normal",
+                                                        color: this.state.theme ? '#EDEADE' : 'black',
+                                                    }}>
+                                                        {this.state.isExpandedProducts[index] ? product.pnsContent : `${product.pnsContent.slice(0, 100)}...`}
+                                                        <Button sx={{ fontSize: "10px", }} onClick={() => this.toggleProducts(index)}>
+                                                            {this.state.isExpandedProducts[index] ? "Show Less" : "Show More"}
+                                                        </Button>
+                                                    </Typography>
+                                                    <Box sx={{ display: "flex", justifyContent: "end" }}>
+                                                        <Typography sx={{
+                                                            color: this.state.theme ? 'white' : '#3498db', fontSize: "10px", cursor: "pointer", p: 1, borderRadius: "20px",
+                                                            '&:hover': {
+                                                                background: '#d6eaf8',
+                                                            },
+                                                        }} onClick={() => this.handleOpenEnquiryModal()}>
+                                                            Enquiry <ArrowForwardIosIcon sx={{ fontSize: "10px" }} />
+                                                        </Typography>
+                                                        <EnquiryModal
+                                                            open={this.state.openEnquiryModal}
+                                                            onClose={this.handleCloseEnquiryModal}
+                                                            uid={user.uid}
+                                                        />
+                                                    </Box>
+                                                </Box>
+                                            ))}
                                         </Box>
                                     </Box>
-                                ))}
-                            </Box>
-                        </Box>
+                                </>
+                            )
+                        }
 
-                        <Box sx={{ border: "1px solid red", mt: 2, mb: 2 }} />
+                        {
+                            user.clientImages != "" && (
+                                <>
+                                    <Box sx={{ border: "1px solid red", mt: 2, mb: 2 }} />
 
-                            <Box p={1} />
-                            <Box sx={boxStyle(this.state.theme)}>
-                            <Typography style={headingssx} >Our Clients</Typography>
-                            <Box p={2} />
-                            <Box sx={{
-                                display: "flex", flexWrap: "wrap", justifyContent: "space-evenly",
-                                gap: "10px", pb: "15px"
-                            }}>
-                                {user.clientImages && user.clientImages.map((url, index) => (
-                                    <img
-                                        key={index}
-                                        src={url}
-                                        alt={`Client image ${index}`}
-                                        style={{
-                                            maxWidth: "150px",
-                                            minWidth: "130px",
-                                            minHeight: "130px",
-                                            // maxHeight: "130px",
+                                    <Box p={1} />
+                                    <Box sx={boxStyle(this.state.theme)}>
+                                        <Typography style={headingssx} >Our Clients</Typography>
+                                        <Box p={2} />
+                                        <Box sx={{
+                                            display: "flex", flexWrap: "wrap", justifyContent: "space-evenly",
+                                            gap: "10px", pb: "15px"
+                                        }}>
+                                            {user.clientImages.map((url, index) => (
+                                                <img
+                                                    key={index}
+                                                    src={url}
+                                                    alt={`Client image ${index}`}
+                                                    style={{
+                                                        maxWidth: "150px",
+                                                        minWidth: "130px",
+                                                        minHeight: "130px",
+                                                        // maxHeight: "130px",
 
-                                        }}
-                                    />
-                                ))}
-                            </Box>
-                        </Box>
+                                                    }}
+                                                />
+                                            ))}
+                                        </Box>
+                                    </Box>
+                                </>
+                            )
+                        }
+
                         <Box p={2.5} />
                         <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px" }}>
                             <Typography sx={{ color: "gray" }} >Create your own profile</Typography>
-                            <Link to="/" style={{ textDecoration: 'none',  }}>
+                            <Link to="/login" style={{ textDecoration: 'none', }}>
                                 Click Here
                             </Link>
                         </Box>

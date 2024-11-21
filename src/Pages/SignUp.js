@@ -160,7 +160,7 @@ const SignUp = () => {
           align="center"
           sx={{ mt: 2, fontSize: { xs: "0.75rem", md: "0.875rem" } }}
         >
-          Already have an account? <Link href="/">Login</Link>.
+          Already have an account? <Link href="/login">Login</Link>.
         </Typography>
       </Box>
     </Box>

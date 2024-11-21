@@ -3,6 +3,7 @@ import { doc, getDoc } from 'firebase/firestore';
 import withRouter from './withRouter';
 import { Box, Typography } from "@mui/material";
 import { db } from '../services/firebase';
+import "./BaseComp.css";
 
 class BaseComponent extends React.Component {
   constructor(props) {
@@ -34,9 +35,14 @@ class BaseComponent extends React.Component {
 
     if (!data) {
       return (
-        <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "auto" }}>
-          <Typography> </Typography>
+        <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "10vh" }}>
+          {/* <Typography> </Typography> */}
           {/* <Typography>{this.state.codeData}</Typography> */}
+          <div className="dot-loader">
+            <span></span>
+            <span></span>
+            <span></span>
+          </div>
         </Box>
       );
     }

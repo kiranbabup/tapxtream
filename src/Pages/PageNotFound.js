@@ -15,7 +15,7 @@ export default function PageNotFound() {
   const navigate = useNavigate();
 
   const handleBack = () => {
-    navigate("/");
+    navigate("/login");
   };
 
   return (

@@ -9,11 +9,16 @@ import CreateNFC from "./Pages/CreateNFC";
 import UP from "./Pages/up";
 import ProductsNServices from "./Pages/ProductsNServices";
 import Enquiries from "./Pages/Enquiries";
+import HomePage from "./Pages/HomePage";
 
 const Router = () => {
   return (
     <Routes>
-      <Route path="/" element={<LogIn />} />
+      <Route path="/" element={<HomePage />} />
+
+
+      
+      <Route path="/login" element={<LogIn />} />
       <Route path="/signup" element={<SignUp />} />
       <Route path="/404" element={<PageNotFound />} />
       <Route path="/profile/:id" element={<Pro/>} />

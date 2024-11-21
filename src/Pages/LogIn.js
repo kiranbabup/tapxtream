@@ -25,7 +25,9 @@ const schema = z.object({
 });
 
 const LogIn = () => {
+
   const user = localStorage.getItem("user");
+  
   const {
     register,
     handleSubmit,
@@ -59,8 +61,8 @@ const LogIn = () => {
       if (user.emailVerified) {
         // console.log("Email verified!");
         localStorage.setItem("user", JSON.stringify(user));
-        // console.log(user);
-        await checkAndStoreUser(user.email, user.emailVerified, user.uid);
+        console.log(user);
+        await checkAndStoreUser(user.email, user.emailVerified, user.uid, user.reloadUserInfo.createdAt);
       } else {
         alert("Please verify your email before proceeding.");
       }
@@ -77,7 +79,7 @@ const LogIn = () => {
     }
   };
 
-  const checkAndStoreUser = async (email, emailVerified, uid) => {
+  const checkAndStoreUser = async (email, emailVerified, uid, createdAt) => {
     try {
       // Check if user already exists in Firestore
       const userQuery = query(
@@ -88,7 +90,7 @@ const LogIn = () => {
       if (userSnapshot.empty) {
         // User does not exist in Firestore, so add new user
         const userDocRef = doc(collection(db, "users"), uid);
-        await setDoc(userDocRef, { email, emailVerified, uid });
+        await setDoc(userDocRef, { email, emailVerified, uid, createdAt });
         // console.log("User data stored in Firestore");
         navigate("/update-profile");
       } else {
