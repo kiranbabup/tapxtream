@@ -1,6 +1,6 @@
 import React from 'react';
 import { Box, Typography, IconButton, Drawer, Divider } from "@mui/material";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import MenuIcon from '@mui/icons-material/Menu';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { useMediaQuery } from '@mui/material';
@@ -8,6 +8,7 @@ import companyLogo from "../../data/Inv_logo-Horizontal.png";
 
 const HeaderComponent = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const [drawerOpen, setDrawerOpen] = React.useState(false);
     const isMobile = useMediaQuery((theme) => theme.breakpoints.down('sm'));
 
@@ -18,6 +19,16 @@ const HeaderComponent = () => {
         setDrawerOpen(open);
     };
 
+    // Function to check if the current path matches the given route
+    const isActiveRoute = (route) => location.pathname === route;
+
+    const navItems = [
+        { label: "Home", route: "/" },
+        { label: "Compatible Phones", route: "/compatible-phones" },
+        { label: "Login", route: "/login" },
+        { label: "Signup", route: "/signup" }
+    ];
+
     return (
         <Box sx={{
             width: "100%",
@@ -25,10 +36,9 @@ const HeaderComponent = () => {
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
-            position:"fixed",
-            zIndex:"10",
-            background:"white"
-            // boxShadow: "#b7b7d6 -5px -85px 33px -28px inset",
+            position: "fixed",
+            zIndex: "10",
+            background: "white"
         }}>
             <Box component="img"
                 alt="Company Logo"
@@ -57,18 +67,22 @@ const HeaderComponent = () => {
                                 <ArrowForwardIosIcon color="info" />
                             </IconButton>
                             <Box width="100%"><Divider /></Box>
-                            <Typography
-                                sx={{ fontWeight: 'bold', cursor: "pointer" }}
-                                onClick={() => navigate("/login")}
-                            >
-                                Login
-                            </Typography>
-                            <Typography
-                                sx={{ fontWeight: 'bold', cursor: "pointer" }}
-                                onClick={() => navigate("/signup")}
-                            >
-                                Signup
-                            </Typography>
+                            {navItems.map(({ label, route }) => (
+                                <Typography
+                                    key={route}
+                                    sx={{
+                                        fontWeight: 'bold',
+                                        cursor: "pointer",
+                                        color: isActiveRoute(route) ? "#616a6b" : "black",
+                                        "&:hover": {
+                                            color: "#616a6b"
+                                        }
+                                    }}
+                                    onClick={() => navigate(route)}
+                                >
+                                    {label}
+                                </Typography>
+                            ))}
                         </Box>
                     </Drawer>
                 </>
@@ -76,21 +90,25 @@ const HeaderComponent = () => {
                 <Box sx={{
                     display: "flex",
                     alignItems: "center",
-                    mr: 2,
+                    mr: 10,
                     gap: "20px"
                 }}>
-                    <Typography
-                        sx={{ fontWeight: 'bold', cursor: "pointer" }}
-                        onClick={() => navigate("/login")}
-                    >
-                        Login
-                    </Typography>
-                    <Typography
-                        sx={{ fontWeight: 'bold', cursor: "pointer" }}
-                        onClick={() => navigate("/signup")}
-                    >
-                        Signup
-                    </Typography>
+                    {navItems.map(({ label, route }) => (
+                        <Typography
+                            key={route}
+                            sx={{
+                                fontWeight: 'bold',
+                                cursor: "pointer",
+                                color: isActiveRoute(route) ? "#616a6b" : "black",
+                                "&:hover": {
+                                    color: "#616a6b"
+                                }
+                            }}
+                            onClick={() => navigate(route)}
+                        >
+                            {label}
+                        </Typography>
+                    ))}
                 </Box>
             )}
         </Box>

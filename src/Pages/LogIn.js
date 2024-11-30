@@ -16,6 +16,7 @@ import { collection, addDoc, getDocs, query, where, doc, setDoc } from "firebase
 import { db } from "../services/firebase";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
+import HeaderComponent from "../components/mainComponents/HeaderComponent";
 
 const schema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -27,7 +28,7 @@ const schema = z.object({
 const LogIn = () => {
 
   const user = localStorage.getItem("user");
-  
+
   const {
     register,
     handleSubmit,
@@ -103,106 +104,115 @@ const LogIn = () => {
   };
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: { xs: "column", md: "row" },
-        height: "100vh",
-      }}
-    >
+    <Box sx={{
+      height: "100vh",
+    }}>
+      <HeaderComponent />
+      <Box
+        sx={{ height: "10vh" }}
+      ></Box>
       <Box
         sx={{
-          width: { xs: "100%", md: "70%" },
-          backgroundColor: "#3f51b5",
-          display: { xs: "none", md: "block" },
-        }}
-      >
-        {/* Add your background image or design here */}
-      </Box>
-
-      <Box
-        sx={{
-          width: { md: "30%" },
-          p: { xs: 2, md: 4 },
-          height: "100%",
           display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          // border: "2px solid red",
+          flexDirection: { xs: "column", md: "row" },
+          height: { md: "calc(100vh - 10vh)" },
         }}
       >
-        <Typography
-          variant="h4"
-          gutterBottom
-          sx={{ fontSize: { xs: "1.5rem", md: "2.125rem" } }}
+        <Box
+          sx={{
+            width: { xs: "100%", md: "70%" },
+            backgroundColor: "#3f51b5",
+            display: { xs: "none", md: "block" },
+          }}
         >
-          Welcome back!
-        </Typography>
-        <Typography
-          variant="body1"
-          gutterBottom
-          sx={{ fontSize: { xs: "0.875rem", md: "1rem" } }}
-        >
-          Enter to get unlimited access to data & information.
-        </Typography>
+          {/* Add your background image or design here */}
+        </Box>
 
-        <form onSubmit={handleSubmit(onSubmit)}>
-          <TextField
-            label="Email"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            {...register("email")}
-            error={!!errors.email}
-            helperText={errors.email ? errors.email.message : ""}
+        <Box
+          sx={{
+            width: { md: "30%" },
+            p: { xs: 2, md: 4 },
+            pt: { xs: 8, md: 0 },
+            // height: "100%",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            // border: "2px solid red",
+          }}
+        >
+          <Typography
+            variant="h4"
+            gutterBottom
+            sx={{ fontSize: { xs: "1.5rem", md: "2.125rem" } }}
+          >
+            Welcome back!
+          </Typography>
+          <Typography
+            variant="body1"
+            gutterBottom
             sx={{ fontSize: { xs: "0.875rem", md: "1rem" } }}
-          />
-          <TextField
-            label="Password"
-            type="password"
-            variant="outlined"
-            fullWidth
-            margin="normal"
-            {...register("password")}
-            error={!!errors.password}
-            helperText={errors.password ? errors.password.message : ""}
-            sx={{ fontSize: { xs: "0.875rem", md: "1rem" } }}
-          />
-          {loginError && (
-            <Typography color="error" sx={{ fontSize: "0.875rem", mt: 1 }}>
-              {loginError}
-            </Typography>
-          )}
-          {/* <FormControlLabel
+          >
+            Enter to get unlimited access to data & information.
+          </Typography>
+
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <TextField
+              label="Email"
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              {...register("email")}
+              error={!!errors.email}
+              helperText={errors.email ? errors.email.message : ""}
+              sx={{ fontSize: { xs: "0.875rem", md: "1rem" } }}
+            />
+            <TextField
+              label="Password"
+              type="password"
+              variant="outlined"
+              fullWidth
+              margin="normal"
+              {...register("password")}
+              error={!!errors.password}
+              helperText={errors.password ? errors.password.message : ""}
+              sx={{ fontSize: { xs: "0.875rem", md: "1rem" } }}
+            />
+            {loginError && (
+              <Typography color="error" sx={{ fontSize: "0.875rem", mt: 1 }}>
+                {loginError}
+              </Typography>
+            )}
+            {/* <FormControlLabel
             control={<Checkbox {...register("rememberMe")} />}
             label="Remember me"
             sx={{ fontSize: { xs: "0.875rem", md: "1rem" } }}
           /> */}
-          {/* <Link
+            {/* <Link
             href="#"
             variant="body2"
             sx={{ fontSize: { xs: "0.75rem", md: "0.875rem" } }}
           >
             Forgot your password?
           </Link> */}
-          <Button
-            type="submit"
-            variant="contained"
-            color="primary"
-            fullWidth
-            sx={{ mt: 2, fontSize: { xs: "0.875rem", md: "1rem" } }}
-          >
-            Log In
-          </Button>
-        </form>
+            <Button
+              type="submit"
+              variant="contained"
+              color="primary"
+              fullWidth
+              sx={{ mt: 2, fontSize: { xs: "0.875rem", md: "1rem" } }}
+            >
+              Log In
+            </Button>
+          </form>
 
-        <Typography
-          variant="body2"
-          align="center"
-          sx={{ mt: 2, fontSize: { xs: "0.75rem", md: "0.875rem" } }}
-        >
-          Don’t have an account? <Link href="/signup">Register here</Link>
-        </Typography>
+          <Typography
+            variant="body2"
+            align="center"
+            sx={{ mt: 2, fontSize: { xs: "0.75rem", md: "0.875rem" } }}
+          >
+            Don’t have an account? <Link href="/signup">Register here</Link>
+          </Typography>
+        </Box>
       </Box>
     </Box>
   );

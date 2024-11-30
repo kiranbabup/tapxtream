@@ -283,7 +283,6 @@ class Pro extends React.Component {
                             >Share</Button>
                         </Box>
 
-
                         <Box p={2} />
                         <Box sx={boxStyle(this.state.theme)}>
                             <Typography style={headingssx} >Contact info</Typography>
@@ -438,7 +437,6 @@ class Pro extends React.Component {
                                                 {this.state.isExpandedAbout ? "Show Less" : "Show More"}
                                             </Button>
                                         </Typography>
-
                                     </Box>
                                 </>
                             )
@@ -476,7 +474,6 @@ class Pro extends React.Component {
                                                             right: 10,
                                                         }}>{getRupee(product.pnsPrice)}/{product.pnsDuration}</Typography>
                                                     </Box>
-
 
                                                     <Typography sx={{
                                                         textAlign: "justify",
@@ -550,7 +547,7 @@ class Pro extends React.Component {
                         <Box p={2.5} />
                         <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px" }}>
                             <Typography sx={{ color: "gray" }} >Create your own profile</Typography>
-                            <Link to="/login" style={{ textDecoration: 'none', }}>
+                            <Link to="/" style={{ textDecoration: 'none', }}>
                                 Click Here
                             </Link>
                         </Box>

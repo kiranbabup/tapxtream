@@ -10,16 +10,19 @@ import UP from "./Pages/up";
 import ProductsNServices from "./Pages/ProductsNServices";
 import Enquiries from "./Pages/Enquiries";
 import HomePage from "./Pages/HomePage";
+import CompatablePage from "./Pages/CompatablePage";
 
 const Router = () => {
   return (
     <Routes>
       <Route path="/" element={<HomePage />} />
-
-
       
       <Route path="/login" element={<LogIn />} />
       <Route path="/signup" element={<SignUp />} />
+
+      <Route path="/compatible-phones" element={<CompatablePage />} />
+
+
       <Route path="/404" element={<PageNotFound />} />
       <Route path="/profile/:id" element={<Pro/>} />
 

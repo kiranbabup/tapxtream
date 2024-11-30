@@ -75,6 +75,7 @@ const UpdateProfile = () => {
           setValue("about", data.about || "");
           setValue("companyName", data.companyName || "");
           setValue("designation", data.designation || "");
+          setValue("displayEmail", data.displayEmail || "");
           // Set the initial state for profileImage and companyLogo
           setProfileImage(data.profileImage || null);
           setCompanyLogo(data.companyLogo || null);
@@ -258,7 +259,7 @@ const UpdateProfile = () => {
             <Button
               // variant="contained"
               // color="primary"
-              sx={{  width: "100%", mb: 1 }}
+              sx={{ width: "100%", mb: 1 }}
               onClick={() => navigate("/add-products-and-services")}
             >
               Add P & S
@@ -266,7 +267,7 @@ const UpdateProfile = () => {
             <Button
               // variant="outlined"
               onClick={() => handleShowQRClick()}
-              sx={{  width: "100%", mb: 1 }}
+              sx={{ width: "100%", mb: 1 }}
               disabled={loading}
             >
               {loading ? <CircularProgress size={24} /> : "Show QR"}
@@ -514,6 +515,15 @@ const UpdateProfile = () => {
                 placeholder="Mobile Number"
                 variant="outlined"
                 fullWidth
+                inputProps={{
+                  maxLength: 10,
+                  inputMode: "numeric"
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "-" || e.key === "." || e.key === "e" || e.key === "+") {
+                    e.preventDefault();
+                  }
+                }}
                 {...register("mobileNumber")}
                 error={!!errors.mobileNumber}
                 helperText={errors.mobileNumber ? errors.mobileNumber.message : ""}
@@ -536,6 +546,15 @@ const UpdateProfile = () => {
                 placeholder="WhatsApp Number"
                 variant="outlined"
                 fullWidth
+                inputProps={{
+                  maxLength: 10,
+                  inputMode: "numeric"
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "-" || e.key === "." || e.key === "e" || e.key === "+") {
+                    e.preventDefault();
+                  }
+                }}
                 {...register("whatsAppNumber")}
                 error={!!errors.whatsAppNumber}
                 helperText={errors.whatsAppNumber ? errors.whatsAppNumber.message : ""}
@@ -633,7 +652,8 @@ const UpdateProfile = () => {
               <Button
                 variant="outlined"
                 color="secondary"
-                onClick={() => navigate("/update-profile")}
+                onClick={() => window.location.reload()}
+                // onClick={() => navigate("/update-profile")}
                 sx={{ fontSize: { xs: "10px", md: "1rem" } }}
               >
                 Cancel

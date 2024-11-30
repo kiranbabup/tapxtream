@@ -81,11 +81,13 @@ const HomePage = () => {
                         <Typography sx={{ fontSize: { xs: "1.2rem", md: "2rem" }, fontWeight: "bold" }} >NFC Business Card for Corporate Professionals</Typography>
                         <Typography color="error" sx={{ fontSize: { md: "2rem", xs: "1.5rem" }, fontWeight: "bold" }}>₹599.00 <del style={{ color: "gray", fontWeight: "lighter" }}>₹999.00</del></Typography>
                         <Typography sx={{ fontSize: { xs: "0.8rem", md: "1rem" }, textAlign: "justify" }} >NFC Cards are revolutionary way to connect people and businesses. Share information, photos, and videos instantly with a single tap or scan. Explore the possibilities</Typography>
-                        <Button fullWidth variant="contained" sx={{
-                            backgroundColor: "#fd710b", fontSize: { md: "1.5rem" }, borderRadius: "50px", mt: 1, '&:hover': {
-                                backgroundColor: 'black',
-                            },
-                        }}>Design Your Card</Button>
+                        <Box>
+                            <Button variant="contained" sx={{
+                                backgroundColor: "#fd710b", padding:"10px 50px", fontSize: { md: "1.5rem" }, borderRadius: "50px", mt: 1, '&:hover': {
+                                    backgroundColor: 'black',
+                                },
+                            }}>Design Your Card</Button>
+                        </Box>
                     </Box>
                 </Box>
             </Box>
@@ -99,13 +101,13 @@ const HomePage = () => {
             }}>
                 {
                     fourProperties.map((prop, index) => (
-                        <Box 
-                        key= { index }
-                        sx={{
-                            display: "flex",
-                            flexDirection: "column",
-                            alignItems: "center",
-                        }}>
+                        <Box
+                            key={index}
+                            sx={{
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                            }}>
                             <Box sx={{
                                 width: "80px",
                                 height: "120px",
