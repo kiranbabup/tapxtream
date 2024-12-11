@@ -1,3 +1,4 @@
+import React, { useEffect } from 'react';
 import { Box, Button, Typography } from "@mui/material"
 import HeaderComponent from "../components/mainComponents/HeaderComponent";
 import { clientsLogos } from "../data/clientsLogo";
@@ -6,9 +7,18 @@ import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
 import imageHere from "../data/images/imagehere.png";
 import SectioneImage from "../data/images/Nfc-banner_mainPage.png";
 import NFCCarddes from "../data/images/nfc-card_type1_blackGold.png";
+import NFCCarddesW from "../data/images/nfc-card_type2_White.png";
 import { fourProperties } from "../data/contents/HomepageContent.js";
+import { useNavigate } from 'react-router-dom';
 
 const HomePage = () => {
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        // Scroll to the top of the page when the component mounts
+        window.scrollTo(0, 0);
+    }, []);
+
     return (
         <Box sx={{
             width: "98.93vw",
@@ -82,11 +92,46 @@ const HomePage = () => {
                         <Typography color="error" sx={{ fontSize: { md: "2rem", xs: "1.5rem" }, fontWeight: "bold" }}>₹599.00 <del style={{ color: "gray", fontWeight: "lighter" }}>₹999.00</del></Typography>
                         <Typography sx={{ fontSize: { xs: "0.8rem", md: "1rem" }, textAlign: "justify" }} >NFC Cards are revolutionary way to connect people and businesses. Share information, photos, and videos instantly with a single tap or scan. Explore the possibilities</Typography>
                         <Box>
-                            <Button variant="contained" sx={{
+                            <Button variant="contained" onClick={()=>navigate("/register-now")} sx={{
                                 backgroundColor: "#fd710b", padding:"10px 50px", fontSize: { md: "1.5rem" }, borderRadius: "50px", mt: 1, '&:hover': {
                                     backgroundColor: 'black',
                                 },
                             }}>Design Your Card</Button>
+                        </Box>
+                    </Box>
+                </Box>
+            </Box>
+            <Box sx={{
+                height: { md: "calc(100vh - 8vh)" },
+                backgroundColor: "#f0f0f0",
+                color: "black",
+                display: "flex", flexDirection: "column",
+                alignItems: "center", justifyContent: "center"
+            }}>
+                <Box sx={{ width: { md: "90%", xs: "90%" }, display: "flex", flexDirection: { xs: "column", md: "row" }, justifyContent: { xs: "center", md: "space-evenly" }, paddingBottom: "1.5rem", alignItems: "center" }}>
+                    <Box sx={{ width: { md: "35%", xs: "80%" }, }} >
+                        <Box sx={{
+                            width: "100%",
+                            height: { xs: "40vh", md: "90.5vh" },
+                            borderRadius: "10px",
+                            // objectFit: "scale-down",
+                            objectFit: "contain",
+                        }}
+                            component="img"
+                            src={NFCCarddesW}
+                            alt="imagehere" />
+                    </Box>
+                    <Box sx={{ width: { md: "45%", xs: "90%" }, height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "cneter" }} >
+                        <Typography sx={{ fontSize: { xs: "1.2rem", md: "2rem" }, fontWeight: "bold" }} >NFC Business Card for Business Professionals</Typography>
+                        <Typography color="error" sx={{ fontSize: { md: "2rem", xs: "1.5rem" }, fontWeight: "bold" }}>₹299.00 <del style={{ color: "gray", fontWeight: "lighter" }}>₹799.00</del></Typography>
+                        <Typography sx={{ fontSize: { xs: "0.8rem", md: "1rem" }, textAlign: "justify" }} >NFC Cards are revolutionary way to connect people and businesses. Share information, photos, and videos instantly with a single tap or scan. Explore the possibilities</Typography>
+                        <Box>
+                            <Button variant="contained" onClick={()=>navigate("/register-now")} sx={{
+                                backgroundColor: "#fd710b", padding:"10px 50px", fontSize: { md: "1.5rem" }, borderRadius: "50px", mt: 1, '&:hover': {
+                                    backgroundColor: 'black',
+                                },
+                            }}
+                            >Design Your Card</Button>
                         </Box>
                     </Box>
                 </Box>

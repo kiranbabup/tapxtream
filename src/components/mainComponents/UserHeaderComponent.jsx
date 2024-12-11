@@ -6,7 +6,7 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { useMediaQuery } from '@mui/material';
 import companyLogo from "../../data/Inv_logo-Horizontal.png";
 
-const HeaderComponent = () => {
+const UserHeaderComponent = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const [drawerOpen, setDrawerOpen] = React.useState(false);
@@ -23,11 +23,12 @@ const HeaderComponent = () => {
     const isActiveRoute = (route) => location.pathname === route;
 
     const navItems = [
-        { label: "Home", route: "/" },
-        { label: "Design NFC ", route: "/create-nfc-design" },
+        { label: "Profile", route: "/profile-page" },
+        { label: "Update Profile ", route: "/edit-profile" },
         { label: "Compatible Phones", route: "/compatible-phones" },
-        { label: "Login", route: "/login" },
-        { label: "Register", route: "/register-now" }
+        { label: "View Enquiries", route: "/enquiries" },
+        { label: "Compatible Phones", route: "/compatible-phones" },
+        { label: "Compatible Phones", route: "/compatible-phones" },
     ];
 
     return (
@@ -116,4 +117,4 @@ const HeaderComponent = () => {
     );
 };
 
-export default HeaderComponent;
+export default UserHeaderComponent;

@@ -137,12 +137,12 @@ class Pro extends React.Component {
     };
 
     handleOpenEnquiryModal = () => {
-        console.log("open enquiry modal");
+        // console.log("open enquiry modal");
         this.setState({ openEnquiryModal: true });
     };
 
     handleCloseEnquiryModal = () => {
-        console.log("close enquiry modal");
+        // console.log("close enquiry modal");
         this.setState({ openEnquiryModal: false });
     };
 
@@ -167,6 +167,39 @@ class Pro extends React.Component {
                         color: this.state.theme ? 'white' : 'black',
                         borderRadius: "5px"
                     }}>
+                        <style>
+                            {`
+                                @keyframes blink {
+                                    0%, 100% { color: white; }
+                                    50% { color: gold; }
+                                }
+                                .blinking-text {
+                                    animation: blink 1s infinite;
+                                    font-size: 12px;
+                                    font-weight: bold;
+                                }
+                            `}
+                        </style>
+                        <Box sx={{
+                            position: "fixed", zIndex: "10",
+                            top: { md: 444, xs: 345 },
+                            right: { md: 500, xs: 1 },
+                            width: { md: "5rem", xs: "4.5rem" },
+                            height: { md: "5rem", xs: "4rem" },
+                            border: "3px solid black",
+                            borderRadius: { md: "50%" },
+                            borderTopLeftRadius: { xs: "50%" },
+                            borderBottomLeftRadius: { xs: "50%" },
+                            backgroundColor: "#c12929",
+                            display: "flex", flexDirection: "column",
+                            justifyContent: "center",
+                            alignItems: "center",
+                        }}
+                            onClick={() => this.props.navigate("/register-now")}>
+                            <Typography sx={{ paddingLeft: { xs: "1px", md: "0px" } }} className="blinking-text">Register</Typography>
+                            <Typography sx={{ paddingLeft: { xs: "1px", md: "0px" } }} className="blinking-text">Now</Typography>
+                        </Box>
+
                         <Box
                             sx={{
                                 background: "linear-gradient(180deg, rgba(2,4,42,1) 45%, rgba(255,255,255,1) 35%, rgba(255,255,255,1) 100%)",
@@ -248,6 +281,7 @@ class Pro extends React.Component {
                                 </Box>
                             </Box>
                         </Box>
+
                         <Box p={1} />
                         <Box sx={{ display: "flex", justifyContent: "space-evenly" }}>
                             {/* // variant={this.state.theme ? 'contained' : ''} */}
@@ -335,6 +369,7 @@ class Pro extends React.Component {
                             }
                             <Box p={1} />
                         </Box>
+
                         {
                             (user.facebookUrl != "" || user.instagramUrl != "" || user.twitterUrl != "" || user.linkedInUrl != "") && (
                                 <>
@@ -413,6 +448,7 @@ class Pro extends React.Component {
                                 </>
                             )
                         }
+
                         {
                             user.about && (
                                 <>
@@ -441,6 +477,7 @@ class Pro extends React.Component {
                                 </>
                             )
                         }
+
                         {
                             user.productsnservices && (
                                 <>
@@ -551,6 +588,7 @@ class Pro extends React.Component {
                                 Click Here
                             </Link>
                         </Box>
+
                         <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px" }}>
                             {/* <i class="fa fa-star" aria-hidden="true" style={{ color: "gold" }}></i> */}
                             {/* <Typography sx={{ color: "gray" }} >Brought to life with</Typography> */}

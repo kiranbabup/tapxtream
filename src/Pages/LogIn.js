@@ -17,6 +17,7 @@ import { db } from "../services/firebase";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import HeaderComponent from "../components/mainComponents/HeaderComponent";
+import companyLogo from "../data/Inv_logo-Horizontal.png";
 
 const schema = z.object({
   email: z.string().email({ message: "Invalid email address" }),
@@ -62,7 +63,7 @@ const LogIn = () => {
       if (user.emailVerified) {
         // console.log("Email verified!");
         localStorage.setItem("user", JSON.stringify(user));
-        console.log(user);
+        // console.log(user);
         await checkAndStoreUser(user.email, user.emailVerified, user.uid, user.reloadUserInfo.createdAt);
       } else {
         alert("Please verify your email before proceeding.");
@@ -120,17 +121,29 @@ const LogIn = () => {
       >
         <Box
           sx={{
-            width: { xs: "100%", md: "70%" },
-            backgroundColor: "#3f51b5",
+            width: { xs: "100%", md: "60%" },
+            // backgroundColor: "#3f51b5",
             display: { xs: "none", md: "block" },
           }}
         >
+          <Box sx={{display:"flex",justifyContent:"center", alignItems:"center", height:"100%"}}>
+            <Box component="img"
+                alt="Company Logo"
+                src={companyLogo}
+                sx={{
+                    width: "500px",
+                    ml: 2,
+                    cursor: "pointer",
+                }}
+                onClick={() => navigate('/')}
+            />
+          </Box>
           {/* Add your background image or design here */}
         </Box>
 
         <Box
           sx={{
-            width: { md: "30%" },
+            width: { md: "40%" },
             p: { xs: 2, md: 4 },
             pt: { xs: 8, md: 0 },
             // height: "100%",
@@ -140,6 +153,12 @@ const LogIn = () => {
             // border: "2px solid red",
           }}
         >
+          <Typography
+            gutterBottom
+            sx={{ fontSize: { xs: "2.2rem", md: "3.2rem" }, fontWeight:"bold", color:"#fd710b", textAlign:"center" }}
+          >
+            Login Now
+          </Typography>
           <Typography
             variant="h4"
             gutterBottom

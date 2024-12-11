@@ -54,6 +54,23 @@ export const getRupee = (amount) => {
   }).format(amount);
 };
 
+export const dotStyle = {
+  display: 'inline-block',
+  width: '8px',
+  height: '8px',
+  margin: '0 2px',
+  borderRadius: '50%',
+  backgroundColor: '#fff',
+  animation: 'dot-blink 0.5s infinite both',
+};
+
+export const dotContainerStyle = {
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  padding: "10px 30px",
+};
+
 // const getBoxStyle = (theme, additionalStyles = {}) => ({
 //   boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px",
 //   borderRadius: "10px",

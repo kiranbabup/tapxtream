@@ -32,7 +32,7 @@ const schema = z.object({
   designation: z.string().min(1, { message: "Designation is required" }),
 });
 
-const UpdateProfile = () => {
+const ProfileUpdate = () => {
   const [loading, setLoading] = useState(false);
   const [openQR, setOpenQR] = useState(false);
   const [openModal, setOpenModal] = useState(false);
@@ -277,7 +277,6 @@ const UpdateProfile = () => {
           </Box>
         </Drawer>
       </Box>
-
       <Box
         sx={{
           display: "flex",
@@ -703,4 +702,4 @@ const UpdateProfile = () => {
   );
 };
 
-export default UpdateProfile;
+export default ProfileUpdate;
