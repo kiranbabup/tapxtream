@@ -3,13 +3,12 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Box, Button, TextField, Typography, Grid, CircularProgress, IconButton, } from "@mui/material";
-import { useNavigate } from "react-router-dom";
 import { useDropzone } from "react-dropzone";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../services/firebase";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import LogoutButtonComp from "../components/LogoutButtonComp";
 import { getRupee } from "../data/styles";
+import UserHeaderComponent from "../components/mainComponents/UserHeaderComponent";
 
 const schema = z.object({
   pnsHeader: z.string().min(1, "Header is required"),
@@ -26,7 +25,6 @@ const ProductsNServices = () => {
   const [newImages, setNewImages] = useState([]);
   const [newCards, setNewCards] = useState([]);
 
-  const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user"));
 
   const { register, handleSubmit, formState: { errors }, reset } = useForm({ resolver: zodResolver(schema) });
@@ -112,13 +110,13 @@ const ProductsNServices = () => {
     }));
   };
   return (
-    <Box sx={{ pl: 2, pr: 2 }}>
-      <Box sx={{ display: "flex", justifyContent: "end", m: 1 }}>
-        <Button variant="contained" color="primary" onClick={() => navigate("/update-profile")}>Update Profile</Button>
-        <Box p={1} />
-        <LogoutButtonComp />
-      </Box>
 
+    <Box sx={{
+      width: "100vw",
+      // background: "black",
+    }}>
+      <UserHeaderComponent />
+      <Box sx={{ height: "10vh" }} ></Box>
       <Box
         sx={{
           display: "flex",

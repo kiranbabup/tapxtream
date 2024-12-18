@@ -11,7 +11,12 @@ const LogoutButtonComp = () => {
     };
     return (
         <Box>
-            <IconButton onClick={() => onLogoutClick()}><OutputIcon large /></IconButton>
+            <IconButton onClick={() => onLogoutClick()} sx={{
+                color: "black",
+                "&:hover": {
+                    color: "gray",
+                },
+            }}><OutputIcon large /></IconButton>
         </Box>
     )
 }

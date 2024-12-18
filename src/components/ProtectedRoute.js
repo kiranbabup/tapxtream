@@ -1,5 +1,5 @@
 import { Navigate, Outlet } from 'react-router-dom';
-import { useAuth } from '../services/AuthProvider';
+// import { useAuth } from '../services/AuthProvider';
 
 const ProtectedRoute = () => {
   const user = localStorage.getItem("user");

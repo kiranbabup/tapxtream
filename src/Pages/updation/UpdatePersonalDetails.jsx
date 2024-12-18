@@ -3,20 +3,20 @@ import { Box, Button, Typography, Grid, } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../services/firebase";
-import topVector from "../../data/images/createScreens/VectorTop.svg";
-import bottomVector from "../../data/images/createScreens/VectorBottom.svg";
 import AccountCircleRoundedIcon from '@mui/icons-material/AccountCircleRounded';
 import EmailRoundedIcon from '@mui/icons-material/EmailRounded';
 import "../phoneSignup.css";
 import { dotContainerStyle, dotStyle } from "../../data/styles";
 import CreatingTextField from "../../components/CreatingTextField";
 import tapxcompanyLogo from "../../data/images/tapxtream.png";
+import UserHeaderComponent from "../../components/mainComponents/UserHeaderComponent";
 
-const CreatePersonalProfile = () => {
+const UpdatePersonalDetails = () => {
     const [firstName, setFirstName] = useState("");
     const [middleName, setMiddleName] = useState("");
     const [lastName, setLastName] = useState("");
     const [email, setEmail] = useState("");
+
     const [loading, setLoading] = useState(false);
     const [errorMsg, setErrorMsg] = useState("");
 
@@ -31,7 +31,6 @@ const CreatePersonalProfile = () => {
 
             if (userData.exists()) {
                 const data = userData.data();
-
                 setFirstName(data.firstName || "");
                 setMiddleName(data.middleName || "");
                 setLastName(data.lastName || "");
@@ -66,7 +65,7 @@ const CreatePersonalProfile = () => {
                 email: email,
             };
             await updateDoc(userDocRef, updatedData);
-            navigate("/company-details");
+            navigate("/user-profile");
         } catch (error) {
             console.error("Error updating profile:", error);
         } finally {
@@ -75,123 +74,52 @@ const CreatePersonalProfile = () => {
     };
 
     return (
-        <Box sx={{ width: "100vw", height: "100vh", display: "flex" }}>
-            <Box
-                sx={{
-                    width: { md: "50%" },
-                    display: { xs: "none", md: "block" },
-                }}
-            >
-                {/* left */}
-                <Box
-                    sx={{
-                        // width: { xs: "100%", md: "450px" },
-                        width: "100%",
-                        height: "100%",
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                    }}
-                >
-                    <Box sx={{ position: "relative", width: "100%", height: '5rem' }}>
-                    </Box>
-
-                    <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", }}>
+        <Box sx={{ width: "100vw", height: "100vh", }}>
+            <UserHeaderComponent />
+            <Box sx={{ height: "10vh" }} ></Box>
+            <Box sx={{ height: "calc(100vh - 10vh)", width: "100%", display: "flex" }} >
+                <Box sx={{ width: "50%", height: "100%", display:{xs:"none", md:"block"} }}>
+                    {/* left */}
+                    <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%" }}>
                         <Box component="img"
                             alt="Company Logo"
                             src={tapxcompanyLogo}
                             sx={{
                                 width: "250px",
-                                // ml: 2,
-                                cursor: "pointer",
-                            }}
-                            onClick={() => navigate('/')}
-                        />
-                    </Box>
-
-                    <Box sx={{ position: "relative", width: "100%", height: '9rem' }}>
-                        <Box component="img"
-                            alt="bottomVector"
-                            src={bottomVector}
-                            sx={{
-                                width: "150px",
-                                position: "absolute",
-                                bottom: 0,
-                                left: 0,
                             }}
                         />
                     </Box>
                 </Box>
-            </Box>
-            {/* right */}
-            <Box
-                sx={{
-                    width: { md: "50%" },
-                    display: "flex",
-                    justifyContent: "center",
-                    // backgroundColor: { md: "#577fd8d9" }
-                }}
-            >
+                {/* right */}
                 <Box
                     sx={{
-                        // width: { xs: "100%", md: "450px" },
-                        width: "100%",
+                        width: { xs: "100%", md: "50%" },
                         height: "100%",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        backgroundColor:{md:"#577fd8d9"}
+                    }}
+                >
+                    <Box sx={{
+                        width: {xs:"90%", md:"60%"},
                         display: "flex",
                         flexDirection: "column",
                         alignItems: "center",
-                        justifyContent: "space-between",
-                        backgroundColor: { md: "aliceblue" },
-                    }}
-                >
-                    <Box sx={{ position: "relative", width: "100%", height: '9rem' }}>
-                        <Box component="img"
-                            alt="topVector"
-                            src={topVector}
-                            sx={{
-                                width: "250px",
-                                position: "absolute",
-                                top: 0,
-                                right: 0,
-                            }}
-                        />
-                        <Box component="img"
-                            alt="Company Logo"
-                            src={tapxcompanyLogo}
-                            sx={{
-                                width: "65px",
-                                position: "absolute",
-                                top: 2,
-                                left: 2,
-                                display: { xs: "block", md: "none" }
-                            }}
-                        />
-                        <Typography
-                            sx={{
-                                textAlign: "center",
-                                width: "100%",
-                                fontSize: "1.5rem",
-                                fontWeight: 600,
-                                position: "absolute",
-                                zIndex: 2,
-                                bottom: 5
-                            }}>
-                            Fill Profile
-                        </Typography>
-                    </Box>
-
-                    <Box sx={{
-                        width: { xs: "90%", md: "50%" },
-                        // width: "90%",
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center"
                     }}>
-                        {user.mobileNumber && <Typography sx={{ mb: 2, }} >
+                        {/* {user.mobileNumber && <Typography sx={{ mb: 2, }} >
                             {user.mobileNumber}
                         </Typography>
-                        }
+                        } */}
+                        <Typography
+                            sx={{
+                                fontSize: "1.3rem",
+                                fontWeight: "bold",
+                                color:{md: "white"},
+                                mb:1
+                            }}>
+                            Update Personal Details
+                        </Typography>
                         <form
                             onSubmit={(e) => {
                                 e.preventDefault();
@@ -221,7 +149,6 @@ const CreatePersonalProfile = () => {
                                 <Grid
                                     item
                                     xs={12}
-                                // sx={{ display: "flex", justifyContent: "space-evenly" }}
                                 >
                                     <Button
                                         type="submit"
@@ -249,24 +176,10 @@ const CreatePersonalProfile = () => {
                         </form>
 
                     </Box>
-
-                    <Box sx={{ position: "relative", width: "100%", height: '5rem' }}>
-                        <Box component="img"
-                            alt="bottomVector"
-                            src={bottomVector}
-                            sx={{
-                                width: "150px",
-                                position: "absolute",
-                                bottom: 0,
-                                left: 0,
-                                display: { xs: "block", md: "none" }
-                            }}
-                        />
-                    </Box>
                 </Box>
             </Box>
         </Box>
     );
 };
 
-export default CreatePersonalProfile;
+export default UpdatePersonalDetails;

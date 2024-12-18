@@ -3,8 +3,6 @@ import { Box, Button, TextField, Typography, Grid, } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../../services/firebase";
-import topVector from "../../data/images/createScreens/VectorTop.svg";
-import bottomVector from "../../data/images/createScreens/VectorBottom.svg";
 import "../phoneSignup.css";
 import { dotContainerStyle, dotStyle } from "../../data/styles";
 import WhatsAppIcon from '@mui/icons-material/WhatsApp';
@@ -14,13 +12,15 @@ import FacebookIcon from '@mui/icons-material/Facebook';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
 import CreatingTextField from "../../components/CreatingTextField";
 import tapxcompanyLogo from "../../data/images/tapxtream.png";
+import UserHeaderComponent from "../../components/mainComponents/UserHeaderComponent";
 
-const SubmitMediaDetails = () => {
+const UpdateSocialDetails = () => {
     const [facebookUrl, setFacebookUrl] = useState("");
     const [instagramUrl, setInstagramUrl] = useState("");
     const [twitterUrl, setTwitterUrl] = useState("");
     const [linkedInUrl, setLinkedInUrl] = useState("");
     const [whatsAppNumber, setWhatsAppNumber] = useState("");
+
     const [loading, setLoading] = useState(false);
     const [errorMsg, setErrorMsg] = useState("");
 
@@ -77,7 +77,7 @@ const SubmitMediaDetails = () => {
                 whatsAppNumber: whatsAppNumber,
             };
             await updateDoc(userDocRef, updatedData);
-            navigate("/select-nfctype");
+            navigate("/user-profile");
         } catch (error) {
             console.error("Error updating profile:", error);
         } finally {
@@ -85,127 +85,49 @@ const SubmitMediaDetails = () => {
         }
     };
 
-    const OnSkipHandle = () => {
-        setLoading(true);
-        navigate("/select-nfctype");
-        // console.log("skip");
-        setLoading(false);
-
-    }
-
     return (
-        <Box sx={{ width: "100vw", height: "100vh", display: "flex" }}>
-            <Box
-                sx={{
-                    width: { md: "50%" },
-                    display: { xs: "none", md: "block" },
-                }}
-            >
-                {/* left */}
-                <Box
-                    sx={{
-                        // width: { xs: "100%", md: "450px" },
-                        width: "100%",
-                        height: "100%",
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                    }}
-                >
-                    <Box sx={{ position: "relative", width: "100%", height: '5rem' }}>
-                    </Box>
-
-                    <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", }}>
+        <Box sx={{ width: "100vw", height: "100vh", }}>
+            <UserHeaderComponent />
+            <Box sx={{ height: "10vh" }} ></Box>
+            <Box sx={{ height: "calc(100vh - 10vh)", width: "100%", display: "flex", }}>
+                <Box sx={{ width: "50%", height: "100%", display: { xs: "none", md: "block" } }}>
+                    {/* left */}
+                    <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%" }}>
                         <Box component="img"
                             alt="Company Logo"
                             src={tapxcompanyLogo}
                             sx={{
                                 width: "250px",
-                                // ml: 2,
-                                cursor: "pointer",
-                            }}
-                            onClick={() => navigate('/')}
-                        />
-                    </Box>
-
-                    <Box sx={{ position: "relative", width: "100%", height: '9rem' }}>
-                        <Box component="img"
-                            alt="bottomVector"
-                            src={bottomVector}
-                            sx={{
-                                width: "150px",
-                                position: "absolute",
-                                bottom: 0,
-                                left: 0,
                             }}
                         />
                     </Box>
                 </Box>
-            </Box>
-            {/* right */}
-            <Box
-                sx={{
-                    width: { md: "50%" },
-                    display: "flex",
-                    justifyContent: "center",
-                    // backgroundColor: { md: "#577fd8d9" }
-                }}
-            >
+                {/* right */}
                 <Box
                     sx={{
-                        // width: { xs: "100%", md: "450px" },
-                        width: "100%",
+                        width: { xs: "100%", md: "50%" },
                         height: "100%",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        backgroundColor:{md:"#577fd8d9"}
+                    }}
+                >
+                    <Box sx={{
+                        width: {xs:"90%", md:"60%"},
                         display: "flex",
                         flexDirection: "column",
                         alignItems: "center",
-                        justifyContent: "space-between",
-                        backgroundColor: { md: "aliceblue" },
-                    }}
-                >
-                    <Box sx={{ position: "relative", width: "100%", height: '9rem' }}>
-                        <Box component="img"
-                            alt="topVector"
-                            src={topVector}
-                            sx={{
-                                width: "250px",
-                                position: "absolute",
-                                top: 0,
-                                right: 0,
-                            }}
-                        />
-                        <Box component="img"
-                            alt="Company Logo"
-                            src={tapxcompanyLogo}
-                            sx={{
-                                width: "65px",
-                                position: "absolute",
-                                top: 2,
-                                left: 2,
-                                display: { xs: "block", md: "none" }
-                            }}
-                        />
+                    }}>
                         <Typography
                             sx={{
-                                textAlign: "center",
-                                width: "100%",
                                 fontSize: "1.3rem",
-                                fontWeight: 600,
-                                position: "absolute",
-                                zIndex: 2,
-                                bottom: 5
+                                fontWeight: "bold",
+                                color:{md: "white"},
+                                mb:1
                             }}>
-                            Social Media Details
+                            Update Social Details
                         </Typography>
-                    </Box>
-
-                    <Box sx={{
-                        width: { xs: "90%", md: "50%" },
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center"
-                    }}>
 
                         <form
                             onSubmit={(e) => {
@@ -234,7 +156,7 @@ const SubmitMediaDetails = () => {
                                         borderRadius: "40px",
                                         width: "100%", height: "3rem",
                                         display: "flex", alignItems: "center", gap: "9px",
-                                        backgroundColor:'white'
+                                        backgroundColor:"white"
                                     }}>
                                         <WhatsAppIcon sx={{ color: "#1976d2", ml: "10px" }} />
                                         <TextField
@@ -272,36 +194,10 @@ const SubmitMediaDetails = () => {
                                         <Typography sx={{ color: "red", fontSize: "11px", textAlign: "center" }}>{errorMsg}</Typography>
                                         : <Box p={1} />
                                 }</Grid>
+                                
                                 <Grid
                                     item
                                     xs={6}
-                                // sx={{ display: "flex", justifyContent: "space-evenly" }}
-                                >
-                                    <Button
-                                        variant="contained"
-                                        color="primary"
-                                        fullWidth
-                                        sx={{ borderRadius: "20px", fontWeight: "bold" }}
-                                        onClick={() => OnSkipHandle()}
-                                        disabled={loading}
-                                    >
-                                        {loading ? (
-                                            <Box sx={{ ...dotContainerStyle, borderRadius: "20px" }}>
-                                                <Box sx={{ ...dotStyle, animationDelay: '0s' }}></Box>
-                                                <Box sx={{ ...dotStyle, animationDelay: '0.2s' }}></Box>
-                                                <Box sx={{ ...dotStyle, animationDelay: '0.4s' }}></Box>
-                                                <Box sx={{ ...dotStyle, animationDelay: '0.6s' }}></Box>
-                                                <Box sx={{ ...dotStyle, animationDelay: '0.8s' }}></Box>
-                                            </Box>
-                                        ) : (
-                                            "Skip & Next"
-                                        )}
-                                    </Button>
-                                </Grid>
-                                <Grid
-                                    item
-                                    xs={6}
-                                // sx={{ display: "flex", justifyContent: "space-evenly" }}
                                 >
                                     <Button
                                         type="submit"
@@ -327,21 +223,6 @@ const SubmitMediaDetails = () => {
                             </Grid>
                             <Box p={1} />
                         </form>
-
-                    </Box>
-
-                    <Box sx={{ position: "relative", width: "100%", height: '5rem' }}>
-                        <Box component="img"
-                            alt="bottomVector"
-                            src={bottomVector}
-                            sx={{
-                                width: "150px",
-                                position: "absolute",
-                                bottom: 0,
-                                left: 0,
-                                display: { xs: "block", md: "none" }
-                            }}
-                        />
                     </Box>
                 </Box>
             </Box>
@@ -349,4 +230,4 @@ const SubmitMediaDetails = () => {
     );
 };
 
-export default SubmitMediaDetails;
+export default UpdateSocialDetails;

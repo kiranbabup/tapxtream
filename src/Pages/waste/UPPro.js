@@ -6,7 +6,7 @@ import { Box, Button, TextField, Typography, Grid, CircularProgress } from "@mui
 import { useNavigate } from "react-router-dom";
 import { useDropzone } from "react-dropzone";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { db } from "../services/firebase";
+import { db } from "../../services/firebase";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 const schema = z.object({

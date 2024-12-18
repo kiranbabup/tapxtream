@@ -19,7 +19,6 @@ export default function PageNotFound() {
   };
 
   return (
-    // <Page title="404 Page Not Found">
       <Container>
         <ContentStyle sx={{ textAlign: "center", alignItems: "center" }}>
           <Typography variant="h3" paragraph>
@@ -40,6 +39,5 @@ export default function PageNotFound() {
           <Button size="large" variant="contained" onClick={handleBack}>Go back</Button>
         </ContentStyle>
       </Container>
-    // </Page>
   );
 }

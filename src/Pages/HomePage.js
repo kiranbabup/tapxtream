@@ -2,10 +2,12 @@ import React, { useEffect } from 'react';
 import { Box, Button, Typography } from "@mui/material"
 import HeaderComponent from "../components/mainComponents/HeaderComponent";
 import { clientsLogos } from "../data/clientsLogo";
-import PlaceIcon from '@mui/icons-material/Place';
+// import PlaceIcon from '@mui/icons-material/Place';
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
-import imageHere from "../data/images/imagehere.png";
-import SectioneImage from "../data/images/Nfc-banner_mainPage.png";
+// import imageHere from "../data/images/imagehere.png";
+// import SectioneImage from "../data/images/Nfc-banner_mainPage.png";
+import SectioneImage from "../data/images/Nfc-banner_profile.png";
+
 import NFCCarddes from "../data/images/nfc-card_type1_blackGold.png";
 import NFCCarddesW from "../data/images/nfc-card_type2_White.png";
 import { fourProperties } from "../data/contents/HomepageContent.js";

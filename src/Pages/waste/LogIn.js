@@ -13,10 +13,10 @@ import {
 } from "@mui/material";
 // import GoogleIcon from "@mui/icons-material/Google";
 import { collection, addDoc, getDocs, query, where, doc, setDoc } from "firebase/firestore";
-import { db } from "../services/firebase";
+import { db } from "../../services/firebase";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import HeaderComponent from "../components/mainComponents/HeaderComponent";
+import HeaderComponent from "../../components/mainComponents/HeaderComponent";
 import companyLogo from "../data/Inv_logo-Horizontal.png";
 
 const schema = z.object({

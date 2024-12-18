@@ -1,15 +1,9 @@
-import React, { useEffect, useState, useCallback } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { Box, Button, TextField, Typography, Grid, CircularProgress, IconButton, Paper, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, TablePagination, } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { Box, Button, Paper, TableContainer, Table, TableHead, TableRow, TableCell, TableBody, TablePagination, } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { useDropzone } from "react-dropzone";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import { db } from "../services/firebase";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import LogoutButtonComp from "../components/LogoutButtonComp";
-import { getRupee } from "../data/styles";
 
 const columns = [
     { id: 'enquiryname', label: 'Name', minWidth: 170 },
@@ -18,7 +12,6 @@ const columns = [
   ];
 
 const Enquiries = () => {
-  // const [loading, setLoading] = useState(false);
   const [enquiryData, setEnquiryData] = useState([]);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
@@ -26,7 +19,6 @@ const Enquiries = () => {
   const navigate = useNavigate();
   const user = JSON.parse(localStorage.getItem("user"));
 
-  // const { register, handleSubmit, formState: { errors }, reset } = useForm({ resolver: zodResolver(schema) });
 
   useEffect(() => {
     const fetchEnquiry = async () => {

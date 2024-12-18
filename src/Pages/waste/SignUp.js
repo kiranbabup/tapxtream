@@ -9,9 +9,9 @@ import {
   createUserWithEmailAndPassword,
   sendEmailVerification,
 } from "firebase/auth";
-import { db } from "../services/firebase";
+import { db } from "../../services/firebase";
 import { useNavigate } from "react-router-dom";
-import HeaderComponent from "../components/mainComponents/HeaderComponent";
+import HeaderComponent from "../../components/mainComponents/HeaderComponent";
 import companyLogo from "../data/Inv_logo-Horizontal.png";
 
 const schema = z.object({

@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import MenuIcon from '@mui/icons-material/Menu';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { useMediaQuery } from '@mui/material';
-import companyLogo from "../../data/Inv_logo-Horizontal.png";
+import companyLogo from "../../data/images/tapxtream.png";
 
 const HeaderComponent = () => {
     const navigate = useNavigate();
@@ -45,8 +45,8 @@ const HeaderComponent = () => {
                 alt="Company Logo"
                 src={companyLogo}
                 sx={{
-                    width: "250px",
-                    ml: 2,
+                    width: "70px",
+                    ml: 3,
                     cursor: "pointer",
                 }}
                 onClick={() => navigate('/')}

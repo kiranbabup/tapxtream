@@ -12,6 +12,7 @@ import QRBlack from "../../data/images/nfcrelated/QR-black.png";
 import CallIcon from '@mui/icons-material/Call';
 import MailIcon from '@mui/icons-material/Mail';
 import Modal from '@mui/material/Modal';
+import tapxcompanyLogo from "../../data/images/tapxtream.png";
 
 const style = {
     position: 'absolute',
@@ -26,7 +27,7 @@ const style = {
 };
 
 const NFCCardDisplay = () => {
-    const [cardData, setCardData] = useState("");
+    const [cardData, setCardData] = useState({});
     const [loading, setLoading] = useState(false);
     const [open, setOpen] = React.useState(false);
     const [loadingSuccess, setLoadingSuccess] = useState(false);
@@ -56,11 +57,14 @@ const NFCCardDisplay = () => {
         fetchUserData();
     }, []);
 
-    useEffect(()=>{
-        if(cardData.paymentStatus === "Successful"){
-            navigate('/update-profile');
+    useEffect(() => {
+        if (cardData.paymentStatus === "Successful") {
+            navigate('/user-profile');
+        } else if (cardData.paymentStatus === "Pending") {
+            onSubmitPaymentSuccess();
         }
-    },[cardData])
+    }, [cardData])
+
     const onSubmit = async (data) => {
         setLoading(true);
         try {
@@ -94,10 +98,10 @@ const NFCCardDisplay = () => {
                 window.location.href = goto;
                 // window.open(goto, '_blank');
                 // setErrorMsg("Payment Link generated Successfully");
-                handleOpen();
+                // handleOpen();
             } else if (result.error && result.existingPaymentService) {
-                console.warn("Email and service_name already exist:", result.error);
-                console.warn("Email and service_name already exist:", result.existingPaymentService);
+                // console.warn("Email and service_name already exist:", result.error);
+                // console.warn("Email and service_name already exist:", result.existingPaymentService);
                 const existingId = result.existingPaymentService.genarate_id;
                 const updatedData = {
                     payment_genarate_id: existingId,
@@ -108,7 +112,7 @@ const NFCCardDisplay = () => {
                 // window.open(goto, '_blank');
                 window.location.href = goto;
                 // setErrorMsg("Payment link retrieved from existing service.");
-                handleOpen();
+                // handleOpen();
             } else {
                 // Handle other errors
                 console.error("Failed to generate payment link:", result.error || "Unknown error");
@@ -121,401 +125,325 @@ const NFCCardDisplay = () => {
         }
     };
 
-    const onSubmitBack = () => {
-        setLoading(true);
-        navigate(-1);
-        setLoading(false); // Optional: Reset loading after navigation
-    };
-
     const updatePaymentStatusInFirebase = async (newStatus) => {
         if (user) {
             const userDoc = doc(db, "users", user.uid);
             await updateDoc(userDoc, {
                 paymentStatus: newStatus,
             });
-            // console.log(newStatus);
         }
     };
 
     const onSubmitPaymentSuccess = async () => {
-        setLoadingSuccess(true);
-
         try {
-            // Fetch user data
-            await fetchUserData();
+            const response = await fetch(
+                `https://apiroute.vibepattern.com/get_payment_service_by_id/${cardData.payment_genarate_id}`
+            );
 
-            if (cardData.paymentStatus === "Pending") {
-                // Call the API to check payment status
-                const response = await fetch(
-                    `https://apiroute.vibepattern.com/get_payment_service_by_id/${cardData.payment_genarate_id}`
-                );
+            if (response.ok) {
+                const paymentData = await response.json();
+                // console.log(paymentData);
 
-                if (response.ok) {
-                    const paymentData = await response.json();
-                    // console.log(paymentData);
-
-                    if (paymentData.payment_status === "Pending") {
-                        handleClose();
-                    } else if (paymentData.payment_status === "Successful") {
-                        await updatePaymentStatusInFirebase("Successful");
-                        navigate("/update-profile");
-                    }
-                } else {
-                    console.error("Failed to fetch payment data from API");
+                if (paymentData.payment_status === "Successful") {
+                    await updatePaymentStatusInFirebase("Successful");
+                    // window.location.reload();
+                    navigate('/user-profile');
                 }
-            } else if (cardData.paymentStatus === "Successful") {
-                // If already successful, navigate directly
-                navigate("/update-profile");
+            } else {
+                console.error("Failed to fetch payment data from API");
             }
         } catch (error) {
             console.error("Error during payment status check:", error);
-        } finally {
-            setLoadingSuccess(false);
         }
     };
 
     return (
-        <Box sx={{ width: "100vw", height: "100vh", display: "flex", justifyContent: "center", alignItems: "center" }}>
+        <Box sx={{ width: "100vw", height: "100vh", display: "flex", flexDirection: "column", alignItems: "center", }}>
+            <Box sx={{ width: "100%", display: "flex", justifyContent: "start", }}>
+                <Box component="img"
+                    alt="Company Logo"
+                    src={tapxcompanyLogo}
+                    sx={{
+                        width: "60px",
+                        padding: "5px"
+                    }}
+                />
+            </Box>
             <Box
                 sx={{
-                    width: { xs: "90%", md: "450px" },
+                    // width: { xs: "90%", md: "450px" },
+                    width: "90%",
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "center",
                     gap: "1rem"
                 }}
             >
-                <Typography sx={{ color: "blue", fontWeight: 600, fontSize: "1.5rem" }}>Your Card Looks Like this</Typography>
-
-                <Modal
-                    open={open}
-                    // onClose={handleClose}
-                    aria-labelledby="modal-modal-title"
-                    aria-describedby="modal-modal-description"
-                >
-                    <Box sx={style}>
-                        <Typography id="modal-modal-title">
-                            Please Select To Move Further
-                        </Typography>
-                        {/* <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                            Duis mollis, est non commodo luctus, nisi erat porttitor ligula.
-                        </Typography> */}
-                        <Box id="modal-modal-description" sx={{ mt: 2, display: "flex", flexDirection: "column", gap: "1rem" }}>
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                fullWidth
-                                onClick={() => onSubmitPaymentSuccess()}
-                                sx={{ fontWeight: "bold" }}
-                                disabled={loadingSuccess}
-                            >
-                                {loadingSuccess ? (
-                                    <Box sx={{ ...dotContainerStyle }}>
-                                        <Box sx={{ ...dotStyle, animationDelay: '0s' }}></Box>
-                                        <Box sx={{ ...dotStyle, animationDelay: '0.2s' }}></Box>
-                                        <Box sx={{ ...dotStyle, animationDelay: '0.4s' }}></Box>
-                                        <Box sx={{ ...dotStyle, animationDelay: '0.6s' }}></Box>
-                                        <Box sx={{ ...dotStyle, animationDelay: '0.8s' }}></Box>
-                                    </Box>
-                                ) : (
-                                    "Payment Successful"
-                                )}
-                            </Button>
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                fullWidth
-                                onClick={() => handleClose()}
-                                sx={{ fontWeight: "bold" }}
-                            >
-                                Not Paid
-                            </Button>
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                fullWidth
-                                onClick={() => {
-                                    localStorage.removeItem("user");
-                                    navigate('/login');
-                                }}
-                                sx={{ fontWeight: "bold" }}
-                            >
-                                Go to Login
-                            </Button>
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                fullWidth
-                                onClick={() => {
-                                    localStorage.removeItem("user");
-                                    navigate('/');
-                                }}
-                                sx={{ fontWeight: "bold" }}
-                            >
-                                Go to Home
-                            </Button>
-                        </Box>
-                    </Box>
-                </Modal>
-                {
-                    cardData.cardType === "Premium NFC Card" &&
-                    <>
-                        <Box
-                            sx={{
-                                width: { xs: "90%", md: "350px" },
-                                height: "12rem",
-                                display: "flex",
-                                flexDirection: "column",
-                                justifyContent: "space-between",
-                                backgroundColor: "black",
-                                boxShadow: "rgba(0, 0, 0, 0.16) 0px 1px 4px",
-                                borderRadius: "12px"
-                            }}
-                        >
-                            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", p: 2, color: "#d4af37" }}>
-                                <Box>
-                                    <Typography sx={{ display: "flex", alignItems: "center", gap: "5px", fontSize: "13px", fontWeight: "bold" }}><CallIcon fontSize="small" /> +91 {cardData.mobileNumber} </Typography>
-                                    <Typography sx={{ display: "flex", alignItems: "center", gap: "5px", fontSize: "13px", fontWeight: "bold" }}><MailIcon fontSize="small" /> {cardData.email} </Typography>
-                                </Box>
-                                <Box
-                                    component="img"
-                                    alt="NFC Card symbol gold"
-                                    src={SymbolGold}
-                                    sx={{
-                                        width: { xs: "3rem", md: "3.4rem" },
-                                    }}
-                                />
-                            </Box>
-                            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "end", p: 2, color: "#d4af37" }}>
-                                <Box>
-                                    <Typography sx={{ fontSize: "14px", fontWeight: "bold" }}>{cardData.firstName} {cardData.middleName} {cardData.lastName}</Typography>
-                                    {!cardData.designation || cardData.designation === "" ? <Box p={1} /> : <Typography sx={{ fontSize: "12px" }}>{cardData.designation}</Typography>}
-
-                                </Box>
-                                <Box
-                                    component="img"
-                                    alt="NFC Card QR gold"
-                                    src={QRGold}
-                                    sx={{
-                                        width: "4.5rem",
-                                    }}
-                                />
-                            </Box>
-                        </Box>
-                        <Box
-                            sx={{
-                                width: { xs: "90%", md: "350px" },
-                                height: "12rem",
-                                display: "flex",
-                                flexDirection: "column",
-                                justifyContent: "center",
-                                alignItems: "center",
-                                backgroundColor: "black",
-                                boxShadow: "rgba(0, 0, 0, 0.16) 0px 1px 4px",
-                                borderRadius: "12px",
-                                position: "relative"
-                            }}
-                        >
-                            <Box
-                                component="img"
-                                alt="NFC Card symbol gold"
-                                src={SymbolGold}
-                                sx={{
-                                    position: "absolute",
-                                    top: "20px",
-                                    right: "20px",
-                                    width: { xs: "2.5rem", md: "2.8rem" },
-                                }}
-                            />
-                            {
-                                !cardData.companyLogo || cardData.companyLogo === "null" ?
-                                    <Typography sx={{ fontSize: "14px", fontWeight: "bold", color: "#d4af37" }}>Please Upload Company Logo</Typography>
-                                    : <Box
-                                        component="img"
-                                        alt="Company Logo"
-                                        src={cardData.companyLogo}
-                                        sx={{
-                                            maxWidth: "75%",
-                                            // minWidth: "30%",
-                                            maxHeight: "50%",
-                                        }}
-                                    />
-                            }
-                        </Box>
-                        <Typography sx={{ color: "blue", fontWeight: 600, fontSize: "1.5rem" }}>
-                            ₹599.00 <del style={{ color: "red", fontWeight: "lighter" }}>₹999.00</del>
-                        </Typography>
-                    </>
-                }
+                <Typography sx={{ color: "blue", fontWeight: 600, fontSize: "1.2rem", marginBottom:{md:"2rem"} }}>Your Card Preview</Typography>
 
                 {
                     cardData.cardType === "Basic NFC Card" &&
                     <>
-                        <Box
-                            sx={{
-                                width: { xs: "90%", md: "350px" },
-                                height: "12rem",
-                                display: "flex",
-                                flexDirection: "column",
-                                justifyContent: "space-between",
-                                backgroundColor: "white",
-                                boxShadow: "rgba(0, 0, 0, 0.16) 0px 1px 4px",
-                                borderRadius: "12px",
-                                position: "relative",
-                                overflow: "hidden"
-                            }}
-                        >
+                        <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: {xs:"1rem", md:"8rem"}, width: "100%", alignItems: "center", justifyContent: "center" }}>
                             <Box
-                                component="img"
-                                alt="NFC Card symbol black"
-                                src={SymbolBlack}
                                 sx={{
-                                    width: "12rem",
-                                    position: "absolute",
-                                    zIndex: "0",
-                                    top: "-70px",
-                                    left: "-50px",
-                                    opacity: 0.08
+                                    width: { xs: "90%", md: "400px" },
+                                    height: {xs:"12rem", md:"15rem"},
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    justifyContent: "space-between",
+                                    backgroundColor: "white",
+                                    boxShadow: "rgba(0, 0, 0, 0.16) 0px 1px 4px",
+                                    borderRadius: "12px",
+                                    position: "relative",
+                                    overflow: "hidden"
                                 }}
-                            />
-                            <Box
-                                component="img"
-                                alt="NFC Card symbol black"
-                                src={SymbolBlack}
-                                sx={{
-                                    width: "12rem",
-                                    position: "absolute",
-                                    zIndex: "0",
-                                    bottom: "-94px",
-                                    left: "-69px",
-                                    rotate: "12deg",
-                                    opacity: 0.08
-                                }}
-                            />
-                            <Box
-                                component="img"
-                                alt="NFC Card symbol black"
-                                src={SymbolBlack}
-                                sx={{
-                                    width: "20rem",
-                                    position: "absolute",
-                                    zIndex: "0",
-                                    bottom: "-199px",
-                                    right: "-194px",
-                                    rotate: "226deg",
-                                    opacity: 0.08
-                                }}
-                            />
-                            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", p: 2, color: "black", position: "absolute", zIndex: 1, width: "90%" }}>
-                                <Box>
-                                    <Typography sx={{ display: "flex", alignItems: "center", gap: "5px", fontSize: "13px", fontWeight: "bold" }}><CallIcon fontSize="small" /> +91 {cardData.mobileNumber} </Typography>
-                                    <Typography sx={{ display: "flex", alignItems: "center", gap: "5px", fontSize: "13px", fontWeight: "bold" }}><MailIcon fontSize="small" /> {cardData.email} </Typography>
-                                </Box>
+                            >
                                 <Box
                                     component="img"
                                     alt="NFC Card symbol black"
                                     src={SymbolBlack}
                                     sx={{
-                                        width: { xs: "3rem", md: "3.4rem" },
+                                        width: "12rem",
+                                        position: "absolute",
+                                        zIndex: "0",
+                                        top: "-70px",
+                                        left: "-50px",
+                                        opacity: 0.08
                                     }}
                                 />
-                            </Box>
-                            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "end", p: 2, color: "black", position: "absolute", zIndex: "1", bottom: 1, width: "90%" }}>
-                                <Box>
-                                    <Typography sx={{ fontSize: "14px", fontWeight: "bold" }}>{cardData.firstName} {cardData.middleName} {cardData.lastName}</Typography>
-                                    {!cardData.designation || cardData.designation === "" ? <Box p={1} /> : <Typography sx={{ fontSize: "12px" }}>{cardData.designation}</Typography>}
-                                </Box>
                                 <Box
                                     component="img"
-                                    alt="NFC Card QR black"
-                                    src={QRBlack}
+                                    alt="NFC Card symbol black"
+                                    src={SymbolBlack}
                                     sx={{
-                                        width: "4.5rem",
-                                        backgroundColor: "white"
+                                        width: "12rem",
+                                        position: "absolute",
+                                        zIndex: "0",
+                                        bottom: "-94px",
+                                        left: "-69px",
+                                        rotate: "12deg",
+                                        opacity: 0.08
                                     }}
                                 />
+                                <Box
+                                    component="img"
+                                    alt="NFC Card symbol black"
+                                    src={SymbolBlack}
+                                    sx={{
+                                        width: "20rem",
+                                        position: "absolute",
+                                        zIndex: "0",
+                                        bottom: "-199px",
+                                        right: "-194px",
+                                        rotate: "226deg",
+                                        opacity: 0.08
+                                    }}
+                                />
+                                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", p: 2, color: "black", position: "absolute", zIndex: 1, width: "90%" }}>
+                                    <Box>
+                                        <Typography sx={{ display: "flex", alignItems: "center", gap: "5px", fontSize: "13px", fontWeight: "bold" }}><CallIcon fontSize="small" /> +91 {cardData.mobileNumber} </Typography>
+                                        <Typography sx={{ display: "flex", alignItems: "start", gap: "5px", fontSize: "13px", fontWeight: "bold", wordBreak: "break-word", overflowWrap: "break-word", }}><MailIcon fontSize="small" /> {cardData.email} </Typography>
+                                    </Box>
+                                    <Box
+                                        component="img"
+                                        alt="NFC Card symbol black"
+                                        src={SymbolBlack}
+                                        sx={{
+                                            width: { xs: "3rem", md: "3.4rem" },
+                                        }}
+                                    />
+                                </Box>
+                                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "end", p: 2, color: "black", position: "absolute", zIndex: "1", bottom: 1, width: "90%" }}>
+                                    <Box>
+                                        <Typography sx={{ fontSize: "14px", fontWeight: "bold" }}>{cardData.firstName} {cardData.middleName} {cardData.lastName}</Typography>
+                                        {!cardData.designation || cardData.designation === "" ? <Box p={1} /> : <Typography sx={{ fontSize: "12px" }}>{cardData.designation}</Typography>}
+                                    </Box>
+                                    <Box
+                                        component="img"
+                                        alt="NFC Card QR black"
+                                        src={QRBlack}
+                                        sx={{
+                                            width: "4.5rem",
+                                            backgroundColor: "white"
+                                        }}
+                                    />
+                                </Box>
+                            </Box>
+                            <Box
+                                sx={{
+                                    width: { xs: "90%", md: "400px" },
+                                    height: {xs:"12rem", md:"15rem"},
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    backgroundColor: "white",
+                                    boxShadow: "rgba(0, 0, 0, 0.16) 0px 1px 4px",
+                                    borderRadius: "12px",
+                                    position: "relative",
+                                    overflow: "hidden"
+                                }}
+                            >
+                                <Box
+                                    component="img"
+                                    alt="NFC Card symbol black"
+                                    src={SymbolBlack}
+                                    sx={{
+                                        width: "12rem",
+                                        position: "absolute",
+                                        zIndex: "0",
+                                        top: "-70px",
+                                        left: "-50px",
+                                        opacity: 0.08
+                                    }}
+                                />
+                                <Box
+                                    component="img"
+                                    alt="NFC Card symbol black"
+                                    src={SymbolBlack}
+                                    sx={{
+                                        width: "12rem",
+                                        position: "absolute",
+                                        zIndex: "0",
+                                        bottom: "-94px",
+                                        left: "-69px",
+                                        rotate: "12deg",
+                                        opacity: 0.08
+                                    }}
+                                />
+                                <Box
+                                    component="img"
+                                    alt="NFC Card symbol black"
+                                    src={SymbolBlack}
+                                    sx={{
+                                        width: "20rem",
+                                        position: "absolute",
+                                        zIndex: "0",
+                                        bottom: "-199px",
+                                        right: "-194px",
+                                        rotate: "226deg",
+                                        opacity: 0.08
+                                    }}
+                                />
+                                <Box
+                                    component="img"
+                                    alt="NFC Card symbol black"
+                                    src={SymbolBlack}
+                                    sx={{
+                                        width: { xs: "2.5rem", md: "2.8rem" },
+                                        position: "absolute",
+                                        top: "20px",
+                                        right: "20px",
+                                        zIndex: 1
+                                    }}
+                                />
+                                <Box sx={{
+                                    width: "100%",
+                                    height: "100%",
+                                    position: "absolute",
+                                    zIndex: 1,
+                                    display: "flex",
+                                    justifyContent: "center",
+                                    alignItems: "center"
+                                }}>
+                                    {
+                                        !cardData.companyLogo || cardData.companyLogo === "null" ?
+                                            <Typography sx={{ fontSize: "14px", fontWeight: "bold", color: "black" }}>Please Upload Company Logo</Typography>
+                                            : <Box
+                                                component="img"
+                                                alt="Company Logo"
+                                                src={cardData.companyLogo}
+                                                sx={{
+                                                    maxWidth: "75%",
+                                                    // minWidth: "30%",
+                                                    maxHeight: "50%",
+                                                }}
+                                            />
+                                    }
+                                </Box>
                             </Box>
                         </Box>
-                        <Box
-                            sx={{
-                                width: { xs: "90%", md: "350px" },
-                                height: "12rem",
-                                display: "flex",
-                                flexDirection: "column",
-                                justifyContent: "center",
-                                alignItems: "center",
-                                backgroundColor: "white",
-                                boxShadow: "rgba(0, 0, 0, 0.16) 0px 1px 4px",
-                                borderRadius: "12px",
-                                position: "relative",
-                                overflow: "hidden"
-                            }}
-                        >
+                        <Typography sx={{ color: "blue", fontWeight: 600, fontSize: "1.2rem" }}>
+                            ₹299.00 <del style={{ color: "red", fontWeight: "lighter" }}>₹799.00</del>
+                        </Typography>
+                    </>
+                }
+
+                {
+                    cardData.cardType === "Premium NFC Card" &&
+                    <>
+                        <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: {xs:"1rem", md:"8rem"}, width: "100%", alignItems: "center", justifyContent: "center" }}>
                             <Box
-                                component="img"
-                                alt="NFC Card symbol black"
-                                src={SymbolBlack}
                                 sx={{
-                                    width: "12rem",
-                                    position: "absolute",
-                                    zIndex: "0",
-                                    top: "-70px",
-                                    left: "-50px",
-                                    opacity: 0.08
+                                    width: { xs: "90%", md: "400px" },
+                                    height: {xs:"12rem", md:"15rem"},
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    justifyContent: "space-between",
+                                    backgroundColor: "black",
+                                    boxShadow: "rgba(0, 0, 0, 0.16) 0px 1px 4px",
+                                    borderRadius: "12px"
                                 }}
-                            />
+                            >
+                                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", p: 2, color: "#d4af37" }}>
+                                    <Box>
+                                        <Typography sx={{ display: "flex", alignItems: "center", gap: "5px", fontSize: "13px", fontWeight: "bold" }}><CallIcon fontSize="small" /> +91 {cardData.mobileNumber} </Typography>
+                                        <Typography sx={{ display: "flex", alignItems: "start", gap: "5px", fontSize: "13px", fontWeight: "bold", wordBreak: "break-word", overflowWrap: "break-word", }}><MailIcon fontSize="small" /> {cardData.email} </Typography>
+                                    </Box>
+                                    <Box
+                                        component="img"
+                                        alt="NFC Card symbol gold"
+                                        src={SymbolGold}
+                                        sx={{
+                                            width: { xs: "3rem", md: "3.4rem" },
+                                        }}
+                                    />
+                                </Box>
+                                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "end", p: 2, color: "#d4af37" }}>
+                                    <Box>
+                                        <Typography sx={{ fontSize: "14px", fontWeight: "bold" }}>{cardData.firstName} {cardData.middleName} {cardData.lastName}</Typography>
+                                        {!cardData.designation || cardData.designation === "" ? <Box p={1} /> : <Typography sx={{ fontSize: "12px" }}>{cardData.designation}</Typography>}
+
+                                    </Box>
+                                    <Box
+                                        component="img"
+                                        alt="NFC Card QR gold"
+                                        src={QRGold}
+                                        sx={{
+                                            width: "4.5rem",
+                                        }}
+                                    />
+                                </Box>
+                            </Box>
                             <Box
-                                component="img"
-                                alt="NFC Card symbol black"
-                                src={SymbolBlack}
                                 sx={{
-                                    width: "12rem",
-                                    position: "absolute",
-                                    zIndex: "0",
-                                    bottom: "-94px",
-                                    left: "-69px",
-                                    rotate: "12deg",
-                                    opacity: 0.08
+                                    width: { xs: "90%", md: "400px" },
+                                    height: {xs:"12rem", md:"15rem"},
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    backgroundColor: "black",
+                                    boxShadow: "rgba(0, 0, 0, 0.16) 0px 1px 4px",
+                                    borderRadius: "12px",
+                                    position: "relative"
                                 }}
-                            />
-                            <Box
-                                component="img"
-                                alt="NFC Card symbol black"
-                                src={SymbolBlack}
-                                sx={{
-                                    width: "20rem",
-                                    position: "absolute",
-                                    zIndex: "0",
-                                    bottom: "-199px",
-                                    right: "-194px",
-                                    rotate: "226deg",
-                                    opacity: 0.08
-                                }}
-                            />
-                            <Box
-                                component="img"
-                                alt="NFC Card symbol black"
-                                src={SymbolBlack}
-                                sx={{
-                                    width: { xs: "2.5rem", md: "2.8rem" },
-                                    position: "absolute",
-                                    top: "20px",
-                                    right: "20px",
-                                    zIndex: 1
-                                }}
-                            />
-                            <Box sx={{
-                                width: "100%",
-                                height: "100%",
-                                position: "absolute",
-                                zIndex: 1,
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center"
-                            }}>
+                            >
+                                <Box
+                                    component="img"
+                                    alt="NFC Card symbol gold"
+                                    src={SymbolGold}
+                                    sx={{
+                                        position: "absolute",
+                                        top: "20px",
+                                        right: "20px",
+                                        width: { xs: "2.5rem", md: "2.8rem" },
+                                    }}
+                                />
                                 {
                                     !cardData.companyLogo || cardData.companyLogo === "null" ?
-                                        <Typography sx={{ fontSize: "14px", fontWeight: "bold", color: "black" }}>Please Upload Company Logo</Typography>
+                                        <Typography sx={{ fontSize: "14px", fontWeight: "bold", color: "#d4af37" }}>Please Upload Company Logo</Typography>
                                         : <Box
                                             component="img"
                                             alt="Company Logo"
@@ -529,56 +457,125 @@ const NFCCardDisplay = () => {
                                 }
                             </Box>
                         </Box>
-                        <Typography sx={{ color: "blue", fontWeight: 600, fontSize: "1.5rem" }}>
-                            ₹299.00 <del style={{ color: "red", fontWeight: "lighter" }}>₹799.00</del>
+                        <Typography sx={{ color: "blue", fontWeight: 600, fontSize: "1.2rem" }}>
+                            ₹599.00 <del style={{ color: "red", fontWeight: "lighter" }}>₹999.00</del>
                         </Typography>
                     </>
                 }
-                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", gap: "1rem" }}>
+
+                <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => onSubmit()}
+                    sx={{ fontWeight: "bold", width:{xs:"100%", md:"50%"}, marginTop:{md:"2rem"} }}
+                    disabled={loading}
+                >
+                    {loading ? (
+                        <Box sx={{ ...dotContainerStyle }}>
+                            <Box sx={{ ...dotStyle, animationDelay: '0s' }}></Box>
+                            <Box sx={{ ...dotStyle, animationDelay: '0.2s' }}></Box>
+                            <Box sx={{ ...dotStyle, animationDelay: '0.4s' }}></Box>
+                            <Box sx={{ ...dotStyle, animationDelay: '0.6s' }}></Box>
+                            <Box sx={{ ...dotStyle, animationDelay: '0.8s' }}></Box>
+                        </Box>
+                    ) : (
+                        "Buy Now"
+                    )}
+                </Button>
+                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: {xs:"100%", md:"50%"}, gap: "1rem" }}>
                     <Button
-                        variant="contained"
+                        // variant="contained"
                         color="primary"
                         fullWidth
-                        onClick={() => onSubmitBack()}
+                        onClick={() => navigate(-1)}
                         sx={{ fontWeight: "bold" }}
-                        disabled={loading}
                     >
-                        {loading ? (
-                            <Box sx={{ ...dotContainerStyle }}>
-                                <Box sx={{ ...dotStyle, animationDelay: '0s' }}></Box>
-                                <Box sx={{ ...dotStyle, animationDelay: '0.2s' }}></Box>
-                                <Box sx={{ ...dotStyle, animationDelay: '0.4s' }}></Box>
-                                <Box sx={{ ...dotStyle, animationDelay: '0.6s' }}></Box>
-                                <Box sx={{ ...dotStyle, animationDelay: '0.8s' }}></Box>
-                            </Box>
-                        ) : (
-                            "Back"
-                        )}
+                        Back
                     </Button>
                     <Button
-                        variant="contained"
+                        // variant="contained"
                         color="primary"
                         fullWidth
-                        onClick={() => onSubmit()}
+                        onClick={() => {
+                            localStorage.removeItem("user");
+                            navigate('/login');
+                        }}
                         sx={{ fontWeight: "bold" }}
-                        disabled={loading}
                     >
-                        {loading ? (
-                            <Box sx={{ ...dotContainerStyle }}>
-                                <Box sx={{ ...dotStyle, animationDelay: '0s' }}></Box>
-                                <Box sx={{ ...dotStyle, animationDelay: '0.2s' }}></Box>
-                                <Box sx={{ ...dotStyle, animationDelay: '0.4s' }}></Box>
-                                <Box sx={{ ...dotStyle, animationDelay: '0.6s' }}></Box>
-                                <Box sx={{ ...dotStyle, animationDelay: '0.8s' }}></Box>
-                            </Box>
-                        ) : (
-                            "Buy Now"
-                        )}
+                        Login
                     </Button>
                 </Box>
+
             </Box>
-        </Box>
+        </Box >
     );
 };
 
 export default NFCCardDisplay;
+{/* <Modal
+    open={open}
+    // onClose={handleClose}
+    aria-labelledby="modal-modal-title"
+    aria-describedby="modal-modal-description"
+>
+    <Box sx={style}>
+        <Typography id="modal-modal-title">
+            Please Select To Move Further
+        </Typography>
+        <Box id="modal-modal-description" sx={{ mt: 2, display: "flex", flexDirection: "column", gap: "1rem" }}>
+            <Button
+                variant="contained"
+                color="primary"
+                fullWidth
+                onClick={() => onSubmitPaymentSuccess()}
+                sx={{ fontWeight: "bold" }}
+                disabled={loadingSuccess}
+            >
+                {loadingSuccess ? (
+                    <Box sx={{ ...dotContainerStyle }}>
+                        <Box sx={{ ...dotStyle, animationDelay: '0s' }}></Box>
+                        <Box sx={{ ...dotStyle, animationDelay: '0.2s' }}></Box>
+                        <Box sx={{ ...dotStyle, animationDelay: '0.4s' }}></Box>
+                        <Box sx={{ ...dotStyle, animationDelay: '0.6s' }}></Box>
+                        <Box sx={{ ...dotStyle, animationDelay: '0.8s' }}></Box>
+                    </Box>
+                ) : (
+                    "Payment Successful"
+                )}
+            </Button>
+            <Button
+                variant="contained"
+                color="primary"
+                fullWidth
+                onClick={() => handleClose()}
+                sx={{ fontWeight: "bold" }}
+            >
+                Not Paid
+            </Button>
+            <Button
+                variant="contained"
+                color="primary"
+                fullWidth
+                onClick={() => {
+                    localStorage.removeItem("user");
+                    navigate('/login');
+                }}
+                sx={{ fontWeight: "bold" }}
+            >
+                Go to Login
+            </Button>
+            <Button
+                variant="contained"
+                color="primary"
+                fullWidth
+                onClick={() => {
+                    localStorage.removeItem("user");
+                    navigate('/');
+                }}
+                sx={{ fontWeight: "bold" }}
+            >
+                Go to Home
+            </Button>
+        </Box>
+    </Box>
+</Modal> */}

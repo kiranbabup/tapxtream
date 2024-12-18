@@ -6,10 +6,10 @@ import { Box, Button, TextField, Typography, Grid, Avatar, Modal, CircularProgre
 import { useNavigate } from "react-router-dom";
 import { useDropzone } from "react-dropzone";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-import { db } from "../services/firebase";
+import { db } from "../../services/firebase";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import OutputIcon from '@mui/icons-material/Output';
-import QRCodeModal from "./QRCodeModal";
+import QRCodeModal from "../QRCodeModal";
 
 const schema = z.object({
   clientImage: z.any().optional(),

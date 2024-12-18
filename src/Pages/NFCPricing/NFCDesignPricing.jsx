@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import { Box, Button, TextField, Typography, Grid, } from "@mui/material";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
@@ -11,11 +11,16 @@ import "../phoneSignup.css";
 import { dotContainerStyle, dotStyle } from "../../data/styles";
 import NFCCardModelBG from "../../data/images/nfc-card_type1_blackGold.png";
 import NFCCardModelW from "../../data/images/nfc-card_type2_White.png";
+import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
+import EastIcon from '@mui/icons-material/East';
+import tapxcompanyLogo from "../../data/images/tapxtream.png";
 
 const NFCDesignPricing = () => {
     const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
+
+    const swiperRef = useRef(null);
 
     const user = JSON.parse(localStorage.getItem("user"));
 
@@ -26,7 +31,7 @@ const NFCDesignPricing = () => {
             const updatedData = {
                 cardType: "Premium NFC Card",
                 cardPrice: "599",
-                selectedServiceID:7,
+                selectedServiceID: 7,
             };
             await updateDoc(userDocRef, updatedData);
             navigate("/nfc-display");
@@ -46,7 +51,7 @@ const NFCDesignPricing = () => {
             const updatedData = {
                 cardType: "Basic NFC Card",
                 cardPrice: "299",
-                selectedServiceID:8,
+                selectedServiceID: 8,
             };
             await updateDoc(userDocRef, updatedData);
             navigate("/nfc-display");
@@ -57,58 +62,99 @@ const NFCDesignPricing = () => {
         }
     };
 
-    const onSubmitBack = () => {
-        setLoading(true);
-        navigate(-1);
-        setLoading(false); // Optional: Reset loading after navigation
-    };
+    // const onSubmitBack = () => {
+    //     setLoading(true);
+    //     navigate(-1);
+    //     setLoading(false); // Optional: Reset loading after navigation
+    // };
 
     return (
-        <Box sx={{ height: "100vh", width: "100vw", display: "flex", justifyContent: "center", }}>
+        <Box sx={{ height: "100vh", width: "100vw", display: "flex", justifyContent: "center", position: "relative" }}>
+            <Box component="img"
+                alt="Company Logo"
+                src={tapxcompanyLogo}
+                sx={{
+                    width: "65px",
+                    position: "absolute",
+                    top: 2,
+                    left: 2,
+                    zIndex: 5,
+                    // backgroundColor: "white",
+                    borderRadius: "6px"
+                }}
+            />
             <Swiper
                 modules={[Pagination]}
                 pagination={{ clickable: true }}
                 slidesPerView={1}
+                onSwiper={(swiper) => (swiperRef.current = swiper)}
             >
+
                 {/* Card 1 */}
                 <SwiperSlide>
-                    <Box sx={{ height: "100%", width: "100%", display: "flex", justifyContent: "center", alignItems: "center", backgroundColor: "#577fd8d9", }}>
+                    <Box sx={{ height: "100%", width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
+
+                        <Typography sx={{ color: "blue", fontWeight: 600, fontSize: "1.5rem", mt: 1 }}>Basic Card</Typography>
+
                         <Box
                             sx={{
                                 display: "flex",
-                                flexDirection: "column",
+                                flexDirection: { xs: "column", md: "row" },
                                 alignItems: "center",
-                                justifyContent: "center",
                                 height: "100%",
-                                width: { xs: "90%", md: "450px" },
+                                width: { xs: "90%", md: "100%" },
                             }}
                         >
-                            <Typography sx={{ color: "white", fontWeight: 600, fontSize: "1.5rem" }}>Premium Card</Typography>
-                            <Box
-                                component="img"
-                                alt="NFC Card Model Black Gold"
-                                src={NFCCardModelBG}
-                                sx={{
-                                    width: { xs: "85%", md: "80%" },
-                                }}
-                            />
-                            <Typography sx={{ color: "white", fontWeight: 600, fontSize: "1.5rem" }}>
-                                ₹599.00 <del style={{ color: "red", fontWeight: "lighter" }}>₹999.00</del>
-                            </Typography>
-                            <Box sx={{ border: "2px solid white", width: "90%", p: 1, mb: 2, mt: 1 }}>
-                                <Typography sx={{ color: "white", fontWeight: 600, fontSize: "1.2rem", textAlign: "start", pl: 1 }}>
-                                    Specifications:
-                                </Typography>
-                                <ul style={{ color: "white", paddingLeft: "15px" }}>
-                                    <li>Profile Updates - Upto 5 Times</li>
-                                    <li>Unlimited Profile Sharing</li>
-                                    <li>No more typing in numbers or searching for you on social media.</li>
-                                </ul>
+                            <Box sx={{
+                                width: { xs: "100%", md: "50%" },
+                                height: { md: "100%" },
+                                display: "flex", justifyContent: "center", alignItems: "center",
+                            }}>
+                                <Box
+                                    component="img"
+                                    alt="NFC Card Model White"
+                                    src={NFCCardModelW}
+                                    sx={{
+                                        width: { xs: "80%", md: "60%" },
+                                    }}
+                                />
                             </Box>
-                            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", gap: "1rem" }}>
-                                <Button
-                                    variant="contained"
-                                    color="primary"
+
+                            <Box sx={{
+                                width: { xs: "100%", md: "45%" },
+                                height: { md: "100%" },
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: { md: "center" },
+                                alignItems: { xs: "center", md: "start" },
+                            }}>
+                                <Typography sx={{
+                                    color: "blue", fontWeight: 600, fontSize: "1.5rem",
+                                    // display:{xs:"none", md:"block"}
+                                }}>Buy for Just</Typography>
+
+                                <Typography sx={{ color: "blue", fontWeight: 600, fontSize: "1.5rem" }}>
+                                    ₹299.00 <del style={{ color: "red", fontWeight: "lighter" }}>₹799.00</del>
+                                </Typography>
+
+                                <Box sx={{ border: "2px solid blue", width: { xs: "90%", md: "95%" }, p: 1, mb: 2, mt: 1 }}>
+                                    <Typography sx={{ color: "blue", fontWeight: 600, fontSize: "1.2rem", textAlign: "start", pl: 1 }}>
+                                        Specifications:
+                                    </Typography>
+                                    <ul style={{ color: "blue", paddingLeft: "15px" }}>
+                                        <li>Profile Updates - Upto 3 Times</li>
+                                        <li>Unlimited Profile Sharing</li>
+                                        <li>No more typing in numbers or searching for you on social media.</li>
+                                    </ul>
+                                </Box>
+
+                                <Box sx={{ display: "flex", 
+                                    flexDirection:{md:"row", xs:"column"},
+                                    justifyContent: {md:"space-between",}, 
+                                    alignItems: "center", width: "100%", gap: "1rem" }}>
+                                    {/* <Button
+                                    variant="outlined"
+                                    color="error"
                                     // fullWidth
                                     onClick={() => onSubmitBack()}
                                     sx={{ fontWeight: "bold" }}
@@ -123,30 +169,43 @@ const NFCDesignPricing = () => {
                                             <Box sx={{ ...dotStyle, animationDelay: '0.8s' }}></Box>
                                         </Box>
                                     ) : (
-                                        "Back"
+                                        "back"
                                     )}
-                                </Button>
+                                </Button> */}
 
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    fullWidth
-                                    onClick={() => onSubmitPrem()}
-                                    sx={{ fontWeight: "bold" }}
-                                    disabled={loading}
-                                >
-                                    {loading ? (
-                                        <Box sx={{ ...dotContainerStyle }}>
-                                            <Box sx={{ ...dotStyle, animationDelay: '0s' }}></Box>
-                                            <Box sx={{ ...dotStyle, animationDelay: '0.2s' }}></Box>
-                                            <Box sx={{ ...dotStyle, animationDelay: '0.4s' }}></Box>
-                                            <Box sx={{ ...dotStyle, animationDelay: '0.6s' }}></Box>
-                                            <Box sx={{ ...dotStyle, animationDelay: '0.8s' }}></Box>
-                                        </Box>
-                                    ) : (
-                                        "Select Premium Card"
-                                    )}
-                                </Button>
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        fullWidth
+                                        onClick={() => onSubmitBasic()}
+                                        sx={{ fontWeight: "bold" }}
+                                        disabled={loading}
+                                    >
+                                        {loading ? (
+                                            <Box sx={{ ...dotContainerStyle }}>
+                                                <Box sx={{ ...dotStyle, animationDelay: '0s' }}></Box>
+                                                <Box sx={{ ...dotStyle, animationDelay: '0.2s' }}></Box>
+                                                <Box sx={{ ...dotStyle, animationDelay: '0.4s' }}></Box>
+                                                <Box sx={{ ...dotStyle, animationDelay: '0.6s' }}></Box>
+                                                <Box sx={{ ...dotStyle, animationDelay: '0.8s' }}></Box>
+                                            </Box>
+                                        ) : (
+                                            "Buy Basic Card"
+                                        )}
+                                    </Button>
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        fullWidth
+                                        onClick={() => swiperRef.current.slideNext()}
+                                        endIcon={<EastIcon />}
+                                        sx={{
+                                            color: "white",
+                                        }}
+                                    >
+                                        Slide Next
+                                    </Button>
+                                </Box>
                             </Box>
                         </Box>
                     </Box>
@@ -154,43 +213,65 @@ const NFCDesignPricing = () => {
 
                 {/* Card 2 */}
                 <SwiperSlide>
-                    <Box sx={{ height: "100%", width: "100%", display: "flex", justifyContent: "center", alignItems: "center", backgroundColor: "white", }}>
+                    <Box sx={{ height: "100%", width: "100%", display: "flex", flexDirection: "column", alignItems: "center", backgroundColor: "#577fd8d9", }}>
+
+                        <Typography sx={{ color: "white", fontWeight: 600, fontSize: "1.5rem", mt: 1 }}>Premium Card</Typography>
+
                         <Box
                             sx={{
                                 display: "flex",
-                                flexDirection: "column",
+                                flexDirection: { xs: "column", md: "row" },
                                 alignItems: "center",
                                 height: "100%",
-                                justifyContent: "center",
-                                width: { xs: "90%", md: "450px" },
+                                width: { xs: "90%", md: "100%" },
                             }}
                         >
-                            <Typography sx={{ color: "blue", fontWeight: 600, fontSize: "1.5rem" }}>Basic Card</Typography>
-                            <Box
-                                component="img"
-                                alt="NFC Card Model White"
-                                src={NFCCardModelW}
-                                sx={{
-                                    width: { xs: "85%", md: "80%" },
-                                }}
-                            />
-                            <Typography sx={{ color: "blue", fontWeight: 600, fontSize: "1.5rem" }}>
-                                ₹299.00 <del style={{ color: "red", fontWeight: "lighter" }}>₹799.00</del>
-                            </Typography>
-                            <Box sx={{ border: "2px solid blue", width: "90%", p: 1, mb: 2, mt: 1 }}>
-                                <Typography sx={{ color: "blue", fontWeight: 600, fontSize: "1.2rem", textAlign: "start", pl: 1 }}>
-                                    Specifications:
-                                </Typography>
-                                <ul style={{ color: "blue", paddingLeft: "15px" }}>
-                                    <li>Profile Updates - Upto 3 Times</li>
-                                    <li>Unlimited Profile Sharing</li>
-                                    <li>No more typing in numbers or searching for you on social media.</li>
-                                </ul>
+                            <Box sx={{
+                                width: { xs: "100%", md: "50%" },
+                                height: { md: "100%" },
+                                display: "flex", justifyContent: "center", alignItems: "center",
+                            }}>
+                                <Box
+                                    component="img"
+                                    alt="NFC Card Model Black Gold"
+                                    src={NFCCardModelBG}
+                                    sx={{
+                                        width: { xs: "80%", md: "60%" },
+                                    }}
+                                />
                             </Box>
-                            <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", gap: "1rem" }}>
-                                <Button
-                                    variant="contained"
-                                    color="primary"
+
+                            <Box sx={{
+                                width: { xs: "100%", md: "45%" },
+                                height: { md: "100%" },
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: { md: "center" },
+                                alignItems: { xs: "center", md: "start" },
+                            }}>
+                                <Typography sx={{
+                                    color: "white", fontWeight: 600, fontSize: "1.5rem",
+                                }}>Buy for Just</Typography>
+
+                                <Typography sx={{ color: "white", fontWeight: 600, fontSize: "1.5rem" }}>
+                                    ₹599.00 <del style={{ color: "red", fontWeight: "lighter" }}>₹999.00</del>
+                                </Typography>
+
+                                <Box sx={{ border: "2px solid white", width: { xs: "90%", md: "95%" }, p: 1, mb: 2, mt: 1 }}>
+                                    <Typography sx={{ color: "white", fontWeight: 600, fontSize: "1.2rem", textAlign: "start", pl: 1 }}>
+                                        Specifications:
+                                    </Typography>
+                                    <ul style={{ color: "white", paddingLeft: "15px" }}>
+                                        <li>Profile Updates - Upto 5 Times</li>
+                                        <li>Unlimited Profile Sharing</li>
+                                        <li>No more typing in numbers or searching for you on social media.</li>
+                                    </ul>
+                                </Box>
+                                <Box sx={{ display: "flex", flexDirection:{md:"row", xs:"column-reverse"},
+                                    justifyContent: {md:"space-between",}, alignItems: "center", width: "100%", gap: "1rem" }}>
+                                    {/* <Button
+                                    variant="outlined"
+                                    color="error"
                                     // fullWidth
                                     onClick={() => onSubmitBack()}
                                     sx={{ fontWeight: "bold" }}
@@ -205,30 +286,42 @@ const NFCDesignPricing = () => {
                                             <Box sx={{ ...dotStyle, animationDelay: '0.8s' }}></Box>
                                         </Box>
                                     ) : (
-                                        "Back"
+                                        "back"
                                     )}
-                                </Button>
-
-                                <Button
-                                    variant="contained"
-                                    color="primary"
-                                    fullWidth
-                                    onClick={() => onSubmitBasic()}
-                                    sx={{ fontWeight: "bold" }}
-                                    disabled={loading}
-                                >
-                                    {loading ? (
-                                        <Box sx={{ ...dotContainerStyle }}>
-                                            <Box sx={{ ...dotStyle, animationDelay: '0s' }}></Box>
-                                            <Box sx={{ ...dotStyle, animationDelay: '0.2s' }}></Box>
-                                            <Box sx={{ ...dotStyle, animationDelay: '0.4s' }}></Box>
-                                            <Box sx={{ ...dotStyle, animationDelay: '0.6s' }}></Box>
-                                            <Box sx={{ ...dotStyle, animationDelay: '0.8s' }}></Box>
-                                        </Box>
-                                    ) : (
-                                        "Select Basic Card"
-                                    )}
-                                </Button>
+                                </Button> */}
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        fullWidth
+                                        onClick={() => swiperRef.current.slidePrev()}
+                                        startIcon={<KeyboardBackspaceIcon />}
+                                        sx={{
+                                            color: "white",
+                                        }}
+                                    >
+                                        Slide Previous
+                                    </Button>
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        fullWidth
+                                        onClick={() => onSubmitPrem()}
+                                        sx={{ fontWeight: "bold" }}
+                                        disabled={loading}
+                                    >
+                                        {loading ? (
+                                            <Box sx={{ ...dotContainerStyle }}>
+                                                <Box sx={{ ...dotStyle, animationDelay: '0s' }}></Box>
+                                                <Box sx={{ ...dotStyle, animationDelay: '0.2s' }}></Box>
+                                                <Box sx={{ ...dotStyle, animationDelay: '0.4s' }}></Box>
+                                                <Box sx={{ ...dotStyle, animationDelay: '0.6s' }}></Box>
+                                                <Box sx={{ ...dotStyle, animationDelay: '0.8s' }}></Box>
+                                            </Box>
+                                        ) : (
+                                            "Buy Premium Card"
+                                        )}
+                                    </Button>
+                                </Box>
                             </Box>
                         </Box>
                     </Box>

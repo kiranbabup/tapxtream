@@ -1,15 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Box, Typography, IconButton, Drawer, Divider } from "@mui/material";
 import { useNavigate, useLocation } from "react-router-dom";
 import MenuIcon from '@mui/icons-material/Menu';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { useMediaQuery } from '@mui/material';
-import companyLogo from "../../data/Inv_logo-Horizontal.png";
+import companyLogo from "../../data/images/tapxtream.png";
+import LogoutButtonComp from '../LogoutButtonComp';
 
 const UserHeaderComponent = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const [drawerOpen, setDrawerOpen] = React.useState(false);
+    const [drawerOpen, setDrawerOpen] = useState(false);
     const isMobile = useMediaQuery((theme) => theme.breakpoints.down('sm'));
 
     const toggleDrawer = (open) => (event) => {
@@ -23,12 +24,15 @@ const UserHeaderComponent = () => {
     const isActiveRoute = (route) => location.pathname === route;
 
     const navItems = [
-        { label: "Profile", route: "/profile-page" },
-        { label: "Update Profile ", route: "/edit-profile" },
-        { label: "Compatible Phones", route: "/compatible-phones" },
-        { label: "View Enquiries", route: "/enquiries" },
-        { label: "Compatible Phones", route: "/compatible-phones" },
-        { label: "Compatible Phones", route: "/compatible-phones" },
+        // { label: "Dashboard", route: "/user-dashboard" },
+        { label: "Profile", route: "/user-profile" },
+        { label: "My NFC Card", route: "/my-nfc-card" },
+        { label: "Compatible Phones", route: "/compatible-mobiles" },
+        { label: "Update Profile ", route: "/update-personal-info" },
+        { label: "Update Social ", route: "/update-social-info" },
+        { label: "Add Products & Services", route: "/add-products-and-services" },
+        { label: "View Enquiries", route: "/enquery-requests" },
+        { isComponent: true, component: <LogoutButtonComp /> },
     ];
 
     return (
@@ -46,8 +50,8 @@ const UserHeaderComponent = () => {
                 alt="Company Logo"
                 src={companyLogo}
                 sx={{
-                    width: "250px",
-                    ml: 2,
+                    width: "70px",
+                    ml: 3,
                     cursor: "pointer",
                 }}
                 onClick={() => navigate('/')}
@@ -69,22 +73,28 @@ const UserHeaderComponent = () => {
                                 <ArrowForwardIosIcon color="info" />
                             </IconButton>
                             <Box width="100%"><Divider /></Box>
-                            {navItems.map(({ label, route }) => (
-                                <Typography
-                                    key={route}
-                                    sx={{
-                                        fontWeight: 'bold',
-                                        cursor: "pointer",
-                                        color: isActiveRoute(route) ? "gray" : "black",
-                                        "&:hover": {
-                                            color: "gray"
-                                        }
-                                    }}
-                                    onClick={() => navigate(route)}
-                                >
-                                    {label}
-                                </Typography>
-                            ))}
+                            {navItems.map((item, index) =>
+                                item.isComponent ? (
+                                    <Box key={index} sx={{ display: "flex", alignItems: "center", }}>
+                                        {item.component}
+                                    </Box>
+                                ) : (
+                                    <Typography
+                                        key={item.route}
+                                        sx={{
+                                            fontWeight: 'bold',
+                                            cursor: "pointer",
+                                            color: isActiveRoute(item.route) ? "gray" : "black",
+                                            "&:hover": {
+                                                color: "gray"
+                                            }
+                                        }}
+                                        onClick={() => navigate(item.route)}
+                                    >
+                                        {item.label}
+                                    </Typography>
+                                )
+                            )}
                         </Box>
                     </Drawer>
                 </>
@@ -95,22 +105,28 @@ const UserHeaderComponent = () => {
                     mr: 10,
                     gap: "20px"
                 }}>
-                    {navItems.map(({ label, route }) => (
-                        <Typography
-                            key={route}
-                            sx={{
-                                fontWeight: 'bold',
-                                cursor: "pointer",
-                                color: isActiveRoute(route) ? "gray" : "black",
-                                "&:hover": {
-                                    color: "gray"
-                                }
-                            }}
-                            onClick={() => navigate(route)}
-                        >
-                            {label}
-                        </Typography>
-                    ))}
+                    {navItems.map((item, index) =>
+                        item.isComponent ? (
+                            <Box key={index} sx={{ display: "flex", alignItems: "center", }}>
+                                {item.component}
+                            </Box>
+                        ) : (
+                            <Typography
+                                key={item.route}
+                                sx={{
+                                    fontWeight: 'bold',
+                                    cursor: "pointer",
+                                    color: isActiveRoute(item.route) ? "gray" : "black",
+                                    "&:hover": {
+                                        color: "gray"
+                                    }
+                                }}
+                                onClick={() => navigate(item.route)}
+                            >
+                                {item.label}
+                            </Typography>
+                        )
+                    )}
                 </Box>
             )}
         </Box>
