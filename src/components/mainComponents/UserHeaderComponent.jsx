@@ -28,8 +28,17 @@ const UserHeaderComponent = () => {
         { label: "Profile", route: "/user-profile" },
         { label: "My NFC Card", route: "/my-nfc-card" },
         { label: "Compatible Phones", route: "/compatible-mobiles" },
-        { label: "Update Profile ", route: "/update-personal-info" },
+        // { label: "Update Profile",
+        //     subItems: [
+        //         { label: "Update Info", route: "/update-personal-info" },
+        //         { label: "Update Social", route: "/update-social-info" },
+        //         { label: "Update Other", route: "/update-ac-data" },
+        //         { label: "Add Products & Services", route: "/add-products-and-services" }
+        //     ]
+        // },
+        { label: "Update Info ", route: "/update-personal-info" },
         { label: "Update Social ", route: "/update-social-info" },
+        { label: "Update Other ", route: "/update-other" },
         { label: "Add Products & Services", route: "/add-products-and-services" },
         { label: "View Enquiries", route: "/enquery-requests" },
         { isComponent: true, component: <LogoutButtonComp /> },

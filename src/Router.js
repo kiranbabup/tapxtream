@@ -9,7 +9,7 @@ import UpdateProfile from "./Pages/UpdateProfile";
 // import Pro from "./Pages/pro";
 // import CreateNFC from "./Pages/CreateNFC";
 import ProductsNServices from "./Pages/ProductsNServices";
-import Enquiries from "./Pages/Enquiries";
+// import Enquiries from "./Pages/Enquiries";
 import { UserAuthContextProvider } from "./context/UserAuthContext";
 import CreatePersonalProfile from "./Pages/creation/CreatePersonalProfile";
 import SubmitMediaDetails from "./Pages/creation/SubmitMediaDetails";
@@ -24,6 +24,8 @@ import UserProfile from "./Pages/userPages/UserProfile";
 import EnquiryPage from "./Pages/userPages/EnquiryPage";
 import UpdatePersonalDetails from "./Pages/updation/UpdatePersonalDetails";
 import UpdateSocialDetails from "./Pages/updation/UpdateSocialDetails";
+import UpdateOther from "./Pages/updation/UpdateOther";
+import LoginTest from "./Pages/testing/LoginTest";
 
 const Router = () => {
   return (
@@ -32,6 +34,7 @@ const Router = () => {
         <Route path="/" element={<HomePage />} />
 
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/logintest" element={<LoginTest />} />
         <Route path="/register-now" element={<PhoneSignUp />} />
 
         <Route path="/compatible-phones" element={<CompatablePage />} />
@@ -47,19 +50,17 @@ const Router = () => {
           <Route path="/select-nfctype" element={<NFCDesignPricing />} />
           <Route path="/nfc-display" element={<NFCCardDisplay />} />
 
-          <Route path="/user-dashboard" element={<UserDashboard />} />
-
           <Route path="/user-profile" element={<UserProfile />} />
-          <Route path="/my-nfc-card" element={<MyNFCCard />} />
           <Route path="/compatible-mobiles" element={<MobileCompatablePage />} />
-          <Route path="/enquery-requests" element={<EnquiryPage />} />
-
+          <Route path="/my-nfc-card" element={<MyNFCCard />} />
           <Route path="/update-personal-info" element={<UpdatePersonalDetails />} />
           <Route path="/update-social-info" element={<UpdateSocialDetails />} />
-
+          <Route path="/update-other" element={<UpdateOther />} />
           <Route path="/add-products-and-services" element={<ProductsNServices />} />
+          <Route path="/enquery-requests" element={<EnquiryPage />} />
 
-          <Route path="/update-profile" element={<UpdateProfile />} />
+          {/* <Route path="/user-dashboard" element={<UserDashboard />} /> */}
+          {/* <Route path="/update-profile" element={<UpdateProfile />} /> */}
         </Route>
         <Route path="*" element={<PageNotFound />} />
       </Routes>

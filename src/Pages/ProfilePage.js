@@ -19,7 +19,7 @@ import EnquiryModal from "../components/mainComponents/EnquiryModal";
 import LightModeOutlinedIcon from '@mui/icons-material/LightModeOutlined';
 // import LightModeIcon from '@mui/icons-material/LightMode';
 import { Link } from "react-router-dom";
-
+import { Tooltip } from "@mui/material";
 import BedtimeIcon from '@mui/icons-material/Bedtime';
 
 export const boxStyle = (theme) => ({
@@ -157,6 +157,7 @@ class ProfilePage extends React.Component {
                     display: "flex", justifyContent: "center",
                     // backgroundColor: this.state.theme ? '' : 'black',
                     backgroundColor: this.state.theme ? 'black' : 'white',
+                    minHeight:"100vh",
                 }}>
                     <Box sx={{
                         width: {
@@ -236,12 +237,20 @@ class ProfilePage extends React.Component {
                                     boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px"
                                 }}
                             >
-                                <Box
-                                    component="img"
-                                    alt="Profile Pic"
-                                    src={user.profileImage}
-                                    sx={{ width: "50%", height: "100%", borderTopLeftRadius: "16px", borderBottomLeftRadius: "16px" }}
-                                />
+                                {(user.profileImage && user.profileImage != "") ?
+                                    (<Box
+                                        component="img"
+                                        alt="Profile Pic"
+                                        src={user.profileImage}
+                                        sx={{ width: "50%", height: "100%", borderTopLeftRadius: "16px", borderBottomLeftRadius: "16px" }}
+                                    />) : (
+                                        <Box
+                                            sx={{
+                                                width: "50%", height: "100%", borderTopLeftRadius: "16px", borderBottomLeftRadius: "16px",
+                                            }} />
+                                        // >Upload Profile Image</Box> 
+                                    )
+                                }
                                 <Box
                                     sx={{
                                         width: "50%", height: "100%",
@@ -323,7 +332,7 @@ class ProfilePage extends React.Component {
                         <Box sx={boxStyle(this.state.theme)}>
                             <Typography style={headingssx} >Contact info</Typography>
                             <Box p={2} />
-                            {user.mobileNumber != "" &&
+                            {(user.mobileNumber != "" && user.mobileNumber) &&
                                 <Box style={contactInfosx} onClick={() => this.handlePhoneClick(user.mobileNumber)} >
                                     <Box sx={{ ...contactInneri }}>
                                         {/* <i class="fa-2xl fas fa-mobile-alt fa-thin" aria-hidden="true" ></i> */}
@@ -335,19 +344,19 @@ class ProfilePage extends React.Component {
                                     </Box>
                                 </Box>
                             }
-                            {user.displayEmail != "" &&
-                                <Box style={contactInfosx} onClick={() => this.handleEmailClick(user.displayEmail)} >
+                            {(user.email != "" && user.email) &&
+                                <Box style={contactInfosx} onClick={() => this.handleEmailClick(user.email)} >
                                     <Box sx={{ ...contactInneri }}>
                                         {/* <i class="fa fa-envelope fa-2xl" aria-hidden="true" ></i> */}
                                         <Box component="img" alt="envelope" src={envelope} sx={{ width: "35px" }} />
                                     </Box>
                                     <Box sx={{ ...contactInnersx }}>
-                                        <Typography sx={{ fontWeight: "bold", wordBreak: "break-word", overflowWrap: "break-word" }}>{user.displayEmail}</Typography>
+                                        <Typography sx={{ fontWeight: "bold", wordBreak: "break-word", overflowWrap: "break-word" }}>{user.email}</Typography>
                                         <ArrowForwardIosIcon sx={{ color: "lightgray" }} />
                                     </Box>
                                 </Box>
                             }
-                            {user.websiteUrl != "" &&
+                            {(user.websiteUrl != "" && user.websiteUrl) &&
                                 <Box style={contactInfosx} onClick={() => this.handleWebsiteClick(user.websiteUrl)}>
                                     <Box sx={{ ...contactInneri }}>
                                         <i class="fa-2xl fas fa-link fa-thin" aria-hidden="true" style={{ color: 'blue' }} ></i>
@@ -358,13 +367,19 @@ class ProfilePage extends React.Component {
                                     </Box>
                                 </Box>
                             }
-                            {user.whatsAppNumber != "" &&
+                            {(user.whatsAppNumber != "" && user.whatsAppNumber) &&
                                 <Box style={contactInfosx} onClick={() => this.handleWhatsappClick(user.whatsAppNumber)}>
                                     <Box sx={{ ...contactInneri }}>
                                         <WhatsAppIcon sx={{ fontSize: '2rem', color: 'green' }} />
                                     </Box>
                                     <Box sx={{ ...contactInnersx }}>
-                                        <Typography sx={{ fontWeight: "bold" }}>WhatsApp Chat</Typography>
+                                        <Tooltip
+                                            title={<Typography sx={{ fontWeight: "bold" }}>{user.whatsAppNumber}</Typography>}
+                                            placement="right"
+                                            arrow
+                                        >
+                                            <Typography sx={{ fontWeight: "bold" }}>WhatsApp Chat</Typography>
+                                        </Tooltip>
                                         <ArrowForwardIosIcon sx={{ color: "lightgray" }} />
                                     </Box>
                                 </Box>
@@ -373,7 +388,7 @@ class ProfilePage extends React.Component {
                         </Box>
 
                         {
-                            (user.facebookUrl != "" || user.instagramUrl != "" || user.twitterUrl != "" || user.linkedInUrl != "") && (
+                            ((user.facebookUrl || user.instagramUrl || user.twitterUrl || user.linkedInUrl) && (user.facebookUrl != "" || user.instagramUrl != "" || user.twitterUrl != "" || user.linkedInUrl != "")) && (
                                 <>
                                     <Box sx={{ border: "1px solid red", mt: 2, mb: 2 }} />
 
@@ -385,7 +400,7 @@ class ProfilePage extends React.Component {
                                             display: "flex", justifyContent: "start", alignItems: "center", flexWrap: "wrap",
                                             paddingLeft: "10px", gap: "8px"
                                         }}>
-                                            {user.facebookUrl != "" &&
+                                            {(user.facebookUrl != "" && user.facebookUrl) &&
                                                 <Box
                                                     component="a"
                                                     href={user.facebookUrl}
@@ -396,7 +411,8 @@ class ProfilePage extends React.Component {
                                                     <Box component="img" alt="Facebook" src={fb} sx={{ width: "50px" }} />
                                                 </Box>
                                             }
-                                            {user.instagramUrl != "" &&
+                                            {(user.instagramUrl != "" && user.instagramUrl) &&
+                                                // {user.instagramUrl != "" &&
                                                 <Box
                                                     component="a"
                                                     href={user.instagramUrl}
@@ -412,7 +428,8 @@ class ProfilePage extends React.Component {
                                                     />
                                                 </Box>
                                             }
-                                            {user.twitterUrl != "" &&
+                                            {(user.twitterUrl != "" && user.twitterUrl) &&
+                                                // {user.twitterUrl != "" &&
                                                 <Box
                                                     component="a"
                                                     href={user.twitterUrl}
@@ -428,7 +445,8 @@ class ProfilePage extends React.Component {
                                                     />
                                                 </Box>
                                             }
-                                            {user.linkedInUrl != "" &&
+                                            {(user.linkedInUrl != "" && user.linkedInUrl) &&
+                                                // {user.linkedInUrl != "" &&
                                                 <Box
                                                     component="a"
                                                     href={user.linkedInUrl}
@@ -502,31 +520,44 @@ class ProfilePage extends React.Component {
                                                     color: this.state.theme ? 'white' : 'black',
                                                     // color: this.state.theme ? '#333' : 'white',
                                                 }}>
-                                                    <Typography variant="h5" sx={{
-                                                        color: this.state.theme ? 'white' : 'black',
-                                                    }}>{product.pnsHeader}</Typography>
-                                                    <Box sx={{ position: "relative" }}>
-                                                        <img src={product.pnsImageUrl} alt={`Product ${index}`} style={{ width: "100%", height: "8rem" }} />
-                                                        <Typography sx={{
-                                                            backgroundColor: "#333", color: "white", fontSize: "10px", p: 1, borderRadius: "20px", position: "absolute",
-                                                            bottom: 10,
-                                                            right: 10,
-                                                        }}>{getRupee(product.pnsPrice)}/{product.pnsDuration}</Typography>
-                                                    </Box>
+                                                    {
+                                                        product.pnsHeader != "" &&
+                                                        <Typography variant="h5" sx={{
+                                                            color: this.state.theme ? 'white' : 'black',
+                                                        }}>{product.pnsHeader}</Typography>
+                                                    }
 
-                                                    <Typography sx={{
-                                                        textAlign: "justify",
-                                                        display: "block",
-                                                        overflowWrap: "break-word",
-                                                        wordBreak: "break-word",
-                                                        whiteSpace: "normal",
-                                                        color: this.state.theme ? '#EDEADE' : 'black',
-                                                    }}>
-                                                        {this.state.isExpandedProducts[index] ? product.pnsContent : `${product.pnsContent.slice(0, 100)}...`}
-                                                        <Button sx={{ fontSize: "10px", }} onClick={() => this.toggleProducts(index)}>
-                                                            {this.state.isExpandedProducts[index] ? "Show Less" : "Show More"}
-                                                        </Button>
-                                                    </Typography>
+                                                    <Box sx={{ position: "relative" }}>
+                                                        {
+                                                            product.pnsImageUrl != "" &&
+                                                            <img src={product.pnsImageUrl} alt={`Product ${index}`} style={{ width: "100%", height: "8rem" }} />
+                                                        }
+                                                        {
+                                                            ((product.pnsPrice != "") || (product.pnsDuration != "")) &&
+                                                            <Typography sx={{
+                                                                backgroundColor: "#333", color: "white", fontSize: "10px", p: 1, borderRadius: "20px", position: "absolute",
+                                                                bottom: 10,
+                                                                right: 10,
+                                                            }}>{getRupee(product.pnsPrice)}/{product.pnsDuration}</Typography>
+                                                        }
+                                                    </Box>
+                                                    {
+                                                        product.pnsContent != "" &&
+                                                        <Typography sx={{
+                                                            textAlign: "justify",
+                                                            display: "block",
+                                                            overflowWrap: "break-word",
+                                                            wordBreak: "break-word",
+                                                            whiteSpace: "normal",
+                                                            color: this.state.theme ? '#EDEADE' : 'black',
+                                                        }}>
+                                                            {this.state.isExpandedProducts[index] ? product.pnsContent : `${product.pnsContent.slice(0, 100)}...`}
+                                                            <Button sx={{ fontSize: "10px", }} onClick={() => this.toggleProducts(index)}>
+                                                                {this.state.isExpandedProducts[index] ? "Show Less" : "Show More"}
+                                                            </Button>
+                                                        </Typography>
+                                                    }
+
                                                     <Box sx={{ display: "flex", justifyContent: "end" }}>
                                                         <Typography sx={{
                                                             color: this.state.theme ? 'white' : '#3498db', fontSize: "10px", cursor: "pointer", p: 1, borderRadius: "20px",
@@ -551,7 +582,7 @@ class ProfilePage extends React.Component {
                         }
 
                         {
-                            user.clientImages != "" && (
+                            ((user.clientImages) && (user.clientImages != "")) ? (
                                 <>
                                     <Box sx={{ border: "1px solid red", mt: 2, mb: 2 }} />
 
@@ -580,7 +611,7 @@ class ProfilePage extends React.Component {
                                         </Box>
                                     </Box>
                                 </>
-                            )
+                            ) : ("")
                         }
 
                         <Box p={2.5} />
@@ -596,8 +627,13 @@ class ProfilePage extends React.Component {
                             {/* <Typography sx={{ color: "gray" }} >Brought to life with</Typography> */}
                             {/* <i class="fa fa-heart" aria-hidden="true" style={{ color: "red" }}></i> */}
                             <Typography sx={{ color: "gray" }} >Powered By</Typography>
-                            <Typography sx={{ color: "#02437a", fontWeight: "bold" }} >INV</Typography>
-                            <Typography sx={{ color: "#fc7f09", fontWeight: "bold" }} >TECHNOLOGIES</Typography>
+
+                            <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px", cursor: "pointer" }}
+                                onClick={() => window.location.href = "https://invtechnologies.in/"}
+                            >
+                                <Typography sx={{ color: "#02437a", fontWeight: "bold" }} >INV</Typography>
+                                <Typography sx={{ color: "#fc7f09", fontWeight: "bold" }} >TECHNOLOGIES</Typography>
+                            </Box>
                             {/* <i class="fa fa-star" aria-hidden="true" style={{ color: "gold" }}></i> */}
                             {/* <Box
                                 component="img"

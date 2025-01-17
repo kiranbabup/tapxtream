@@ -20,7 +20,7 @@ const CompatComp = () => {
 
     return (
         <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", color: "white", width: "100%" }}>
-            <Box sx={{ padding: { md: "5rem 0px", xs: "2rem 0px" }, display: "flex", flexDirection: "column", alignItems: "center", backgroundColor: "#fd710b", width: "100%" }}>
+            <Box sx={{ padding: { md: "5rem 0px", xs: "2rem 0px" }, display: "flex", flexDirection: "column", alignItems: "center", backgroundColor: "#05417c", width: "100%" }}>
                 <Typography sx={{ mb: 4, fontSize: { xs: "1.3rem", md: "2.5rem" }, fontWeight: "bold", textAlign: "center", pl: "20px", pr: "20px" }}>Is your device compatible with NFC Card</Typography>
                 <Typography sx={{ mb: 2, fontSize: { xs: "1rem", md: "1.5rem" }, textAlign: "center", pl: "20px", pr: "20px" }}><b>INV's TapXtream</b> uses technology that is compatible with most newer iPhone and Android devices.</Typography>
                 <Typography sx={{ mb: 2, fontSize: { xs: "1rem", md: "1.5rem" }, fontWeight: "bold", textAlign: "center", pl: "20px", pr: "20px" }}>Check the list below to see if your device is NFC compatible. If not, Qr code is accepted by most of the smartphones.</Typography>

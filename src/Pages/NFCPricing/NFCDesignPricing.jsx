@@ -32,6 +32,8 @@ const NFCDesignPricing = () => {
                 cardType: "Premium NFC Card",
                 cardPrice: "599",
                 selectedServiceID: 7,
+                updateProfileCount: 5,
+                updateSocialCount: 5,
             };
             await updateDoc(userDocRef, updatedData);
             navigate("/nfc-display");
@@ -50,8 +52,10 @@ const NFCDesignPricing = () => {
             const userDocRef = doc(db, "users", user.uid);
             const updatedData = {
                 cardType: "Basic NFC Card",
-                cardPrice: "299",
+                cardPrice: "1",
                 selectedServiceID: 8,
+                updateProfileCount: 3,
+                updateSocialCount: 3,
             };
             await updateDoc(userDocRef, updatedData);
             navigate("/nfc-display");
@@ -83,24 +87,25 @@ const NFCDesignPricing = () => {
                     borderRadius: "6px"
                 }}
             />
-            <Swiper
+            {/* <Swiper
                 modules={[Pagination]}
                 pagination={{ clickable: true }}
                 slidesPerView={1}
                 onSwiper={(swiper) => (swiperRef.current = swiper)}
-            >
+            > */}
 
                 {/* Card 1 */}
-                <SwiperSlide>
+                {/* <SwiperSlide>
                     <Box sx={{ height: "100%", width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
 
-                        <Typography sx={{ color: "blue", fontWeight: 600, fontSize: "1.5rem", mt: 1 }}>Basic Card</Typography>
+                        <Typography sx={{ color: "blue", fontWeight: 600, fontSize: "1.5rem", mt: 1.5 }}>Basic Card</Typography>
 
                         <Box
                             sx={{
                                 display: "flex",
                                 flexDirection: { xs: "column", md: "row" },
                                 alignItems: "center",
+                                justifyContent:"center",
                                 height: "100%",
                                 width: { xs: "90%", md: "100%" },
                             }}
@@ -151,7 +156,7 @@ const NFCDesignPricing = () => {
                                 <Box sx={{ display: "flex", 
                                     flexDirection:{md:"row", xs:"column"},
                                     justifyContent: {md:"space-between",}, 
-                                    alignItems: "center", width: "100%", gap: "1rem" }}>
+                                    alignItems: "center", width: "100%", gap: "1rem" }}> */}
                                     {/* <Button
                                     variant="outlined"
                                     color="error"
@@ -173,7 +178,7 @@ const NFCDesignPricing = () => {
                                     )}
                                 </Button> */}
 
-                                    <Button
+                                    {/* <Button
                                         variant="contained"
                                         color="primary"
                                         fullWidth
@@ -203,29 +208,31 @@ const NFCDesignPricing = () => {
                                             color: "white",
                                         }}
                                     >
-                                        Slide Next
+                                        Slide to Premium
                                     </Button>
                                 </Box>
                             </Box>
                         </Box>
                     </Box>
-                </SwiperSlide>
+                </SwiperSlide> */}
 
                 {/* Card 2 */}
-                <SwiperSlide>
+                {/* <SwiperSlide> */}
                     <Box sx={{ height: "100%", width: "100%", display: "flex", flexDirection: "column", alignItems: "center", backgroundColor: "#577fd8d9", }}>
 
-                        <Typography sx={{ color: "white", fontWeight: 600, fontSize: "1.5rem", mt: 1 }}>Premium Card</Typography>
+                    <Typography sx={{ color: "white", fontWeight: 600, fontSize: "1.5rem", mt: 1.5, display:{xs:"none", md:"block"}}}>Premium Card</Typography>
 
                         <Box
                             sx={{
                                 display: "flex",
                                 flexDirection: { xs: "column", md: "row" },
                                 alignItems: "center",
+                                justifyContent:"center",
                                 height: "100%",
                                 width: { xs: "90%", md: "100%" },
                             }}
                         >
+                            <Typography sx={{ color: "white", fontWeight: 600, fontSize: "1.5rem", mt: 1.5, display:{xs:"block", md:"none"}}}>Premium Card</Typography>
                             <Box sx={{
                                 width: { xs: "100%", md: "50%" },
                                 height: { md: "100%" },
@@ -289,7 +296,7 @@ const NFCDesignPricing = () => {
                                         "back"
                                     )}
                                 </Button> */}
-                                    <Button
+                                    {/* <Button
                                         variant="contained"
                                         color="primary"
                                         fullWidth
@@ -299,8 +306,8 @@ const NFCDesignPricing = () => {
                                             color: "white",
                                         }}
                                     >
-                                        Slide Previous
-                                    </Button>
+                                        Slide to basic
+                                    </Button> */}
                                     <Button
                                         variant="contained"
                                         color="primary"
@@ -325,8 +332,8 @@ const NFCDesignPricing = () => {
                             </Box>
                         </Box>
                     </Box>
-                </SwiperSlide>
-            </Swiper>
+                {/* </SwiperSlide> */}
+            {/* </Swiper> */}
         </Box>
     );
 };

@@ -16,7 +16,7 @@ const UserDashboard = () => {
 
             if (userData.exists()) {
                 const data = userData.data();
-                console.log(data);
+                // console.log(data);
                 setUser(data);
             }
         }

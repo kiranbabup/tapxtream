@@ -31,7 +31,7 @@ export const headingssx = {
   borderRadius: "10px",
   padding: "12px",
   width: "80%",
-  color:"white"
+  color: "white"
 }
 
 export const socialIconStyle = {
@@ -84,3 +84,14 @@ export const dotContainerStyle = {
 // // Usage in your component
 // <Box sx={getBoxStyle(this.state.theme)} />
 // <Box sx={getBoxStyle(this.state.theme, { padding: 2 })} />
+
+export const footerLocStyle = {
+  color: "white", maxWidth: "300px",
+  display: "flex",
+  alignItems:"center",
+  gap: "0.6rem",
+  '&:hover': {
+    textDecoration: "underline",
+    color:"darkgray"
+  },
+}

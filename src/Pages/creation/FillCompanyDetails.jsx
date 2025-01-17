@@ -46,6 +46,18 @@ const FillCompanyDetails = () => {
     }, []);
 
     const storage = getStorage();
+    
+    const onDropCompanyLogo = useCallback((acceptedFiles) => {
+        setNewCompanyLogo(acceptedFiles[0]);
+    }, []);
+
+    const {
+        getRootProps: getRootPropsLogo,
+        getInputProps: getInputPropsLogo,
+    } = useDropzone({
+        onDrop: onDropCompanyLogo,
+        accept: "image/*",
+    });
 
     const uploadImage = async (file, path) => {
         const storageRef = ref(storage, path);
@@ -82,17 +94,7 @@ const FillCompanyDetails = () => {
         }
     };
 
-    const onDropCompanyLogo = useCallback((acceptedFiles) => {
-        setNewCompanyLogo(acceptedFiles[0]);
-    }, []);
 
-    const {
-        getRootProps: getRootPropsLogo,
-        getInputProps: getInputPropsLogo,
-    } = useDropzone({
-        onDrop: onDropCompanyLogo,
-        accept: "image/*",
-    });
 
     return (
         <Box sx={{ width: "100vw", height: "100vh", display: "flex" }}>

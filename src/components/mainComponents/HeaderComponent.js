@@ -24,7 +24,7 @@ const HeaderComponent = () => {
 
     const navItems = [
         { label: "Home", route: "/" },
-        { label: "Design NFC ", route: "/create-nfc-design" },
+        // { label: "Design NFC ", route: "/create-nfc-design" },
         { label: "Compatible Phones", route: "/compatible-phones" },
         { label: "Login", route: "/login" },
         { label: "Register", route: "/register-now" }

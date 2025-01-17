@@ -1,5 +1,5 @@
 const days = 1;
-const storageKey = "meetme";
+const storageKey = "txit";
 
 class LsService {
   ls = window.localStorage;

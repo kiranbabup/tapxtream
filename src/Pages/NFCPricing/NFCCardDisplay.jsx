@@ -29,12 +29,12 @@ const style = {
 const NFCCardDisplay = () => {
     const [cardData, setCardData] = useState({});
     const [loading, setLoading] = useState(false);
-    const [open, setOpen] = React.useState(false);
-    const [loadingSuccess, setLoadingSuccess] = useState(false);
+    // const [open, setOpen] = React.useState(false);
+    // const [loadingSuccess, setLoadingSuccess] = useState(false);
 
-    const handleOpen = () => setOpen(true);
+    // const handleOpen = () => setOpen(true);
 
-    const handleClose = () => setOpen(false);
+    // const handleClose = () => setOpen(false);
 
     const navigate = useNavigate();
 
@@ -68,7 +68,7 @@ const NFCCardDisplay = () => {
     const onSubmit = async (data) => {
         setLoading(true);
         try {
-            const response = await fetch('https://apiroute.vibepattern.com/create_payment_service', {
+            const response = await fetch('https://apiroutetapxtream.invtechnologies.in/create_payment_service', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -137,7 +137,7 @@ const NFCCardDisplay = () => {
     const onSubmitPaymentSuccess = async () => {
         try {
             const response = await fetch(
-                `https://apiroute.vibepattern.com/get_payment_service_by_id/${cardData.payment_genarate_id}`
+                `https://apiroutetapxtream.invtechnologies.in/get_payment_service_by_id/${cardData.payment_genarate_id}`
             );
 
             if (response.ok) {
@@ -164,7 +164,7 @@ const NFCCardDisplay = () => {
                     alt="Company Logo"
                     src={tapxcompanyLogo}
                     sx={{
-                        width: "60px",
+                        width: "65px",
                         padding: "5px"
                     }}
                 />
@@ -173,22 +173,24 @@ const NFCCardDisplay = () => {
                 sx={{
                     // width: { xs: "90%", md: "450px" },
                     width: "90%",
+                    height: "100%",
                     display: "flex",
                     flexDirection: "column",
                     alignItems: "center",
+                    justifyContent: "center",
                     gap: "1rem"
                 }}
             >
-                <Typography sx={{ color: "blue", fontWeight: 600, fontSize: "1.2rem", marginBottom:{md:"2rem"} }}>Your Card Preview</Typography>
+                <Typography sx={{ color: "blue", fontWeight: 600, fontSize: "1.2rem", marginBottom: { md: "2rem" } }}>Your Card Preview</Typography>
 
                 {
                     cardData.cardType === "Basic NFC Card" &&
                     <>
-                        <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: {xs:"1rem", md:"8rem"}, width: "100%", alignItems: "center", justifyContent: "center" }}>
+                        <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: { xs: "1rem", md: "8rem" }, width: "100%", alignItems: "center", justifyContent: "center" }}>
                             <Box
                                 sx={{
                                     width: { xs: "90%", md: "400px" },
-                                    height: {xs:"12rem", md:"15rem"},
+                                    height: { xs: "12rem", md: "15rem" },
                                     display: "flex",
                                     flexDirection: "column",
                                     justifyContent: "space-between",
@@ -273,7 +275,7 @@ const NFCCardDisplay = () => {
                             <Box
                                 sx={{
                                     width: { xs: "90%", md: "400px" },
-                                    height: {xs:"12rem", md:"15rem"},
+                                    height: { xs: "12rem", md: "15rem" },
                                     display: "flex",
                                     flexDirection: "column",
                                     justifyContent: "center",
@@ -373,11 +375,11 @@ const NFCCardDisplay = () => {
                 {
                     cardData.cardType === "Premium NFC Card" &&
                     <>
-                        <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: {xs:"1rem", md:"8rem"}, width: "100%", alignItems: "center", justifyContent: "center" }}>
+                        <Box sx={{ display: "flex", flexDirection: { xs: "column", md: "row" }, gap: { xs: "1rem", md: "8rem" }, width: "100%", alignItems: "center", justifyContent: "center" }}>
                             <Box
                                 sx={{
                                     width: { xs: "90%", md: "400px" },
-                                    height: {xs:"12rem", md:"15rem"},
+                                    height: { xs: "12rem", md: "15rem" },
                                     display: "flex",
                                     flexDirection: "column",
                                     justifyContent: "space-between",
@@ -419,7 +421,7 @@ const NFCCardDisplay = () => {
                             <Box
                                 sx={{
                                     width: { xs: "90%", md: "400px" },
-                                    height: {xs:"12rem", md:"15rem"},
+                                    height: { xs: "12rem", md: "15rem" },
                                     display: "flex",
                                     flexDirection: "column",
                                     justifyContent: "center",
@@ -467,7 +469,7 @@ const NFCCardDisplay = () => {
                     variant="contained"
                     color="primary"
                     onClick={() => onSubmit()}
-                    sx={{ fontWeight: "bold", width:{xs:"100%", md:"50%"}, marginTop:{md:"2rem"} }}
+                    sx={{ fontWeight: "bold", width: { xs: "100%", md: "50%" }, marginTop: { md: "2rem" } }}
                     disabled={loading}
                 >
                     {loading ? (
@@ -482,16 +484,27 @@ const NFCCardDisplay = () => {
                         "Buy Now"
                     )}
                 </Button>
-                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: {xs:"100%", md:"50%"}, gap: "1rem" }}>
-                    <Button
-                        // variant="contained"
-                        color="primary"
-                        fullWidth
-                        onClick={() => navigate(-1)}
-                        sx={{ fontWeight: "bold" }}
-                    >
-                        Back
-                    </Button>
+                <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: { xs: "100%", md: "50%" }, gap: "1rem" }}>
+                    {
+                        !cardData.companyLogo || cardData.companyLogo === "null" ?
+                            <Button
+                                color="primary"
+                                fullWidth
+                                onClick={() => navigate("/company-details")}
+                                sx={{ fontWeight: "bold" }}
+                            >
+                                Upload Logo
+                            </Button>
+                            :
+                            <Button
+                                color="primary"
+                                fullWidth
+                                onClick={() => navigate("/select-nfctype")}
+                                sx={{ fontWeight: "bold" }}
+                            >
+                                Back
+                            </Button>
+                    }
                     <Button
                         // variant="contained"
                         color="primary"

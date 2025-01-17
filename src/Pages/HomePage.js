@@ -12,6 +12,7 @@ import NFCCarddes from "../data/images/nfc-card_type1_blackGold.png";
 import NFCCarddesW from "../data/images/nfc-card_type2_White.png";
 import { fourProperties } from "../data/contents/HomepageContent.js";
 import { useNavigate } from 'react-router-dom';
+import FooterComponent from '../components/mainComponents/FooterComponent.jsx';
 
 const HomePage = () => {
     const navigate = useNavigate();
@@ -59,7 +60,7 @@ const HomePage = () => {
 
             <Box sx={{
                 height: { md: "3rem", xs: "4rem" },
-                background: "#fd710b",
+                background: "#05417c",
                 color: "black",
                 display: "flex",
                 alignItems: "center", justifyContent: "center"
@@ -95,15 +96,15 @@ const HomePage = () => {
                         <Typography sx={{ fontSize: { xs: "0.8rem", md: "1rem" }, textAlign: "justify" }} >NFC Cards are revolutionary way to connect people and businesses. Share information, photos, and videos instantly with a single tap or scan. Explore the possibilities</Typography>
                         <Box>
                             <Button variant="contained" onClick={()=>navigate("/register-now")} sx={{
-                                backgroundColor: "#fd710b", padding:"10px 50px", fontSize: { md: "1.5rem" }, borderRadius: "50px", mt: 1, '&:hover': {
+                                backgroundColor: "#05417c", padding:"10px 50px", fontSize: { md: "1.5rem" }, borderRadius: "50px", mt: 1, '&:hover': {
                                     backgroundColor: 'black',
                                 },
-                            }}>Design Your Card</Button>
+                            }}>Get Your Card Now</Button>
                         </Box>
                     </Box>
                 </Box>
             </Box>
-            <Box sx={{
+            {/* <Box sx={{
                 height: { md: "calc(100vh - 8vh)" },
                 backgroundColor: "#f0f0f0",
                 color: "black",
@@ -129,7 +130,7 @@ const HomePage = () => {
                         <Typography sx={{ fontSize: { xs: "0.8rem", md: "1rem" }, textAlign: "justify" }} >NFC Cards are revolutionary way to connect people and businesses. Share information, photos, and videos instantly with a single tap or scan. Explore the possibilities</Typography>
                         <Box>
                             <Button variant="contained" onClick={()=>navigate("/register-now")} sx={{
-                                backgroundColor: "#fd710b", padding:"10px 50px", fontSize: { md: "1.5rem" }, borderRadius: "50px", mt: 1, '&:hover': {
+                                backgroundColor: "#05417c", padding:"10px 50px", fontSize: { md: "1.5rem" }, borderRadius: "50px", mt: 1, '&:hover': {
                                     backgroundColor: 'black',
                                 },
                             }}
@@ -137,10 +138,10 @@ const HomePage = () => {
                         </Box>
                     </Box>
                 </Box>
-            </Box>
+            </Box> */}
 
             <Box sx={{
-                background: "#fd710b",
+                background: "#05417c",
                 color: "white",
                 padding: { md: "2rem 0px", xs: "1rem 0px" },
                 display: "flex", flexDirection: { md: "row", xs: "column", },
@@ -204,7 +205,7 @@ const HomePage = () => {
                     }
                 </Box>
             </Box>
-
+            <FooterComponent />
         </Box>
     )
 }

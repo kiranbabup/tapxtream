@@ -18,12 +18,15 @@ import LightModeOutlinedIcon from '@mui/icons-material/LightModeOutlined';
 // import LightModeIcon from '@mui/icons-material/LightMode';
 import { boxStyle } from "../ProfilePage";
 import BedtimeIcon from '@mui/icons-material/Bedtime';
+import { Tooltip } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 const UserProfile = () => {
     const [user, setUser] = useState({});
     const [isExpandedAbout, setisExpandedAbout] = useState(false);
     const [isExpandedProducts, setisExpandedProducts] = useState({});
     const [theme, settheme] = useState(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    const navigate = useNavigate();
 
     const userProfileData = JSON.parse(localStorage.getItem("user"));
 
@@ -34,7 +37,7 @@ const UserProfile = () => {
 
             if (userData.exists()) {
                 const data = userData.data();
-                console.log(data);
+                // console.log(data);
                 setUser(data);
             }
         }
@@ -106,9 +109,8 @@ const UserProfile = () => {
         }));
     };
 
-
     const handleShare = () => {
-        const shareUrl = window.location.href; // Assuming the current URL is the one to be shared
+        const shareUrl = `https://tapxtream.invtechnologies.in/profile/${user.uid}`;
         const message = `Check out this profile: ${shareUrl}`;
 
         if (navigator.share) {
@@ -195,12 +197,27 @@ const UserProfile = () => {
                                 boxShadow: "rgba(0, 0, 0, 0.35) 0px 5px 15px"
                             }}
                         >
-                            <Box
-                                component="img"
-                                alt="Profile Pic"
-                                src={user.profileImage}
-                                sx={{ width: "50%", height: "100%", borderTopLeftRadius: "16px", borderBottomLeftRadius: "16px" }}
-                            />
+                            {
+                                (user.profileImage && user.profileImage != "") ?
+                                    (<Box
+                                        component="img"
+                                        alt="Profile Pic"
+                                        src={user.profileImage}
+                                        sx={{ width: "50%", height: "100%", borderTopLeftRadius: "16px", borderBottomLeftRadius: "16px" }}
+                                    />
+                                    ) : (
+                                        <Typography
+                                            sx={{
+                                                width: "50%", height: "100%", borderTopLeftRadius: "16px", borderBottomLeftRadius: "16px",
+                                                display: "flex", justifyContent: "center",
+                                                alignItems: "center",
+                                                color: "black",
+                                                cursor: "pointer"
+                                            }}
+                                            onClick={() => navigate("/update-personal-info")}
+                                        >Upload Profile Image</Typography>
+                                    )
+                            }
                             <Box
                                 sx={{
                                     width: "50%", height: "100%",
@@ -292,19 +309,19 @@ const UserProfile = () => {
                                 </Box>
                             </Box>
                         }
-                        {user.displayEmail != "" &&
-                            <Box style={contactInfosx} onClick={() => handleEmailClick(user.displayEmail)} >
+                        {(user.email != "" && user.email) &&
+                            <Box style={contactInfosx} onClick={() => handleEmailClick(user.email)} >
                                 <Box sx={{ ...contactInneri }}>
                                     {/* <i class="fa fa-envelope fa-2xl" aria-hidden="true" ></i> */}
                                     <Box component="img" alt="envelope" src={envelope} sx={{ width: "35px" }} />
                                 </Box>
                                 <Box sx={{ ...contactInnersx }}>
-                                    <Typography sx={{ fontWeight: "bold", wordBreak: "break-word", overflowWrap: "break-word" }}>{user.displayEmail}</Typography>
+                                    <Typography sx={{ fontWeight: "bold", wordBreak: "break-word", overflowWrap: "break-word" }}>{user.email}</Typography>
                                     <ArrowForwardIosIcon sx={{ color: "lightgray" }} />
                                 </Box>
                             </Box>
                         }
-                        {user.websiteUrl != "" &&
+                        {(user.websiteUrl != "" && user.websiteUrl) &&
                             <Box style={contactInfosx} onClick={() => handleWebsiteClick(user.websiteUrl)}>
                                 <Box sx={{ ...contactInneri }}>
                                     <i className="fa-2xl fas fa-link fa-thin" aria-hidden="true" style={{ color: 'blue' }} ></i>
@@ -315,13 +332,19 @@ const UserProfile = () => {
                                 </Box>
                             </Box>
                         }
-                        {user.whatsAppNumber != "" &&
+                        {(user.whatsAppNumber != "" && user.whatsAppNumber) &&
                             <Box style={contactInfosx} onClick={() => handleWhatsappClick(user.whatsAppNumber)}>
                                 <Box sx={{ ...contactInneri }}>
                                     <WhatsAppIcon sx={{ fontSize: '2rem', color: 'green' }} />
                                 </Box>
                                 <Box sx={{ ...contactInnersx }}>
-                                    <Typography sx={{ fontWeight: "bold" }}>WhatsApp Chat</Typography>
+                                    <Tooltip
+                                        title={<Typography sx={{ fontWeight: "bold" }}>{user.whatsAppNumber}</Typography>}
+                                        placement="right"
+                                        arrow
+                                    >
+                                        <Typography sx={{ fontWeight: "bold" }}>WhatsApp Chat</Typography>
+                                    </Tooltip>
                                     <ArrowForwardIosIcon sx={{ color: "lightgray" }} />
                                 </Box>
                             </Box>
@@ -330,7 +353,7 @@ const UserProfile = () => {
                     </Box>
 
                     {
-                        (user.facebookUrl != "" || user.instagramUrl != "" || user.twitterUrl != "" || user.linkedInUrl != "") && (
+                        ((user.facebookUrl || user.instagramUrl || user.twitterUrl || user.linkedInUrl) && (user.facebookUrl != "" || user.instagramUrl != "" || user.twitterUrl != "" || user.linkedInUrl != "")) && (
                             <>
                                 <Box sx={{ border: "1px solid red", mt: 2, mb: 2 }} />
 
@@ -342,7 +365,7 @@ const UserProfile = () => {
                                         display: "flex", justifyContent: "start", alignItems: "center", flexWrap: "wrap",
                                         paddingLeft: "10px", gap: "8px"
                                     }}>
-                                        {user.facebookUrl != "" &&
+                                        {(user.facebookUrl != "" && user.facebookUrl) &&
                                             <Box
                                                 component="a"
                                                 href={user.facebookUrl}
@@ -353,7 +376,7 @@ const UserProfile = () => {
                                                 <Box component="img" alt="Facebook" src={fb} sx={{ width: "50px" }} />
                                             </Box>
                                         }
-                                        {user.instagramUrl != "" &&
+                                        {(user.instagramUrl != "" && user.instagramUrl) &&
                                             <Box
                                                 component="a"
                                                 href={user.instagramUrl}
@@ -369,7 +392,7 @@ const UserProfile = () => {
                                                 />
                                             </Box>
                                         }
-                                        {user.twitterUrl != "" &&
+                                        {(user.twitterUrl != "" && user.twitterUrl) &&
                                             <Box
                                                 component="a"
                                                 href={user.twitterUrl}
@@ -385,7 +408,7 @@ const UserProfile = () => {
                                                 />
                                             </Box>
                                         }
-                                        {user.linkedInUrl != "" &&
+                                        {(user.linkedInUrl != "" && user.linkedInUrl) &&
                                             <Box
                                                 component="a"
                                                 href={user.linkedInUrl}
@@ -457,31 +480,41 @@ const UserProfile = () => {
                                                 backgroundColor: theme ? '#333' : 'white',
                                                 color: theme ? 'white' : 'black',
                                             }}>
-                                                <Typography variant="h5" sx={{
-                                                    color: theme ? 'white' : 'black',
-                                                }}>{product.pnsHeader}</Typography>
+                                                {
+                                                    product.pnsHeader != "" && <Typography variant="h5" sx={{
+                                                        color: theme ? 'white' : 'black',
+                                                    }}>{product.pnsHeader}</Typography>
+                                                }
                                                 <Box sx={{ position: "relative" }}>
-                                                    <img src={product.pnsImageUrl} alt={`Product ${index}`} style={{ width: "100%", height: "8rem" }} />
-                                                    <Typography sx={{
-                                                        backgroundColor: "#333", color: "white", fontSize: "10px", p: 1, borderRadius: "20px", position: "absolute",
-                                                        bottom: 10,
-                                                        right: 10,
-                                                    }}>{getRupee(product.pnsPrice)}/{product.pnsDuration}</Typography>
+                                                    {
+                                                        product.pnsImageUrl != "" &&
+                                                        <img src={product.pnsImageUrl} alt={`Product ${index}`} style={{ width: "100%", height: "8rem" }} />
+                                                    }
+                                                    {
+                                                        ((product.pnsPrice != "") || (product.pnsDuration != "")) &&
+                                                        <Typography sx={{
+                                                            backgroundColor: "#333", color: "white", fontSize: "10px", p: 1, borderRadius: "20px", position: "absolute",
+                                                            bottom: 10,
+                                                            right: 10,
+                                                        }}>{getRupee(product.pnsPrice)}/{product.pnsDuration}</Typography>
+                                                    }
                                                 </Box>
-
-                                                <Typography sx={{
-                                                    textAlign: "justify",
-                                                    display: "block",
-                                                    overflowWrap: "break-word",
-                                                    wordBreak: "break-word",
-                                                    whiteSpace: "normal",
-                                                    color: theme ? '#EDEADE' : 'black',
-                                                }}>
-                                                    {isExpandedProducts[index] ? product.pnsContent : `${product.pnsContent.slice(0, 100)}...`}
-                                                    <Button sx={{ fontSize: "10px", }} onClick={() => toggleProducts(index)}>
-                                                        {isExpandedProducts[index] ? "Show Less" : "Show More"}
-                                                    </Button>
-                                                </Typography>
+                                                {
+                                                    product.pnsContent != "" &&
+                                                    <Typography sx={{
+                                                        textAlign: "justify",
+                                                        display: "block",
+                                                        overflowWrap: "break-word",
+                                                        wordBreak: "break-word",
+                                                        whiteSpace: "normal",
+                                                        color: theme ? '#EDEADE' : 'black',
+                                                    }}>
+                                                        {isExpandedProducts[index] ? product.pnsContent : `${product.pnsContent.slice(0, 100)}...`}
+                                                        <Button sx={{ fontSize: "10px", }} onClick={() => toggleProducts(index)}>
+                                                            {isExpandedProducts[index] ? "Show Less" : "Show More"}
+                                                        </Button>
+                                                    </Typography>
+                                                }
                                             </Box>
                                         ))}
                                     </Box>
@@ -491,7 +524,7 @@ const UserProfile = () => {
                     }
 
                     {
-                        user.clientImages != "" && (
+                        (user.clientImages && user.clientImages != "") && (
                             <>
                                 <Box sx={{ border: "1px solid red", mt: 2, mb: 2 }} />
 
@@ -522,7 +555,8 @@ const UserProfile = () => {
                     }
 
                     <Box p={2.5} />
-                    <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px" }}>
+                    <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", cursor: "pointer" }}
+                        onClick={() => window.location.href = "https://invtechnologies.in/"}>
                         <Typography sx={{ color: "gray" }} >Powered By</Typography>
                         <Typography sx={{ color: "#02437a", fontWeight: "bold" }} >INV</Typography>
                         <Typography sx={{ color: "#fc7f09", fontWeight: "bold" }} >TECHNOLOGIES</Typography>

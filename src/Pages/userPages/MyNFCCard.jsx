@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Box, Typography, } from "@mui/material";
+import { Box, Button, Typography, } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { doc, getDoc, } from "firebase/firestore";
 import { db } from "../../services/firebase";
@@ -11,6 +11,7 @@ import QRBlack from "../../data/images/nfcrelated/QR-black.png";
 import CallIcon from '@mui/icons-material/Call';
 import MailIcon from '@mui/icons-material/Mail';
 import UserHeaderComponent from "../../components/mainComponents/UserHeaderComponent";
+import SelectnBuyComp from "../../components/SelectnBuyComp";
 
 const MyNFCCard = () => {
     const [cardData, setCardData] = useState({});
@@ -44,18 +45,23 @@ const MyNFCCard = () => {
             <Box
                 sx={{ height: "10vh" }}
             ></Box>
-            <Box sx={{ width: "100vw", height: { md: "calc(100vh - 10vh)" }, display: "flex", justifyContent: "center", alignItems: "center" }}>
+            <Box sx={{ width: "100vw", height: "calc(100vh - 10vh)", display: "flex", justifyContent: "center", alignItems: "center" }}>
                 <Box
                     sx={{
                         width: { xs: "90%", md: "450px" },
                         display: "flex",
                         flexDirection: "column",
                         alignItems: "center",
+                        justifyContent: "center",
+                        height: "100%",
                         gap: "1rem"
                     }}
                 >
                     <Typography sx={{ color: "blue", fontWeight: 600, fontSize: "1.5rem" }}>My NFC card</Typography>
-
+                    {
+                        !cardData.cardType &&
+                        <SelectnBuyComp />
+                    }
                     {
                         cardData.cardType === "Premium NFC Card" &&
                         <>
@@ -326,6 +332,19 @@ const MyNFCCard = () => {
                                 </Box>
                             </Box>
                         </>
+                    }
+                    {
+                        cardData.paymentStatus === "Pending" &&
+                        <Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 1 }}>
+                            <Typography sx={{ fontWeight: 600, textAlign: "center" }}>Buy now and Have the Privilege to showcase your profile by a single tap.</Typography>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                onClick={() => navigate("/nfc-display")}
+                                sx={{ fontWeight: "bold" }}
+                            >Buy now</Button>
+
+                        </Box>
                     }
                 </Box>
             </Box>

@@ -211,7 +211,7 @@ const LoginPage = () => {
                         // console.log(sendValue);
 
                         try {
-                                const resendResponse = await fetch('https://apiroute.vibepattern.com/send-sms', {
+                                const resendResponse = await fetch('https://apiroutetapxtream.invtechnologies.in/send-sms', {
                                         method: 'POST',
                                         headers: {
                                                 'Content-Type': 'application/json',

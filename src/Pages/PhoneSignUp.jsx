@@ -62,47 +62,47 @@ const PhoneSignUp = () => {
         } else {
             setIsOtpsentLoading(true);
             // added manual mode to be removed when sms live
-            setSaveOtp("123456");
-            setIsOtpsent(true);
-            setIsOtpsentLoading(false);
+            // setSaveOtp("123456");
+            // setIsOtpsent(true);
+            // setIsOtpsentLoading(false);
 
             // making manual all are in off from below
-            // const otpsending = createOTP();
-            // setSaveOtp(otpsending);
+            const otpsending = createOTP();
+            setSaveOtp(otpsending);
 
-            // const sendValue = {
-            //     mobile: Number(phoneNumber),
-            //     username: "User",
-            //     otp: otpsending,
-            // }
-            // // console.log(sendValue);
+            const sendValue = {
+                mobile: Number(phoneNumber),
+                username: "User",
+                otp: otpsending,
+            }
+            // console.log(sendValue);
 
-            // try {
-            //     const resendResponse = await fetch('https://apiroute.vibepattern.com/send-sms', {
-            //         method: 'POST',
-            //         headers: {
-            //             'Content-Type': 'application/json',
-            //         },
-            //         body: JSON.stringify({ ...sendValue }),
-            //     });
+            try {
+                const resendResponse = await fetch('https://apiroutetapxtream.invtechnologies.in/send-sms', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ ...sendValue }),
+                });
 
-            //     if (!resendResponse.ok) {
-            //         const errorData = await resendResponse.json();
-            //         console.error("Error response:", errorData);
-            //         setNumErrorMsg("Failed to Send OTP. Please Try Again!");
-            //         throw new Error('Failed to send OTP');
-            //     } else {
-            //         const messageData = await resendResponse.json();
-            //         // console.log(messageData);
-            //         setIsOtpsent(true);
-            //     }
-            // } catch (error) {
-            //     console.error("Error sending OTP:", error.message);
-            //     setNumErrorMsg("Failed to Send OTP. Under maintenance!");
-            //     // alert(`Error: ${error.message}`);
-            // } finally {
-            //     setIsOtpsentLoading(false);
-            // }
+                if (!resendResponse.ok) {
+                    const errorData = await resendResponse.json();
+                    console.error("Error response:", errorData);
+                    setNumErrorMsg("Failed to Send OTP. Please Try Again!");
+                    throw new Error('Failed to send OTP');
+                } else {
+                    const messageData = await resendResponse.json();
+                    // console.log(messageData);
+                    setIsOtpsent(true);
+                }
+            } catch (error) {
+                console.error("Error sending OTP:", error.message);
+                setNumErrorMsg("Failed to Send OTP. Under maintenance!");
+                // alert(`Error: ${error.message}`);
+            } finally {
+                setIsOtpsentLoading(false);
+            }
         }
 
     };
@@ -153,7 +153,7 @@ const PhoneSignUp = () => {
                             uid: querySnapshot.docs[0].id,
                         }));
                         setIsConfirmOtpLoading(false);
-                        navigate("/create-profile");
+                        navigate("/user-profile");
                     }
                 } catch (error) {
                     // console.error("Error verifying OTP or storing phone number:", error);
@@ -188,7 +188,7 @@ const PhoneSignUp = () => {
                     display: "flex",
                     flexDirection: { xs: "column", md: "row" },
                     justifyContent: "start",
-                    height: { md: "100vh", xs: "calc(100vh - 75px)" },
+                    height: { md: "100vh", xs: "calc(100vh - 68px)" },
                 }}
             >
                 <Box
@@ -215,11 +215,12 @@ const PhoneSignUp = () => {
                 <Box
                     sx={{
                         width: { md: "50%" },
-                        p: { xs: 2, },
+                        p: { xs: 2, md: 0},
                         display: "flex",
                         flexDirection: "column",
                         justifyContent: "center",
                         alignItems: "center",
+                        height:"100%",
                         backgroundColor: { md: "#577fd8d9" }
                     }}
                 >
@@ -233,6 +234,7 @@ const PhoneSignUp = () => {
                                             src={sendOtpimg}
                                             sx={{
                                                 width: "150px",
+                                                height:"150px",
                                                 // ml: 2,
                                                 cursor: "pointer",
                                             }}
@@ -262,7 +264,7 @@ const PhoneSignUp = () => {
                                         variant="standard"
                                         fullWidth
                                         required
-                                        placeholder="Enter 10 digits Phone number"
+                                        placeholder="Enter Number"
                                         value={phoneNumber}
                                         inputProps={{
                                             maxLength: 10,
@@ -317,6 +319,7 @@ const PhoneSignUp = () => {
                                             src={otpimgSent}
                                             sx={{
                                                 width: "150px",
+                                                height:"150px",
                                                 // ml: 2,
                                                 cursor: "pointer",
                                             }}

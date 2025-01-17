@@ -1,4 +1,4 @@
-import { Box, IconButton } from "@mui/material"
+import { Box, IconButton, Tooltip } from "@mui/material"
 import OutputIcon from '@mui/icons-material/Output';
 import { useNavigate } from "react-router-dom";
 
@@ -16,7 +16,11 @@ const LogoutButtonComp = () => {
                 "&:hover": {
                     color: "gray",
                 },
-            }}><OutputIcon large /></IconButton>
+            }}>
+                <Tooltip title="Logout" placement="bottom" arrow>
+                    <OutputIcon large />
+                </Tooltip>
+            </IconButton>
         </Box>
     )
 }
