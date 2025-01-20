@@ -13,6 +13,7 @@ import NFCCarddesW from "../data/images/nfc-card_type2_White.png";
 import { fourProperties } from "../data/contents/HomepageContent.js";
 import { useNavigate } from 'react-router-dom';
 import FooterComponent from '../components/mainComponents/FooterComponent.jsx';
+import SocialUrlNFCCards from './SocialUrlNFCCards.jsx';
 
 const HomePage = () => {
     const navigate = useNavigate();
@@ -72,7 +73,7 @@ const HomePage = () => {
 
             <Box sx={{
                 height: { md: "calc(100vh - 8vh)" },
-                backgroundColor: "#f0f0f0",
+                backgroundColor: "white",
                 color: "black",
                 display: "flex", flexDirection: "column",
                 alignItems: "center", justifyContent: "center"
@@ -104,6 +105,7 @@ const HomePage = () => {
                     </Box>
                 </Box>
             </Box>
+            <SocialUrlNFCCards />
             {/* <Box sx={{
                 height: { md: "calc(100vh - 8vh)" },
                 backgroundColor: "#f0f0f0",
