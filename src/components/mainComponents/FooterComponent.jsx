@@ -21,17 +21,21 @@ const FooterComponent = () => {
             display: "flex",
             flexDirection: { xs: "column", sm: "row" },
             justifyContent: { xs: "center", sm: "space-evenly" },
-            alignItems: { xs: "center", sm: "start" },
+            alignItems: { xs: "start", sm: "start" },
             gap: "1rem",
             background: "#1f1e1d",
-            padding: "1rem 0px"
+            padding: "3rem 0px",
+            // paddingLeft: { xs: "2.5rem", md: "0" },
+            borderTopLeftRadius: "10rem",
+            borderBottomRightRadius: "10rem",
         }}>
             <Box component="img"
                 alt="Company Logo"
                 src={companyLogo}
                 sx={{
-                    width: "70px",
-                    ml: 3,
+                    width: "150px",
+                    // ml: 3,
+                ml: { xs: "2.5rem", md: "0" },
                     cursor: "pointer",
                 }}
                 onClick={() => navigate('/')}
@@ -39,10 +43,14 @@ const FooterComponent = () => {
             <Box sx={{
                 display: "flex",
                 flexDirection: "column",
-                gap: ".5rem"
+                gap: ".5rem",
+                paddingLeft: { xs: "2.5rem", md: "0" },
             }}>
+                <h2 style={{ color: "#f7dc6f" }}>Office</h2>
                 <Typography sx={{
-                    color: "white", maxWidth: "300px", cursor: "pointer",
+                    color: "white",
+                    maxWidth: "300px",
+                    cursor: "pointer",
                     '&:hover': {
                         color: "darkgray"
                     },
@@ -65,8 +73,11 @@ const FooterComponent = () => {
             <Box sx={{
                 display: "flex",
                 flexDirection: "column",
-                gap: ".5rem"
+                gap: ".5rem",
+                pl: { xs: "2.5rem", md: "0" },
+
             }}>
+                <h2 style={{ color: "#f7dc6f" }}>Links</h2>
                 <a href="/compatible-phones" style={{ textDecoration: "none", color: "white", fontWeight: "bold" }} onMouseEnter={(e) => e.currentTarget.style.textDecoration = "underline"} onMouseLeave={(e) => e.currentTarget.style.textDecoration = "none"}>Compatible Phones</a>
                 <a href="/login" style={{ textDecoration: "none", color: "white", fontWeight: "bold" }} onMouseEnter={(e) => e.currentTarget.style.textDecoration = "underline"} onMouseLeave={(e) => e.currentTarget.style.textDecoration = "none"}>Login</a>
                 <a href="/register-now" style={{ textDecoration: "none", color: "white", fontWeight: "bold" }} onMouseEnter={(e) => e.currentTarget.style.textDecoration = "underline"} onMouseLeave={(e) => e.currentTarget.style.textDecoration = "none"}>Register</a>

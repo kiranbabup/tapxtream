@@ -73,11 +73,11 @@ const UpdateSocialDetails = () => {
             return;
         }
         if (facebookUrl.length < 4) {
-            setErrorMsg("Please fill the URL'S & Number or click on Skip & Next");
+            setErrorMsg("Please fill the URL'S & Number");
             return;
         }
         if (whatsAppNumber.length < 10) {
-            setErrorMsg("Please fill the URL'S & Number or click on Skip & Next");
+            setErrorMsg("Please fill the URL'S & Number");
             return;
         }
         setLoading(true);
@@ -226,12 +226,26 @@ const UpdateSocialDetails = () => {
 
                                             <Grid
                                                 item
-                                                xs={12}
+                                                xs={6}
+                                            >
+                                                <Button
+                                                    variant="contained"
+                                                    color="primary"
+                                                    fullWidth
+                                                    sx={{ borderRadius: "20px", fontWeight: "bold" }}
+                                                    onClick={() => navigate("/update-other")}
+                                                >
+                                                    Next
+                                                </Button>
+                                            </Grid>
+                                            <Grid
+                                                item
+                                                xs={6}
                                             >
                                                 <Button
                                                     type="submit"
                                                     variant="contained"
-                                                    color="primary"
+                                                    color="success"
                                                     fullWidth
                                                     sx={{ borderRadius: "20px", fontWeight: "bold" }}
                                                     disabled={loading}

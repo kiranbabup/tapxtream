@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Box, Button, Typography, Grid, } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
@@ -25,7 +25,7 @@ const UpdatePersonalDetails = () => {
     const [newCompanyLogo, setNewCompanyLogo] = useState(null);
     const [profileImage, setProfileImage] = useState(null);
     const [newProfileImage, setNewProfileImage] = useState(null);
-    
+
     const [paymentStatus, setPaymentStatus] = useState("");
     const [loading, setLoading] = useState(false);
     const [errorMsg, setErrorMsg] = useState("");
@@ -250,7 +250,7 @@ const UpdatePersonalDetails = () => {
                                             <Grid item xs={12}>
                                                 <CreatingTextField Icon={BusinessIcon} value={companyName} setValue={setCompanyName} placeholder="Enter Comapny Name*" />
                                             </Grid>
-                                            
+
                                             <Grid item xs={12} >{
                                                 errorMsg !== "" ?
                                                     <Typography sx={{ color: "red", fontSize: "11px", textAlign: "center" }}>{errorMsg}</Typography>
@@ -258,8 +258,8 @@ const UpdatePersonalDetails = () => {
                                             }</Grid>
 
                                             <Grid item xs={12} md={6}>
-                                                <Typography sx={{ fontWeight: "bold", display: "flex", alignItems: "center", gap: 1, mb: 1, color:{md:"white"} }}>
-                                                <UploadFileIcon sx={{ color:{xs:"#1976d2", md:"white"}, ml: "10px" }} /> Upload Profile Image
+                                                <Typography sx={{ fontWeight: "bold", display: "flex", alignItems: "center", gap: 1, mb: 1, color: { md: "white" } }}>
+                                                    <UploadFileIcon sx={{ color: { xs: "#1976d2", md: "white" }, ml: "10px" }} /> Upload Profile Image
                                                 </Typography>
                                                 <Box
                                                     {...getRootPropsProfile()}
@@ -284,16 +284,16 @@ const UpdatePersonalDetails = () => {
                                                         />
                                                     ) : (
                                                         <Box>
-                                                            <Typography sx={{ display: { xs: "flex", md: "none" }, textAlign:"center" }}>Click & Browse to Upload</Typography>
-                                                            <Typography sx={{ display: { md: "flex", xs: "none" }, textAlign:"center" }}>Click & Browse Or Drag & Drop to Upload</Typography>
+                                                            <Typography sx={{ display: { xs: "flex", md: "none" }, textAlign: "center" }}>Click & Browse to Upload</Typography>
+                                                            <Typography sx={{ display: { md: "flex", xs: "none" }, textAlign: "center" }}>Click & Browse Or Drag & Drop to Upload</Typography>
                                                         </Box>
                                                     )}
                                                 </Box>
                                             </Grid>
 
                                             <Grid item xs={12} md={6}>
-                                                <Typography sx={{ fontWeight: "bold", display: "flex", alignItems: "center", gap: 1, mb: 1, color:{md:"white"} }}>
-                                                    <UploadFileIcon sx={{ color:{xs:"#1976d2", md:"white"}, ml: "10px" }} /> Upload Company Logo
+                                                <Typography sx={{ fontWeight: "bold", display: "flex", alignItems: "center", gap: 1, mb: 1, color: { md: "white" } }}>
+                                                    <UploadFileIcon sx={{ color: { xs: "#1976d2", md: "white" }, ml: "10px" }} /> Upload Company Logo
                                                 </Typography>
                                                 <Box
                                                     {...getRootPropsLogo()}
@@ -318,8 +318,8 @@ const UpdatePersonalDetails = () => {
                                                         />
                                                     ) : (
                                                         <Box>
-                                                            <Typography sx={{ display: { xs: "flex", md: "none" }, textAlign:"center" }}>Click & Browse to Upload</Typography>
-                                                            <Typography sx={{ display: { md: "flex", xs: "none" }, textAlign:"center" }}>Click & Browse Or Drag & Drop to Upload</Typography>
+                                                            <Typography sx={{ display: { xs: "flex", md: "none" }, textAlign: "center" }}>Click & Browse to Upload</Typography>
+                                                            <Typography sx={{ display: { md: "flex", xs: "none" }, textAlign: "center" }}>Click & Browse Or Drag & Drop to Upload</Typography>
                                                         </Box>
                                                     )}
                                                 </Box>
@@ -327,12 +327,26 @@ const UpdatePersonalDetails = () => {
 
                                             <Grid
                                                 item
-                                                xs={12}
+                                                xs={6}
+                                            >
+                                                <Button
+                                                    variant="contained"
+                                                    color="primary"
+                                                    fullWidth
+                                                    sx={{ borderRadius: "20px", fontWeight: "bold" }}
+                                                    onClick={() => navigate("/update-social-info")}
+                                                >
+                                                    Next
+                                                </Button>
+                                            </Grid>
+                                            <Grid
+                                                item
+                                                xs={6}
                                             >
                                                 <Button
                                                     type="submit"
                                                     variant="contained"
-                                                    color="primary"
+                                                    color="success"
                                                     fullWidth
                                                     sx={{ borderRadius: "20px", fontWeight: "bold" }}
                                                     disabled={loading}

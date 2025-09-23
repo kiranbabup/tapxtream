@@ -140,6 +140,7 @@ const LoginPage = () => {
                             mobileNumber: phoneNumber,
                             email: querySnapshot.docs[0].data().email || "",
                             uid: querySnapshot.docs[0].id,
+                            review: querySnapshot.docs[0].data().reviewAccess || false,
                         }));
                         navigate("/user-profile");
                     }

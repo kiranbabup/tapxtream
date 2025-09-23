@@ -38,6 +38,14 @@ export const socialIconStyle = {
   width: "60px", height: "60px", backgroundColor: "#f5f5f5", borderRadius: "15px",
   display: "flex", justifyContent: "center", alignItems: "center",
 }
+
+export const reviewSocialIconStyle = {
+  width: "95%", height: "60px", backgroundColor: "#f5f5f5", borderRadius: "15px",
+  display: "flex", justifyContent: "center", alignItems: "center",
+  fontWeight:"bold",
+  cursor: "pointer", textDecoration: "none",
+}
+
 export const textWrap = {
   width: "90%",
   display: "flex",
@@ -86,7 +94,8 @@ export const dotContainerStyle = {
 // <Box sx={getBoxStyle(this.state.theme, { padding: 2 })} />
 
 export const footerLocStyle = {
-  color: "white", maxWidth: "300px",
+  color: "white", 
+  maxWidth: "300px",
   display: "flex",
   alignItems:"center",
   gap: "0.6rem",

@@ -530,7 +530,7 @@ class ProfilePage extends React.Component {
                                                     <Box sx={{ position: "relative" }}>
                                                         {
                                                             product.pnsImageUrl != "" &&
-                                                            <img src={product.pnsImageUrl} alt={`Product ${index}`} style={{ width: "100%", height: "8rem" }} />
+                                                            <img src={product.pnsImageUrl} alt={`Product ${index}`} style={{ width: "100%", }} />
                                                         }
                                                         {
                                                             ((product.pnsPrice != "") || (product.pnsDuration != "")) &&
@@ -629,7 +629,8 @@ class ProfilePage extends React.Component {
                             <Typography sx={{ color: "gray" }} >Powered By</Typography>
 
                             <Box sx={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px", cursor: "pointer" }}
-                                onClick={() => window.location.href = "https://invtechnologies.in/"}
+                                // onClick={() => window.location.href = "https://invtechnologies.in/"}
+                                onClick={() => window.open("https://invtechnologies.in/", "_blank")}
                             >
                                 <Typography sx={{ color: "#02437a", fontWeight: "bold" }} >INV</Typography>
                                 <Typography sx={{ color: "#fc7f09", fontWeight: "bold" }} >TECHNOLOGIES</Typography>

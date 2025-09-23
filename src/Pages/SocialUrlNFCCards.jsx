@@ -7,37 +7,35 @@ import xImg from "../data/images/SocialMediaModels/Twitte.png";
 import whatsappImg from "../data/images/SocialMediaModels/Watsapp.png";
 import ytImg from "../data/images/SocialMediaModels/Youtube.png";
 
-
-
 const SocialUrlNFCCards = () => {
     const socialCardsArray = [
         {
             cardType: "Facebook",
-            cardImage: fbImg,
+            cardImage: "https://firebasestorage.googleapis.com/v0/b/tapxtream-64eea.appspot.com/o/websiteImages%2FFacebook.png?alt=media&token=5a090773-d3e9-4b06-b07f-a6bc22ad5c42",
         },
         {
             cardType: "Google Review",
-            cardImage: grImg,
+            cardImage: "https://firebasestorage.googleapis.com/v0/b/tapxtream-64eea.appspot.com/o/websiteImages%2FGoogle-review.png?alt=media&token=4a2819d3-5eaa-4d4b-86ad-1a0b1bf574d8",
         },
         {
             cardType: "Instagram",
-            cardImage: instaImg,
+            cardImage: "https://firebasestorage.googleapis.com/v0/b/tapxtream-64eea.appspot.com/o/websiteImages%2FInstagram.png?alt=media&token=e0ec2b1c-af46-4924-808c-65773934f1a1",
         },
         {
             cardType: "LinkedIn",
-            cardImage: linkedinImg,
+            cardImage: "https://firebasestorage.googleapis.com/v0/b/tapxtream-64eea.appspot.com/o/websiteImages%2FLikedin.png?alt=media&token=18ac02d5-bcf8-44e8-8859-4bd1b906f23b",
         },
         {
             cardType: "Twitter",
-            cardImage: xImg,
+            cardImage: "https://firebasestorage.googleapis.com/v0/b/tapxtream-64eea.appspot.com/o/websiteImages%2FTwitte.png?alt=media&token=56ae56b7-3608-443c-9920-eeb11f9ef0bf",
         },
         {
             cardType: "WhatsApp",
-            cardImage: whatsappImg,
+            cardImage: "https://firebasestorage.googleapis.com/v0/b/tapxtream-64eea.appspot.com/o/websiteImages%2FWatsapp.png?alt=media&token=e645afd8-4234-42b8-8132-f75647e31925",
         },
         {
             cardType: "YouTube",
-            cardImage: ytImg,
+            cardImage: "https://firebasestorage.googleapis.com/v0/b/tapxtream-64eea.appspot.com/o/websiteImages%2FYoutube.png?alt=media&token=5bcbc782-569e-40c2-8174-f0962975f14e",
         },
     ]
 

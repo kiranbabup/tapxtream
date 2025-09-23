@@ -1,4 +1,4 @@
-import { Box, IconButton, Tooltip } from "@mui/material"
+import { Box, IconButton, Tooltip, Typography } from "@mui/material"
 import OutputIcon from '@mui/icons-material/Output';
 import { useNavigate } from "react-router-dom";
 
@@ -17,8 +17,9 @@ const LogoutButtonComp = () => {
                     color: "gray",
                 },
             }}>
+                <Typography sx={{fontWeight:"bold"}}>Logout</Typography>
                 <Tooltip title="Logout" placement="bottom" arrow>
-                    <OutputIcon large />
+                    <OutputIcon fontSize="large" />
                 </Tooltip>
             </IconButton>
         </Box>

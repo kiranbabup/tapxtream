@@ -217,7 +217,7 @@ const UpdateOther = () => {
                                                         display: "flex",
                                                         justifyContent: "space-evenly",
                                                         alignItems: "center",
-                                                        flexWrap:"wrap",
+                                                        flexWrap: "wrap",
                                                         minHeight: "50px",
                                                         cursor: "pointer",
                                                     }}
@@ -295,12 +295,26 @@ const UpdateOther = () => {
                                             }</Grid> */}
                                             <Grid
                                                 item
-                                                xs={12}
+                                                xs={6}
+                                            >
+                                                <Button
+                                                    variant="contained"
+                                                    color="primary"
+                                                    fullWidth
+                                                    sx={{ borderRadius: "20px", fontWeight: "bold" }}
+                                                    onClick={() => navigate("/add-products-and-services")}
+                                                >
+                                                    Next
+                                                </Button>
+                                            </Grid>
+                                            <Grid
+                                                item
+                                                xs={6}
                                             >
                                                 <Button
                                                     type="submit"
                                                     variant="contained"
-                                                    color="primary"
+                                                    color="success"
                                                     fullWidth
                                                     sx={{ borderRadius: "20px", fontWeight: "bold" }}
                                                     disabled={loading}

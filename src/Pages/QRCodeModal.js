@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, IconButton, Typography } from "@mui/material";
 import QRCode from 'react-qr-code';
 import { useNavigate } from "react-router-dom";
+import { urlredirecting } from "../data/contents/HomepageContent";
 
 const QRCodeModal = ({ open, onClose }) => {
   const [qrData, setQrData] = useState('');
@@ -10,8 +11,7 @@ const QRCodeModal = ({ open, onClose }) => {
 
   useEffect(() => {
     if (user) {
-      setQrData(`https://tapxtream.invtechnologies.in/profile/${user.uid}`);
-      // setQrData(`http://localhost:3000/profile/${user.uid}`);
+      setQrData(`${urlredirecting}/${user.uid}`);
     } else {
       navigate("/404");
     }

@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { Box, Button, TextField, Typography, Link, useMediaQuery, } from "@mui/material";
-import { collection, query, where, getDocs, } from "firebase/firestore";
+import { collection, query, where, getDocs, setDoc, doc } from "firebase/firestore";
 import { db } from "../../services/firebase";
 import { useNavigate } from "react-router-dom";
 import companyLogo from "../../data/images/tapxtream.png";
-import sendOtpimg from "../../data/Loginicon.png";
+import sendOtpimg from "../../data/paper-airplane.png";
 import otpimgSent from "../../data/OTP.png";
 import "../phoneSignup.css";
 import { dotContainerStyle, dotStyle } from "../../data/styles";
 import PinInput from "react-pin-input";
 
-const LoginTest = () => {
+const RegisterTest = () => {
     const [phoneNumber, setPhoneNumber] = useState("");
     const [saveOtp, setSaveOtp] = useState("");
     const [isOtpsent, setIsOtpsent] = useState(false);
@@ -25,13 +25,6 @@ const LoginTest = () => {
     const navigate = useNavigate();
 
     const isMdScreen = useMediaQuery((theme) => theme.breakpoints.up("md"));
-
-    const user = localStorage.getItem("user");
-    useEffect(() => {
-        if (user) {
-            navigate("/user-profile");
-        }
-    }, [user, navigate]);
 
     useEffect(() => {
         let interval;
@@ -85,14 +78,32 @@ const LoginTest = () => {
                     const querySnapshot = await getDocs(q);
 
                     if (querySnapshot.empty) {
-                        setOtpErrorMsg("Please Register to continue");
+                        const userDocRef = doc(collection(db, "users"));
+                        const uid = userDocRef.id;
+                        await setDoc(userDocRef, {
+                            mobileNumber: phoneNumber,
+                            uid: uid,
+                            createdAt: Date.now(),
+                        });
+
+                        localStorage.setItem("user", JSON.stringify({
+                            mobileNumber: phoneNumber,
+                            email: "",
+                            uid: uid,
+                        }));
+                        setIsConfirmOtpLoading(false);
+                        navigate("/create-profile");
+
                     } else {
+                        // console.log("Phone number already exists in the database.");
+                        // setOtpErrorMsg("Phone number already registered.");
+
                         localStorage.setItem("user", JSON.stringify({
                             mobileNumber: phoneNumber,
                             email: querySnapshot.docs[0].data().email || "",
                             uid: querySnapshot.docs[0].id,
-                            review: querySnapshot.docs[0].data().reviewAccess || false,
                         }));
+                        setIsConfirmOtpLoading(false);
                         navigate("/user-profile");
                     }
                 } catch (error) {
@@ -121,8 +132,8 @@ const LoginTest = () => {
                     display: { md: "none", xs: "block" },
                     pl: 2, paddingTop: "10px"
                 }}
-                onClick={() => navigate('/')} />
-
+                onClick={() => navigate('/')}
+            />
             <Box
                 sx={{
                     display: "flex",
@@ -155,14 +166,13 @@ const LoginTest = () => {
                 <Box
                     sx={{
                         width: { md: "50%" },
-                        p: { xs: 2, md: 0 },
+                        p: { xs: 2, md: 0},
                         display: "flex",
                         flexDirection: "column",
-                        alignItems: "center",
                         justifyContent: "center",
-                        backgroundColor: { md: "#577fd8d9" },
+                        alignItems: "center",
                         height:"100%",
-                        // backgroundColor: { md: "aliceblue" }
+                        backgroundColor: { md: "#577fd8d9" }
                     }}
                 >
                     {
@@ -174,8 +184,8 @@ const LoginTest = () => {
                                             alt="otp page"
                                             src={sendOtpimg}
                                             sx={{
-                                                width: "130px",
-                                                height:"140px",
+                                                width: "150px",
+                                                height:"150px",
                                                 // ml: 2,
                                                 cursor: "pointer",
                                             }}
@@ -186,7 +196,7 @@ const LoginTest = () => {
                                         gutterBottom
                                         sx={{ fontSize: { xs: "1.5rem", md: "2.5rem" }, fontWeight: "bold", textAlign: "center", color: { md: "white" } }}
                                     >
-                                        Login Now !
+                                        Register Now
                                     </Typography>
                                     <Typography
                                         variant="body1"
@@ -195,9 +205,9 @@ const LoginTest = () => {
                                     >
                                         We will send you an One Time Password(OTP) to the given Phone Number.
                                     </Typography>
-                                    <Box p={4} />
+                                    <Box p={3} />
                                     <Typography
-                                        sx={{ textAlign: "center", width: "100%", fontWeight: "bold", color: { md: "white" } }}
+                                        sx={{ textAlign: "center", color: { md: "white" }, width: "100%", fontWeight: "bold" }}
                                     >Enter Phone Number</Typography>
                                     <Box p={0.5} />
 
@@ -219,7 +229,6 @@ const LoginTest = () => {
                                                 e.preventDefault();
                                             }
                                         }}
-
                                     />
                                     <Box p={0.5} />
                                     {
@@ -234,7 +243,10 @@ const LoginTest = () => {
                                         color="primary"
                                         fullWidth
                                         onClick={() => sendOtptoPhone()}
-                                        sx={{ fontWeight: "bold" }}
+                                        sx={{
+                                            //  fontSize: { xs: "0.9rem", md: "1rem" }, 
+                                            fontWeight: "bold"
+                                        }}
                                         disabled={isOtpsentLoading}
                                     >
                                         {isOtpsentLoading ? (
@@ -251,7 +263,7 @@ const LoginTest = () => {
                                     </Button>
                                 </Box>
                             ) : (
-                                <Box sx={{ width: { md: "60%", } }} >
+                                <Box sx={{ width: { md: "60%", } }}>
                                     <Box sx={{ display: "flex", justifyContent: "center" }}>
                                         <Box component="img"
                                             alt="otp page"
@@ -267,9 +279,9 @@ const LoginTest = () => {
                                     </Box>
                                     <Typography
                                         gutterBottom
-                                        sx={{ fontSize: { xs: "1.5rem", md: "2.2rem" }, fontWeight: "bold", textAlign: "center", color: { md: "white" } }}
+                                        sx={{ fontSize: { xs: "1.5rem", md: "2.5rem" }, fontWeight: "bold", textAlign: "center", color: { md: "white" } }}
                                     >
-                                        Login OTP Verification !
+                                        OTP Verification !
                                     </Typography>
                                     <Typography
                                         variant="body1"
@@ -294,7 +306,7 @@ const LoginTest = () => {
                                             onComplete={(value) => {
                                                 setOtpEntered(value);
                                             }}
-                                            style={{ width: "100%", display: "flex", justifyContent: "space-between", }}
+                                            style={{ width: "100%", display: "flex", justifyContent: "space-between" }}
                                             inputStyle={{
                                                 borderColor: "#2C2D3C",
                                                 borderRadius: "6px",
@@ -311,16 +323,17 @@ const LoginTest = () => {
                                             : <Box p={1.1} />
                                     }
                                     <Box p={0.8} />
+
                                     {
                                         isActive ? (
                                             <Box sx={{ display: "flex", alignItems: "center", gap: "1rem", justifyContent: "space-between", pl: 2, pr: 2 }}>
                                                 <Typography sx={{ color: { xs: "black", md: "white" } }}>Didn’t receive the OTP?</Typography>
-                                                <Link onClick={(e) => handleResend(e)} sx={{ color: { xs: "#1976d2", md: "white", }, cursor: "pointer", textDecoration: { xs: "none", md: "underline" }, fontWeight: "Bold" }}>
+                                                <Link onClick={(e) => handleResend(e)} sx={{ color: { xs: "#1976d2", md: "white", }, textDecoration: { xs: "none", md: "underline" }, fontWeight: "Bold", cursor: "pointer" }}>
                                                     Resend OTP
                                                 </Link>
                                             </Box>
                                         ) : (
-                                            <Typography sx={{ color: { xs: "blue", md: "white" }, textAlign: "center" }}>Resend OTP in {timer}s</Typography>
+                                            <Typography style={{ color: { xs: "blue", md: "white" }, textAlign: "center" }}>Resend OTP in {timer}s</Typography>
                                         )
                                     }
                                     <Box p={0.5} />
@@ -342,12 +355,11 @@ const LoginTest = () => {
                                                 <Box sx={{ ...dotStyle, animationDelay: '0.8s' }}></Box>
                                             </Box>
                                         ) : (
-                                            "Confirm OTP & Login"
+                                            "Confirm OTP"
                                         )}
                                     </Button>
                                 </Box>
-                            )
-                    }
+                            )}
 
 
                     <Typography
@@ -355,9 +367,9 @@ const LoginTest = () => {
                         align="center"
                         sx={{ mt: 2, fontSize: { xs: "0.85rem", md: "0.9rem" }, color: { xs: "grey", md: "white" } }}
                     >
-                        Didn’t have an Account? <Link href="/register-now" 
-                        sx={{ textDecoration: { xs: "none", md: "underline" }, color: { md: "white" }, fontWeight: "bold" }}
-                        >Signup</Link>
+                        Already have an account? <Link href="/login"
+                            sx={{ textDecoration: { xs: "none", md: "underline" }, color: { md: "white" }, fontWeight: "bold" }}
+                        >Login</Link>.
                     </Typography>
                 </Box>
             </Box>
@@ -365,4 +377,4 @@ const LoginTest = () => {
     );
 };
 
-export default LoginTest;
+export default RegisterTest;

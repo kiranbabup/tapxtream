@@ -25,3 +25,8 @@ export const fourProperties = [
     content: "Edit your information anytime",
   }
 ]
+
+// export const urlredirecting = "https://tapxtream.invtechnologies.in/profile"
+export const urlredirecting = "https://tapxtream.com/profile"
+
+// http://localhost:3000/profile

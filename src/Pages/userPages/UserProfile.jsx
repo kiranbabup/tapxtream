@@ -20,6 +20,7 @@ import { boxStyle } from "../ProfilePage";
 import BedtimeIcon from '@mui/icons-material/Bedtime';
 import { Tooltip } from "@mui/material";
 import { useNavigate } from "react-router-dom";
+import { urlredirecting } from "../../data/contents/HomepageContent";
 
 const UserProfile = () => {
     const [user, setUser] = useState({});
@@ -110,7 +111,7 @@ const UserProfile = () => {
     };
 
     const handleShare = () => {
-        const shareUrl = `https://tapxtream.invtechnologies.in/profile/${user.uid}`;
+        const shareUrl = `${urlredirecting}/${user.uid}`;
         const message = `Check out this profile: ${shareUrl}`;
 
         if (navigator.share) {
@@ -488,7 +489,7 @@ const UserProfile = () => {
                                                 <Box sx={{ position: "relative" }}>
                                                     {
                                                         product.pnsImageUrl != "" &&
-                                                        <img src={product.pnsImageUrl} alt={`Product ${index}`} style={{ width: "100%", height: "8rem" }} />
+                                                        <img src={product.pnsImageUrl} alt={`Product ${index}`} style={{ width: "100%", }} />
                                                     }
                                                     {
                                                         ((product.pnsPrice != "") || (product.pnsDuration != "")) &&
@@ -556,7 +557,9 @@ const UserProfile = () => {
 
                     <Box p={2.5} />
                     <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", cursor: "pointer" }}
-                        onClick={() => window.location.href = "https://invtechnologies.in/"}>
+                        // onClick={() => window.location.href = "https://invtechnologies.in/"}
+                        onClick={() => window.open("https://invtechnologies.in/", "_blank")}
+                        >
                         <Typography sx={{ color: "gray" }} >Powered By</Typography>
                         <Typography sx={{ color: "#02437a", fontWeight: "bold" }} >INV</Typography>
                         <Typography sx={{ color: "#fc7f09", fontWeight: "bold" }} >TECHNOLOGIES</Typography>

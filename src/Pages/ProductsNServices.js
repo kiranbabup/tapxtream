@@ -200,7 +200,7 @@ const ProductsNServices = () => {
                       }}>
                         {
                           product.pnsImageUrl != "" &&
-                          <img src={product.pnsImageUrl} alt={`Product ${index}`} style={{ width: "100%", height: "8rem" }} />}
+                          <img src={product.pnsImageUrl} alt={`Product ${index}`} style={{ width: "100%", }} />}
 
                         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
 

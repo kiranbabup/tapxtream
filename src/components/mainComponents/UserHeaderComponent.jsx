@@ -23,11 +23,10 @@ const UserHeaderComponent = () => {
     // Function to check if the current path matches the given route
     const isActiveRoute = (route) => location.pathname === route;
 
+    const userProfileData = JSON.parse(localStorage.getItem("user"));
+
     const navItems = [
         // { label: "Dashboard", route: "/user-dashboard" },
-        { label: "Profile", route: "/user-profile" },
-        { label: "My NFC Card", route: "/my-nfc-card" },
-        { label: "Compatible Phones", route: "/compatible-mobiles" },
         // { label: "Update Profile",
         //     subItems: [
         //         { label: "Update Info", route: "/update-personal-info" },
@@ -36,11 +35,16 @@ const UserHeaderComponent = () => {
         //         { label: "Add Products & Services", route: "/add-products-and-services" }
         //     ]
         // },
+        
+        { label: "Profile", route: "/user-profile" },
         { label: "Update Info ", route: "/update-personal-info" },
         { label: "Update Social ", route: "/update-social-info" },
         { label: "Update Other ", route: "/update-other" },
         { label: "Add Products & Services", route: "/add-products-and-services" },
+        ...(userProfileData?.review ? [{ label: "Manage Review Links", route: "/manage-review-links" }] : []),       
         { label: "View Enquiries", route: "/enquery-requests" },
+        { label: "My NFC Card", route: "/my-nfc-card" },
+        { label: "Compatible Phones", route: "/compatible-mobiles" },
         { isComponent: true, component: <LogoutButtonComp /> },
     ];
 
@@ -111,7 +115,7 @@ const UserHeaderComponent = () => {
                 <Box sx={{
                     display: "flex",
                     alignItems: "center",
-                    mr: 10,
+                    mr: 2,
                     gap: "20px"
                 }}>
                     {navItems.map((item, index) =>

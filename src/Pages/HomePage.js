@@ -53,7 +53,7 @@ const HomePage = () => {
                             objectFit: "contain",
                         }}
                             component="img"
-                            src={SectioneImage}
+                            src="https://firebasestorage.googleapis.com/v0/b/tapxtream-64eea.appspot.com/o/websiteImages%2FNfc-banner_profile.png?alt=media&token=10dcdb84-7e96-4a96-a327-7a89fd6b55ea"
                             alt="imagehere" />
                     </Box>
                 </Box>
