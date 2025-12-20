@@ -244,7 +244,7 @@ const NFCCardDisplay = () => {
                                 />
                                 <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", p: 2, color: "black", position: "absolute", zIndex: 1, width: "90%" }}>
                                     <Box>
-                                        <Typography sx={{ display: "flex", alignItems: "center", gap: "5px", fontSize: "13px", fontWeight: "bold" }}><CallIcon fontSize="small" /> +91 {cardData.mobileNumber} </Typography>
+                                        <Typography sx={{ display: "flex", alignItems: "center", gap: "5px", fontSize: "13px", fontWeight: "bold" }}><CallIcon fontSize="small" /> {cardData.mobileNumber} </Typography>
                                         <Typography sx={{ display: "flex", alignItems: "start", gap: "5px", fontSize: "13px", fontWeight: "bold", wordBreak: "break-word", overflowWrap: "break-word", }}><MailIcon fontSize="small" /> {cardData.email} </Typography>
                                     </Box>
                                     <Box
@@ -390,7 +390,7 @@ const NFCCardDisplay = () => {
                             >
                                 <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", p: 2, color: "#d4af37" }}>
                                     <Box>
-                                        <Typography sx={{ display: "flex", alignItems: "center", gap: "5px", fontSize: "13px", fontWeight: "bold" }}><CallIcon fontSize="small" /> +91 {cardData.mobileNumber} </Typography>
+                                        <Typography sx={{ display: "flex", alignItems: "center", gap: "5px", fontSize: "13px", fontWeight: "bold" }}><CallIcon fontSize="small" /> {cardData.mobileNumber} </Typography>
                                         <Typography sx={{ display: "flex", alignItems: "start", gap: "5px", fontSize: "13px", fontWeight: "bold", wordBreak: "break-word", overflowWrap: "break-word", }}><MailIcon fontSize="small" /> {cardData.email} </Typography>
                                     </Box>
                                     <Box

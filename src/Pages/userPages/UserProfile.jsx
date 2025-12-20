@@ -84,7 +84,7 @@ const UserProfile = () => {
     };
 
     const handlePhoneClick = (ph) => {
-        window.open(`tel:+91${ph}`, "_self");  // Opens phone dialer on mobile devices
+        window.open(`tel:${ph}`, "_self");  // Opens phone dialer on mobile devices
     };
 
     const handleEmailClick = (email) => {
@@ -305,7 +305,7 @@ const UserProfile = () => {
                                     <Box component="img" alt="phone" src={phone} sx={{ width: "35px" }} />
                                 </Box>
                                 <Box sx={{ ...contactInnersx }}>
-                                    <Typography sx={{ fontWeight: "bold" }}>+91{user.mobileNumber}</Typography>
+                                    <Typography sx={{ fontWeight: "bold" }}>{user.mobileNumber}</Typography>
                                     <ArrowForwardIosIcon sx={{ color: "lightgray" }} />
                                 </Box>
                             </Box>

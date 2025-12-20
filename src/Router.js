@@ -29,6 +29,10 @@ import LoginTest from "./Pages/testing/LoginTest";
 import MuiltiReview from "./Pages/reviewCards/MuiltiReview";
 import UpdateReviewLinks from "./Pages/updation/UpdateReviewLinks";
 import RegisterTest from "./Pages/testing/RegisterTest";
+import EmailLoginPage from "./Pages/EmailLoginPage";
+import GmailLogin from "./Pages/GmailLogin";
+import PnGSignUp from "./Pages/PnGSignUp";
+import GmailRegister from "./Pages/GmailRegister";
 
 const Router = () => {
   return (
@@ -36,9 +40,13 @@ const Router = () => {
       <Routes>
         <Route path="/" element={<HomePage />} />
 
-        <Route path="/login" element={<LoginPage />} />
+        {/* <Route path="/login" element={<LoginPage />} /> */}
+        {/* <Route path="/loginem" element={<EmailLoginPage />} /> */}
+        <Route path="/login" element={<GmailLogin />} />
         <Route path="/logintest" element={<LoginTest />} />
-        <Route path="/register-now" element={<PhoneSignUp />} />
+        <Route path="/register-now" element={<GmailRegister />} />
+        {/* <Route path="/register-now" element={<PhoneSignUp />} /> */}
+        {/* <Route path="/sign-up" element={<PnGSignUp />} /> */}
         <Route path="/registertest" element={<RegisterTest />} />
 
         <Route path="/compatible-phones" element={<CompatablePage />} />
@@ -56,7 +64,7 @@ const Router = () => {
           <Route path="/nfc-display" element={<NFCCardDisplay />} />
 
           <Route path="/user-profile" element={<UserProfile />} />
-          
+
           <Route path="/update-personal-info" element={<UpdatePersonalDetails />} />
           <Route path="/update-social-info" element={<UpdateSocialDetails />} />
           <Route path="/update-other" element={<UpdateOther />} />
@@ -68,7 +76,7 @@ const Router = () => {
 
           <Route path="/compatible-mobiles" element={<MobileCompatablePage />} />
           <Route path="/my-nfc-card" element={<MyNFCCard />} />
-          
+
           {/* <Route path="/user-dashboard" element={<UserDashboard />} /> */}
           {/* <Route path="/update-profile" element={<UpdateProfile />} /> */}
         </Route>

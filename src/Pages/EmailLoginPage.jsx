@@ -6,9 +6,26 @@ import {
   Typography,
   Link,
   useMediaQuery,
+  Select,
+  MenuItem,
 } from "@mui/material";
-import { collection, query, where, getDocs } from "firebase/firestore";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  doc,
+  getDoc,
+  setDoc,
+} from "firebase/firestore";
 import { db } from "../services/firebase";
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signInWithPhoneNumber,
+  RecaptchaVerifier,
+} from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import companyLogo from "../data/images/tapxtream.png";
 import sendOtpimg from "../data/Loginicon.png";
@@ -16,29 +33,105 @@ import otpimgSent from "../data/OTP.png";
 import "./phoneSignup.css";
 import { dotContainerStyle, dotStyle } from "../data/styles";
 import PinInput from "react-pin-input";
+import gicon from "../data/images/GoogleGLogo.png";
+import CustomButton from "../components/CustomButton";
 
-const LoginPage = () => {
+const countryCodes = [
+  { code: "+91", label: "India (+91)" },
+  { code: "+971", label: "UAE (+971)" },
+  { code: "+1", label: "US (+1)" },
+  { code: "+7", label: "Russia (+7)" },
+  { code: "+20", label: "Egypt (+20)" },
+  { code: "+27", label: "South Africa (+27)" },
+  { code: "+30", label: "Greece (+30)" },
+  { code: "+31", label: "Netherlands (+31)" },
+  { code: "+32", label: "Belgium (+32)" },
+  { code: "+33", label: "France (+33)" },
+  { code: "+34", label: "Spain (+34)" },
+  { code: "+36", label: "Hungary (+36)" },
+  { code: "+39", label: "Italy (+39)" },
+  { code: "+40", label: "Romania (+40)" },
+  { code: "+44", label: "UK (+44)" },
+  { code: "+49", label: "Germany (+49)" },
+  { code: "+52", label: "Mexico (+52)" },
+  { code: "+53", label: "Cuba (+53)" },
+  { code: "+54", label: "Argentina (+54)" },
+  { code: "+55", label: "Brazil (+55)" },
+  { code: "+57", label: "Colombia (+57)" },
+  { code: "+60", label: "Malaysia (+60)" },
+  { code: "+61", label: "Australia (+61)" },
+  { code: "+62", label: "Indonesia (+62)" },
+  { code: "+63", label: "Philippines (+63)" },
+  { code: "+64", label: "New Zealand (+64)" },
+  { code: "+65", label: "Singapore (+65)" },
+  { code: "+66", label: "Thailand (+66)" },
+  { code: "+81", label: "Japan (+81)" },
+  { code: "+82", label: "South Korea (+82)" },
+  { code: "+84", label: "Vietnam (+84)" },
+  { code: "+86", label: "China (+86)" },
+  { code: "+90", label: "Turkey (+90)" },
+  { code: "+92", label: "Pakistan (+92)" },
+  { code: "+93", label: "Afghanistan (+93)" },
+  { code: "+94", label: "Sri Lanka (+94)" },
+  { code: "+98", label: "Iran (+98)" },
+  { code: "+212", label: "Morocco (+212)" },
+  { code: "+213", label: "Algeria (+213)" },
+  { code: "+216", label: "Tunisia (+216)" },
+  { code: "+218", label: "Libya (+218)" },
+  { code: "+351", label: "Portugal (+351)" },
+  { code: "+358", label: "Finland (+358)" },
+  { code: "+353", label: "Ireland (+353)" },
+  { code: "+972", label: "Israel (+972)" },
+  { code: "+380", label: "Ukraine (+380)" },
+  // add more or remove entries here to cover all countries which firebase availble for otp
+];
+
+const EmailLoginPage = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [saveOtp, setSaveOtp] = useState("");
   const [isOtpsent, setIsOtpsent] = useState(false);
-  const [timer, setTimer] = useState(120);
+  const [timer, setTimer] = useState(80);
   const [isActive, setIsActive] = useState(false);
   const [isOtpsentLoading, setIsOtpsentLoading] = useState(false);
   const [numErrorMsg, setNumErrorMsg] = useState("");
   const [otpEntered, setOtpEntered] = useState("");
   const [otpErrorMsg, setOtpErrorMsg] = useState("");
   const [isConfirmOtpLoading, setIsConfirmOtpLoading] = useState(false);
+  const [countryCode, setcountryCode] = useState("");
+  const [confirmationResult, setConfirmationResult] = useState(null);
 
   const navigate = useNavigate();
 
   const isMdScreen = useMediaQuery((theme) => theme.breakpoints.up("md"));
-
+  const auth = getAuth();
   const user = localStorage.getItem("user");
+
   useEffect(() => {
     if (user) {
       navigate("/user-profile");
     }
   }, [user, navigate]);
+
+  useEffect(() => {
+    if (!window.recaptchaVerifier) {
+      window.recaptchaVerifier = new RecaptchaVerifier(
+        auth,
+        "recaptcha-container",
+        {
+          size: "invisible",
+          // callback: () => {
+          //   console.log("reCAPTCHA solved");
+          // },
+        }
+      );
+
+      window.recaptchaVerifier.render();
+    }
+    return () => {
+    // ✅ prevent duplicate instances in dev strict mode
+    window.recaptchaVerifier?.clear();
+    window.recaptchaVerifier = null;
+  };
+  }, [auth]);
 
   useEffect(() => {
     let interval;
@@ -60,115 +153,147 @@ const LoginPage = () => {
     }
   };
 
-  function createOTP() {
-    const charset = "0123456789";
-    let otpPassword = "";
-    for (let i = 0; i < 6; i++) {
-      const randomIndex = Math.floor(Math.random() * charset.length);
-      otpPassword += charset[randomIndex];
-    }
-    return otpPassword;
-  }
-
   const sendOtptoPhone = async () => {
-    if (phoneNumber.length < 10) {
-      setNumErrorMsg("Please Enter Valid 10 Digits Phone Number");
-    } else {
-      setIsOtpsentLoading(true);
-      // added manual mode to be removed when sms live
-      // setSaveOtp("123456");
-      // setIsOtpsent(true);
-      // setIsOtpsentLoading(false);
+    if (!countryCode) {
+      setNumErrorMsg("Select country code");
+      return;
+    }
 
-      // making manual all are in off from below
-      const otpsending = createOTP();
-      setSaveOtp(otpsending);
+    if (!phoneNumber || phoneNumber.length < 6 || phoneNumber.length > 15) {
+      setNumErrorMsg("Enter a valid phone number");
+      return;
+    }
 
-      const sendValue = {
-        mobile: Number(phoneNumber),
-        username: "User, Welcome to INV Technologies",
-        otp: otpsending,
-      };
-      // console.log(sendValue);
+    const fullPhoneNumber = `${countryCode}${phoneNumber}`;
 
-      try {
-        const resendResponse = await fetch(
-          "https://apiroutetapxtream.invtechnologies.in/send-sms",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ ...sendValue }),
-          }
-        );
-
-        if (!resendResponse.ok) {
-          const errorData = await resendResponse.json();
-          console.error("Error response:", errorData);
-          setNumErrorMsg("Failed to Send OTP. Please Try Again!");
-          throw new Error("Failed to send OTP");
-        } else {
-          const messageData = await resendResponse.json();
-          // console.log(messageData);
-          setIsOtpsent(true);
-        }
-      } catch (error) {
-        console.error("Error sending OTP:", error.message);
-        setNumErrorMsg("Failed to Send OTP. Under maintenance!");
-        // alert(`Error: ${error.message}`);
-      } finally {
-        setIsOtpsentLoading(false);
+    try {
+      if (!window.recaptchaVerifier) {
+        throw new Error("reCAPTCHA not initialized");
       }
+      const appVerifier = window.recaptchaVerifier;
+
+      setIsOtpsentLoading(true);
+      setNumErrorMsg("");
+
+      // ✅ Check existing user
+      const q = query(
+        collection(db, "users"),
+        where("mobileNumber", "==", fullPhoneNumber)
+      );
+      const snapshot = await getDocs(q);
+
+      if (snapshot.empty) {
+        setNumErrorMsg("Please register to continue");
+        return;
+      }
+
+      const confirmation = await signInWithPhoneNumber(
+        auth,
+        fullPhoneNumber,
+        appVerifier
+      );
+
+      setConfirmationResult(confirmation);
+      setIsOtpsent(true);
+      setTimer(80);
+    } catch (error) {
+      console.error("OTP send error:", error);
+      if (error.code === "auth/timeout") {
+      setNumErrorMsg("reCAPTCHA timeout. Please try again.");
+    } else {
+      setNumErrorMsg("Failed to send OTP");
+    }
+    } finally {
+      setIsOtpsentLoading(false);
     }
   };
 
   const handleResend = (e) => {
     e.preventDefault();
     setIsActive(false);
-    setSaveOtp("");
     setOtpEntered("");
     sendOtptoPhone();
-    setTimer(120);
   };
 
   const handleSubmit = async () => {
-    if (otpEntered.length < 6) {
-      setOtpErrorMsg("Enter a valid 6-digit OTP.");
-    } else {
-      setIsConfirmOtpLoading(true);
-      if (saveOtp === otpEntered) {
-        try {
-          const q = query(
-            collection(db, "users"),
-            where("mobileNumber", "==", phoneNumber)
-          );
-          const querySnapshot = await getDocs(q);
+    if (!otpEntered || otpEntered.length < 6) {
+      setOtpErrorMsg("Enter valid OTP");
+      return;
+    }
 
-          if (querySnapshot.empty) {
-            setOtpErrorMsg("Please Register to continue");
-          } else {
-            localStorage.setItem(
-              "user",
-              JSON.stringify({
-                mobileNumber: phoneNumber,
-                email: querySnapshot.docs[0].data().email || "",
-                uid: querySnapshot.docs[0].id,
-                review: querySnapshot.docs[0].data().reviewAccess || false,
-              })
-            );
-            navigate("/user-profile");
-          }
-        } catch (error) {
-          // console.error("Error verifying OTP or storing phone number:", error);
-          setOtpErrorMsg("Invalid OTP.");
-        } finally {
-          setIsConfirmOtpLoading(false);
-        }
-      } else {
-        setOtpErrorMsg("Enter a valid 6-digit OTP.");
-        setIsConfirmOtpLoading(false);
+    try {
+      setIsConfirmOtpLoading(true);
+
+      const result = await confirmationResult.confirm(otpEntered);
+      const phone = result.user.phoneNumber;
+
+      const q = query(
+        collection(db, "users"),
+        where("mobileNumber", "==", phone)
+      );
+
+      const snapshot = await getDocs(q);
+
+      if (snapshot.empty) {
+        setOtpErrorMsg("User not registered");
+        return;
       }
+
+      const docSnap = snapshot.docs[0];
+      const userData = docSnap.data();
+
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          uid: docSnap.id,
+          mobileNumber: phone,
+          email: userData.email || "",
+          review: userData.reviewAccess || false,
+        })
+      );
+
+      navigate("/user-profile");
+    } catch (error) {
+      console.error("OTP verification error:", error);
+      setOtpErrorMsg("Invalid or expired OTP");
+    } finally {
+      setIsConfirmOtpLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+
+      const email = result.user.email;
+      if (!email) throw new Error("No email found");
+
+      const q = query(collection(db, "users"), where("email", "==", email));
+      const snapshot = await getDocs(q);
+
+      if (snapshot.empty) {
+        setNumErrorMsg("Please register to continue");
+        return;
+      }
+
+      const docSnap = snapshot.docs[0];
+      const userData = docSnap.data();
+
+      localStorage.setItem(
+        "user",
+        JSON.stringify({
+          uid: docSnap.id,
+          email,
+          mobileNumber: userData.mobileNumber || "",
+          review: userData.reviewAccess || false,
+        })
+      );
+
+      navigate("/user-profile");
+    } catch (error) {
+      console.error("Google login error:", error);
+      setNumErrorMsg("Google login failed");
     }
   };
 
@@ -178,6 +303,7 @@ const LoginPage = () => {
         height: "100vh",
       }}
     >
+      <div id="recaptcha-container"></div>
       <Box
         component="img"
         alt="Company Logo"
@@ -275,9 +401,9 @@ const LoginPage = () => {
                 sx={{ textAlign: "center", color: { md: "white" } }}
               >
                 We will send you an One Time Password(OTP) to the given Phone
-                Number.
+                Number or Login with Gmail.
               </Typography>
-              <Box p={4} />
+              <Box p={2} />
               <Typography
                 sx={{
                   textAlign: "center",
@@ -289,33 +415,65 @@ const LoginPage = () => {
                 Enter Phone Number
               </Typography>
               <Box p={0.5} />
-
-              <TextField
-                variant="standard"
-                fullWidth
-                required
-                placeholder="Enter Number"
-                value={phoneNumber}
-                inputProps={{
-                  maxLength: 10,
-                  inputMode: "numeric",
-                  style: { textAlign: "center", fontWeight: "bold" },
-                  sx: { color: { md: "white" } },
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: 1,
                 }}
-                onChange={(e) => {
-                  onTypingChange(e);
-                }}
-                onKeyDown={(e) => {
-                  if (
-                    e.key === "-" ||
-                    e.key === "." ||
-                    e.key === "e" ||
-                    e.key === "+"
-                  ) {
-                    e.preventDefault();
-                  }
-                }}
-              />
+              >
+                <Select
+                  size="small"
+                  value={countryCode}
+                  onChange={(e) => setcountryCode(e.target.value)}
+                  displayEmpty
+                  disabled={isOtpsentLoading}
+                  sx={{
+                    // "& .MuiSelect-select": { padding: "10px 12px" },
+                    backgroundColor: "white",
+                    color: "black",
+                    width: "12rem",
+                  }}
+                >
+                  {countryCodes.map((c) => (
+                    <MenuItem key={c.code} value={c.code}>
+                      {c.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+                <TextField
+                  variant="standard"
+                  fullWidth
+                  required
+                  placeholder="Enter Number"
+                  disabled={isOtpsentLoading}
+                  value={phoneNumber}
+                  inputProps={{
+                    maxLength: 12,
+                    inputMode: "numeric",
+                    style: {
+                      textAlign: "left",
+                      fontWeight: "bold",
+                      paddingLeft: "8px",
+                    },
+                    sx: { color: { md: "white" } },
+                  }}
+                  onChange={(e) => {
+                    onTypingChange(e);
+                  }}
+                  onKeyDown={(e) => {
+                    if (
+                      e.key === "-" ||
+                      e.key === "." ||
+                      e.key === "e" ||
+                      e.key === "+"
+                    ) {
+                      e.preventDefault();
+                    }
+                  }}
+                />
+              </Box>
               <Box p={0.5} />
               {numErrorMsg !== "" ? (
                 <Typography
@@ -333,7 +491,7 @@ const LoginPage = () => {
                 color="primary"
                 fullWidth
                 onClick={() => sendOtptoPhone()}
-                sx={{ fontWeight: "bold" }}
+                sx={{ fontWeight: "bold", textTransform: "none" }}
                 disabled={isOtpsentLoading}
               >
                 {isOtpsentLoading ? (
@@ -348,6 +506,33 @@ const LoginPage = () => {
                   "Send OTP"
                 )}
               </Button>
+
+              <Box p={0.8} />
+
+              <CustomButton
+                title="Login with Gmail"
+                loading={isOtpsentLoading}
+                onPressed={handleGoogleSignIn}
+                fullWidth
+                sx={{
+                  color: "black",
+                  backgroundColor: "white",
+                  fontSize: { sm: 15, xs: 12 },
+                  px: { xs: 0 },
+                  py: { xs: 0 },
+                  textTransform: "none",
+                }}
+                hoverColor="#1fd4af"
+                hoverTxtColor="white"
+                startIcon={
+                  <Box
+                    component="img"
+                    alt="Tapxtream Gmail Login"
+                    src={gicon}
+                    sx={{ width: 32 }}
+                  />
+                }
+              />
             </Box>
           ) : (
             <Box sx={{ width: { md: "60%" } }}>
@@ -392,7 +577,7 @@ const LoginPage = () => {
                   color: { md: "white" },
                 }}
               >
-                +91 {phoneNumber}
+                {countryCode} {phoneNumber}
               </Typography>
               <Box p={2} />
               <Box sx={{ width: "100%" }}>
@@ -501,6 +686,7 @@ const LoginPage = () => {
             Didn’t have an Account?{" "}
             <Link
               href="/register-now"
+              disabled={isOtpsentLoading}
               sx={{
                 textDecoration: { xs: "none", md: "underline" },
                 color: { md: "white" },
@@ -516,4 +702,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default EmailLoginPage;

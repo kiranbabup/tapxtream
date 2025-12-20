@@ -2,14 +2,8 @@ import React, { useEffect } from 'react';
 import { Box, Button, Typography } from "@mui/material"
 import HeaderComponent from "../components/mainComponents/HeaderComponent";
 import { clientsLogos } from "../data/clientsLogo";
-// import PlaceIcon from '@mui/icons-material/Place';
 import LocationOnOutlinedIcon from '@mui/icons-material/LocationOnOutlined';
-// import imageHere from "../data/images/imagehere.png";
-// import SectioneImage from "../data/images/Nfc-banner_mainPage.png";
-import SectioneImage from "../data/images/Nfc-banner_profile.png";
-
 import NFCCarddes from "../data/images/nfc-card_type1_blackGold.png";
-import NFCCarddesW from "../data/images/nfc-card_type2_White.png";
 import { fourProperties } from "../data/contents/HomepageContent.js";
 import { useNavigate } from 'react-router-dom';
 import FooterComponent from '../components/mainComponents/FooterComponent.jsx';
@@ -19,14 +13,15 @@ const HomePage = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        // Scroll to the top of the page when the component mounts
         window.scrollTo(0, 0);
     }, []);
 
     return (
         <Box sx={{
-            width: "98.93vw",
-            background: "black",
+            // width: "98.93vw",
+            // width: "100vw",
+            width: { xs: "100vw", sm: "100vw", md: "99vw" },
+            backgroundColor: "black",
             // height: "100vh",
         }}>
             <HeaderComponent />
@@ -39,7 +34,7 @@ const HomePage = () => {
                 color: "white",
                 display: "flex", justifyContent: "center"
             }}>
-                <Box sx={{ width: { xs: "95%", md: '90%' }, display: "flex", flexDirection: { xs: "column-reverse", md: "row" }, alignItems: "center", justifyContent: { md: "space-between" } }} >
+                <Box sx={{ width: { xs: "95%", md: '90%' }, display: "flex", flexDirection: { xs: "column-reverse", sm: "row" }, alignItems: "center", justifyContent: { md: "space-between" } }} >
                     <Box sx={{ width: { md: "45%", xs: "90%" }, height: { md: "30vh", xs: "10vh" }, display: "flex", flexDirection: "column", justifyContent: "center", padding: "1rem 0px" }} >
                         <Typography sx={{ fontSize: { xs: "1.5rem", md: "3rem" }, fontWeight: "bold", textShadow: "4px 4px 2.6px rgb(219 26 26 / 97%)" }} >The FUTURE in single tap</Typography>
                         <Typography sx={{ fontSize: { xs: "1rem", md: "1.5rem" }, }} >Instantly share your profile with a single tap!</Typography>
@@ -66,13 +61,13 @@ const HomePage = () => {
                 display: "flex",
                 alignItems: "center", justifyContent: "center"
             }}>
-                <Typography sx={{ width: { md: "70%", xs: "90%" }, display: "flex", justifyContent: "center", alignItems: { md: "center", xs: "start" }, color: "white", fontWeight: "bold", fontSize: { xs: "0.9rem", md: "1.2rem" }, }}>
+                <Typography sx={{ width: "90%", display: "flex", justifyContent: "center", alignItems: { md: "center", xs: "start" }, color: "white", fontWeight: "bold", fontSize: { xs: "0.9rem", md: "1.2rem" }, }}>
                     <LocationOnOutlinedIcon /> India's Number one NFC Cards & Business Profiles Company INV Technologies
                 </Typography>
             </Box>
 
             <Box sx={{
-                height: { md: "calc(100vh - 8vh)" },
+                height: { sm: "60vh", md: "calc(100vh - 8vh)" },
                 backgroundColor: "white",
                 color: "black",
                 display: "flex", flexDirection: "column",
@@ -96,8 +91,8 @@ const HomePage = () => {
                         <Typography color="error" sx={{ fontSize: { md: "2rem", xs: "1.5rem" }, fontWeight: "bold" }}>₹599.00 <del style={{ color: "gray", fontWeight: "lighter" }}>₹999.00</del></Typography>
                         <Typography sx={{ fontSize: { xs: "0.8rem", md: "1rem" }, textAlign: "justify" }} >NFC Cards are revolutionary way to connect people and businesses. Share information, photos, and videos instantly with a single tap or scan. Explore the possibilities</Typography>
                         <Box>
-                            <Button variant="contained" onClick={()=>navigate("/register-now")} sx={{
-                                backgroundColor: "#05417c", padding:"10px 50px", fontSize: { md: "1.5rem" }, borderRadius: "50px", mt: 1, '&:hover': {
+                            <Button variant="contained" onClick={() => navigate("/register-now")} sx={{
+                                backgroundColor: "#05417c", padding: "10px 50px", fontSize: { md: "1.5rem" }, borderRadius: "50px", mt: 1, '&:hover': {
                                     backgroundColor: 'black',
                                 },
                             }}>Get Your Card Now</Button>
@@ -105,42 +100,8 @@ const HomePage = () => {
                     </Box>
                 </Box>
             </Box>
+
             <SocialUrlNFCCards />
-            {/* <Box sx={{
-                height: { md: "calc(100vh - 8vh)" },
-                backgroundColor: "#f0f0f0",
-                color: "black",
-                display: "flex", flexDirection: "column",
-                alignItems: "center", justifyContent: "center"
-            }}>
-                <Box sx={{ width: { md: "90%", xs: "90%" }, display: "flex", flexDirection: { xs: "column", md: "row" }, justifyContent: { xs: "center", md: "space-evenly" }, paddingBottom: "1.5rem", alignItems: "center" }}>
-                    <Box sx={{ width: { md: "35%", xs: "80%" }, }} >
-                        <Box sx={{
-                            width: "100%",
-                            height: { xs: "40vh", md: "90.5vh" },
-                            borderRadius: "10px",
-                            // objectFit: "scale-down",
-                            objectFit: "contain",
-                        }}
-                            component="img"
-                            src={NFCCarddesW}
-                            alt="imagehere" />
-                    </Box>
-                    <Box sx={{ width: { md: "45%", xs: "90%" }, height: "100%", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "cneter" }} >
-                        <Typography sx={{ fontSize: { xs: "1.2rem", md: "2rem" }, fontWeight: "bold" }} >NFC Business Card for Business Professionals</Typography>
-                        <Typography color="error" sx={{ fontSize: { md: "2rem", xs: "1.5rem" }, fontWeight: "bold" }}>₹299.00 <del style={{ color: "gray", fontWeight: "lighter" }}>₹799.00</del></Typography>
-                        <Typography sx={{ fontSize: { xs: "0.8rem", md: "1rem" }, textAlign: "justify" }} >NFC Cards are revolutionary way to connect people and businesses. Share information, photos, and videos instantly with a single tap or scan. Explore the possibilities</Typography>
-                        <Box>
-                            <Button variant="contained" onClick={()=>navigate("/register-now")} sx={{
-                                backgroundColor: "#05417c", padding:"10px 50px", fontSize: { md: "1.5rem" }, borderRadius: "50px", mt: 1, '&:hover': {
-                                    backgroundColor: 'black',
-                                },
-                            }}
-                            >Design Your Card</Button>
-                        </Box>
-                    </Box>
-                </Box>
-            </Box> */}
 
             <Box sx={{
                 background: "#05417c",
@@ -172,7 +133,7 @@ const HomePage = () => {
                             <Typography sx={{
                                 fontWeight: "bold", fontSize: { md: "1.8rem", xs: "1.5rem" }
                             }}>{prop.head}</Typography>
-                            <Typography>{prop.content}</Typography>
+                            <Typography textAlign="center" >{prop.content}</Typography>
                         </Box>
                     ))
                 }

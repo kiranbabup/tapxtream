@@ -7,17 +7,27 @@ import {
   Link,
   useMediaQuery,
 } from "@mui/material";
-import { collection, query, where, getDocs } from "firebase/firestore";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  setDoc,
+  doc,
+} from "firebase/firestore";
 import { db } from "../services/firebase";
 import { useNavigate } from "react-router-dom";
 import companyLogo from "../data/images/tapxtream.png";
-import sendOtpimg from "../data/Loginicon.png";
+import sendOtpimg from "../data/paper-airplane.png";
 import otpimgSent from "../data/OTP.png";
 import "./phoneSignup.css";
 import { dotContainerStyle, dotStyle } from "../data/styles";
 import PinInput from "react-pin-input";
+import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import gicon from "../data/images/GoogleGLogo.png";
+import CustomButton from "../components/CustomButton";
 
-const LoginPage = () => {
+const PnGSignUp = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [saveOtp, setSaveOtp] = useState("");
   const [isOtpsent, setIsOtpsent] = useState(false);
@@ -28,17 +38,12 @@ const LoginPage = () => {
   const [otpEntered, setOtpEntered] = useState("");
   const [otpErrorMsg, setOtpErrorMsg] = useState("");
   const [isConfirmOtpLoading, setIsConfirmOtpLoading] = useState(false);
+  const [gmailError, setGmailError] = useState("");
+  const auth = getAuth();
 
   const navigate = useNavigate();
 
   const isMdScreen = useMediaQuery((theme) => theme.breakpoints.up("md"));
-
-  const user = localStorage.getItem("user");
-  useEffect(() => {
-    if (user) {
-      navigate("/user-profile");
-    }
-  }, [user, navigate]);
 
   useEffect(() => {
     let interval;
@@ -74,52 +79,53 @@ const LoginPage = () => {
     if (phoneNumber.length < 10) {
       setNumErrorMsg("Please Enter Valid 10 Digits Phone Number");
     } else {
-      setIsOtpsentLoading(true);
+      setNumErrorMsg("SMS Service is Down, Please use Register with Gmail!");
+      //   setIsOtpsentLoading(true);
       // added manual mode to be removed when sms live
       // setSaveOtp("123456");
       // setIsOtpsent(true);
       // setIsOtpsentLoading(false);
 
       // making manual all are in off from below
-      const otpsending = createOTP();
-      setSaveOtp(otpsending);
+      //   const otpsending = createOTP();
+      //   setSaveOtp(otpsending);
 
-      const sendValue = {
-        mobile: Number(phoneNumber),
-        username: "User, Welcome to INV Technologies",
-        otp: otpsending,
-      };
+      //   const sendValue = {
+      //     mobile: Number(phoneNumber),
+      //     username: "User",
+      //     otp: otpsending,
+      //   };
       // console.log(sendValue);
 
-      try {
-        const resendResponse = await fetch(
-          "https://apiroutetapxtream.invtechnologies.in/send-sms",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ ...sendValue }),
-          }
-        );
+      //   try {
+      //     const resendResponse = await fetch(
+      //       "https://apiroutetapxtream.invtechnologies.in/send-sms",
+      //       {
+      //         method: "POST",
+      //         headers: {
+      //           "Content-Type": "application/json",
+      //         },
+      //         body: JSON.stringify({ ...sendValue }),
+      //       }
+      //     );
 
-        if (!resendResponse.ok) {
-          const errorData = await resendResponse.json();
-          console.error("Error response:", errorData);
-          setNumErrorMsg("Failed to Send OTP. Please Try Again!");
-          throw new Error("Failed to send OTP");
-        } else {
-          const messageData = await resendResponse.json();
-          // console.log(messageData);
-          setIsOtpsent(true);
-        }
-      } catch (error) {
-        console.error("Error sending OTP:", error.message);
-        setNumErrorMsg("Failed to Send OTP. Under maintenance!");
-        // alert(`Error: ${error.message}`);
-      } finally {
-        setIsOtpsentLoading(false);
-      }
+      //     if (!resendResponse.ok) {
+      //       const errorData = await resendResponse.json();
+      //       console.error("Error response:", errorData);
+      //       setNumErrorMsg("Failed to Send OTP. Please Try Again!");
+      //       throw new Error("Failed to send OTP");
+      //     } else {
+      //       const messageData = await resendResponse.json();
+      //       // console.log(messageData);
+      //       setIsOtpsent(true);
+      //     }
+      //   } catch (error) {
+      //     console.error("Error sending OTP:", error.message);
+      //     setNumErrorMsg("Failed to Send OTP. Under maintenance!");
+      //     // alert(`Error: ${error.message}`);
+      //   } finally {
+      //     setIsOtpsentLoading(false);
+      //   }
     }
   };
 
@@ -146,17 +152,37 @@ const LoginPage = () => {
           const querySnapshot = await getDocs(q);
 
           if (querySnapshot.empty) {
-            setOtpErrorMsg("Please Register to continue");
+            const userDocRef = doc(collection(db, "users"));
+            const uid = userDocRef.id;
+            await setDoc(userDocRef, {
+              mobileNumber: phoneNumber,
+              uid: uid,
+              createdAt: Date.now(),
+            });
+
+            localStorage.setItem(
+              "user",
+              JSON.stringify({
+                mobileNumber: phoneNumber,
+                email: "",
+                uid: uid,
+              })
+            );
+            setIsConfirmOtpLoading(false);
+            navigate("/create-profile");
           } else {
+            // console.log("Phone number already exists in the database.");
+            // setOtpErrorMsg("Phone number already registered.");
+
             localStorage.setItem(
               "user",
               JSON.stringify({
                 mobileNumber: phoneNumber,
                 email: querySnapshot.docs[0].data().email || "",
                 uid: querySnapshot.docs[0].id,
-                review: querySnapshot.docs[0].data().reviewAccess || false,
               })
             );
+            setIsConfirmOtpLoading(false);
             navigate("/user-profile");
           }
         } catch (error) {
@@ -169,6 +195,62 @@ const LoginPage = () => {
         setOtpErrorMsg("Enter a valid 6-digit OTP.");
         setIsConfirmOtpLoading(false);
       }
+    }
+  };
+
+  const handleGmailRegister = async () => {
+    try {
+      setGmailError("");
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+
+      const email = result.user.email;
+      if (!email) throw new Error("No email found");
+
+      // Check if user already exists
+      const q = query(collection(db, "users"), where("email", "==", email));
+      const snapshot = await getDocs(q);
+
+      if (!snapshot.empty) {
+        // ✅ USER EXISTS → LOGIN
+        const docSnap = snapshot.docs[0];
+
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            uid: docSnap.id,
+            email: email,
+            mobileNumber: docSnap.data().mobileNumber || "",
+          })
+        );
+
+        navigate("/user-profile");
+      } else {
+        // 🆕 USER DOES NOT EXIST → REGISTER
+        const userDocRef = doc(collection(db, "users"));
+        const uid = userDocRef.id;
+
+        await setDoc(userDocRef, {
+          uid: uid,
+          email: email,
+          mobileNumber: "",
+          createdAt: Date.now(),
+        });
+
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            uid: uid,
+            email: email,
+            mobileNumber: "",
+          })
+        );
+
+        navigate("/create-profile");
+      }
+    } catch (error) {
+      console.error("Gmail registration error:", error);
+      setGmailError("Google sign-in failed. Please try again.");
     }
   };
 
@@ -191,7 +273,6 @@ const LoginPage = () => {
         }}
         onClick={() => navigate("/")}
       />
-
       <Box
         sx={{
           display: "flex",
@@ -235,11 +316,10 @@ const LoginPage = () => {
             p: { xs: 2, md: 0 },
             display: "flex",
             flexDirection: "column",
-            alignItems: "center",
             justifyContent: "center",
-            backgroundColor: { md: "#577fd8d9" },
+            alignItems: "center",
             height: "100%",
-            // backgroundColor: { md: "aliceblue" }
+            backgroundColor: { md: "#577fd8d9" },
           }}
         >
           {!isOtpsent ? (
@@ -250,8 +330,8 @@ const LoginPage = () => {
                   alt="otp page"
                   src={sendOtpimg}
                   sx={{
-                    width: "130px",
-                    height: "140px",
+                    width: "150px",
+                    height: "150px",
                     // ml: 2,
                     cursor: "pointer",
                   }}
@@ -267,7 +347,7 @@ const LoginPage = () => {
                   color: { md: "white" },
                 }}
               >
-                Login Now !
+                Register Now
               </Typography>
               <Typography
                 variant="body1"
@@ -277,13 +357,13 @@ const LoginPage = () => {
                 We will send you an One Time Password(OTP) to the given Phone
                 Number.
               </Typography>
-              <Box p={4} />
+              <Box p={3} />
               <Typography
                 sx={{
                   textAlign: "center",
+                  color: { md: "white" },
                   width: "100%",
                   fontWeight: "bold",
-                  color: { md: "white" },
                 }}
               >
                 Enter Phone Number
@@ -333,7 +413,10 @@ const LoginPage = () => {
                 color="primary"
                 fullWidth
                 onClick={() => sendOtptoPhone()}
-                sx={{ fontWeight: "bold" }}
+                sx={{
+                  //  fontSize: { xs: "0.9rem", md: "1rem" },
+                  fontWeight: "bold",
+                }}
                 disabled={isOtpsentLoading}
               >
                 {isOtpsentLoading ? (
@@ -348,6 +431,42 @@ const LoginPage = () => {
                   "Send OTP"
                 )}
               </Button>
+              <Box mt={2}>
+                <CustomButton
+                  title="Register with Gmail"
+                  onPressed={handleGmailRegister}
+                  fullWidth
+                  sx={{
+                    color: "black",
+                    backgroundColor: "white",
+                    textTransform: "none",
+                    fontWeight: "bold",
+                  }}
+                  hoverColor="#1fd4af"
+                  hoverTxtColor="white"
+                  startIcon={
+                    <Box
+                      component="img"
+                      src={gicon}
+                      alt="Google"
+                      sx={{ width: 28 }}
+                    />
+                  }
+                />
+              </Box>
+
+              {gmailError && (
+                <Typography
+                  sx={{
+                    color: "red",
+                    mt: 1,
+                    textAlign: "center",
+                    fontSize: "12px",
+                  }}
+                >
+                  {gmailError}
+                </Typography>
+              )}
             </Box>
           ) : (
             <Box sx={{ width: { md: "60%" } }}>
@@ -368,13 +487,13 @@ const LoginPage = () => {
               <Typography
                 gutterBottom
                 sx={{
-                  fontSize: { xs: "1.5rem", md: "2.2rem" },
+                  fontSize: { xs: "1.5rem", md: "2.5rem" },
                   fontWeight: "bold",
                   textAlign: "center",
                   color: { md: "white" },
                 }}
               >
-                Login OTP Verification !
+                OTP Verification !
               </Typography>
               <Typography
                 variant="body1"
@@ -428,6 +547,7 @@ const LoginPage = () => {
                 <Box p={1.1} />
               )}
               <Box p={0.8} />
+
               {isActive ? (
                 <Box
                   sx={{
@@ -446,9 +566,9 @@ const LoginPage = () => {
                     onClick={(e) => handleResend(e)}
                     sx={{
                       color: { xs: "#1976d2", md: "white" },
-                      cursor: "pointer",
                       textDecoration: { xs: "none", md: "underline" },
                       fontWeight: "Bold",
+                      cursor: "pointer",
                     }}
                   >
                     Resend OTP
@@ -456,7 +576,7 @@ const LoginPage = () => {
                 </Box>
               ) : (
                 <Typography
-                  sx={{
+                  style={{
                     color: { xs: "blue", md: "white" },
                     textAlign: "center",
                   }}
@@ -483,7 +603,7 @@ const LoginPage = () => {
                     <Box sx={{ ...dotStyle, animationDelay: "0.8s" }}></Box>
                   </Box>
                 ) : (
-                  "Confirm OTP & Login"
+                  "Confirm OTP"
                 )}
               </Button>
             </Box>
@@ -498,17 +618,18 @@ const LoginPage = () => {
               color: { xs: "grey", md: "white" },
             }}
           >
-            Didn’t have an Account?{" "}
+            Already have an account?{" "}
             <Link
-              href="/register-now"
+              href="/login"
               sx={{
                 textDecoration: { xs: "none", md: "underline" },
                 color: { md: "white" },
                 fontWeight: "bold",
               }}
             >
-              Signup
+              Login
             </Link>
+            .
           </Typography>
         </Box>
       </Box>
@@ -516,4 +637,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default PnGSignUp;
