@@ -1,0 +1,632 @@
+// SignupSMSGMPage
+import React, { useEffect, useState } from "react";
+import {
+  Box,
+  Button,
+  TextField,
+  Typography,
+  Link,
+  useMediaQuery,
+} from "@mui/material";
+import {
+  collection,
+  query,
+  where,
+  getDocs,
+  setDoc,
+  doc,
+} from "firebase/firestore";
+import { db } from "../services/firebase";
+import { useNavigate } from "react-router-dom";
+import companyLogo from "../data/images/tapxtream.png";
+import sendOtpimg from "../data/paper-airplane.png";
+import otpimgSent from "../data/OTP.png";
+import "./phoneSignup.css";
+import { dotContainerStyle, dotStyle } from "../data/styles";
+import PinInput from "react-pin-input";
+import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import gicon from "../data/images/GoogleGLogo.png";
+import CustomButton from "../components/CustomButton";
+
+const SignupSMSGMPage = () => {
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [saveOtp, setSaveOtp] = useState("");
+  const [isOtpsent, setIsOtpsent] = useState(false);
+  const [timer, setTimer] = useState(120);
+  const [isActive, setIsActive] = useState(false);
+  const [isOtpsentLoading, setIsOtpsentLoading] = useState(false);
+  const [numErrorMsg, setNumErrorMsg] = useState("");
+  const [otpEntered, setOtpEntered] = useState("");
+  const [otpErrorMsg, setOtpErrorMsg] = useState("");
+  const [isConfirmOtpLoading, setIsConfirmOtpLoading] = useState(false);
+  const [gmailError, setGmailError] = useState("");
+  const auth = getAuth();
+
+  const navigate = useNavigate();
+
+  const isMdScreen = useMediaQuery((theme) => theme.breakpoints.up("md"));
+
+  useEffect(() => {
+    let interval;
+    if (timer > 0 && !isActive && isOtpsent) {
+      interval = setInterval(() => {
+        setTimer((prevTimer) => prevTimer - 1);
+      }, 1000); // 1000
+    } else if (timer === 0 && !isActive) {
+      setIsActive(true);
+    }
+    return () => clearInterval(interval);
+  }, [timer, isActive, isOtpsent]);
+
+  const onTypingChange = (e) => {
+    const value = e.target.value.replace(/\D/g, "");
+    if (value.length <= 10) {
+      setNumErrorMsg("");
+      setPhoneNumber(value);
+    }
+  };
+
+  function createOTP() {
+    const charset = "0123456789";
+    let otpPassword = "";
+    for (let i = 0; i < 6; i++) {
+      const randomIndex = Math.floor(Math.random() * charset.length);
+      otpPassword += charset[randomIndex];
+    }
+    return otpPassword;
+  }
+
+  const sendOtptoPhone = async () => {
+    // if phone number not to start with 0-5 so show error
+    if (/^[0-5]/.test(phoneNumber)) {
+      setNumErrorMsg("Please Enter Valid 10 Digits Phone Number");
+      return;
+    }
+    setIsOtpsentLoading(true);
+    setNumErrorMsg("");
+
+    const otpCode = createOTP();
+    setSaveOtp(otpCode);
+
+    const username = "User, Welcome to TapXtream";
+    const message = `Dear ${username}, Your OTP for registration is ${otpCode}. The OTP is valid for 10 minutes. Do not share it with anyone. You will never receive any calls during for your OTP, Please be conscious. First Second Third Apple..`;
+    const encodedMessage = encodeURIComponent(message);
+    const smsUrl = `https://api.voicensms.in/SMSAPI/webresources/CreateSMSCampaignGet?ukey=IfbQrsFvMJV51oHPJwbTUOsph&msisdn=91${phoneNumber}&language=0&credittype=2&senderid=THDAMC&templateid=0&message=${encodedMessage}&filetype=2`;
+
+    try {
+      const response = await fetch(smsUrl, { method: "GET" });
+      if (!response.ok) {
+        const responseText = await response.text();
+        console.error("SMS API error:", response.status, responseText);
+        throw new Error("Failed to send OTP");
+      }
+      setIsOtpsent(true);
+      setTimer(120);
+      setIsActive(false);
+    } catch (error) {
+      console.error("Error sending OTP:", error);
+      setNumErrorMsg("Failed to send OTP. Please try again.");
+    } finally {
+      setIsOtpsentLoading(false);
+    }
+  };
+
+  const handleResend = (e) => {
+    e.preventDefault();
+    setIsActive(false);
+    setSaveOtp("");
+    setOtpEntered("");
+    sendOtptoPhone();
+    setTimer(120);
+  };
+
+  const handleSubmit = async () => {
+    if (otpEntered.length < 6) {
+      setOtpErrorMsg("Enter a valid 6-digit OTP.");
+    } else {
+      setIsConfirmOtpLoading(true);
+      if (saveOtp === otpEntered) {
+        try {
+          const q = query(
+            collection(db, "users"),
+            where("mobileNumber", "==", phoneNumber),
+          );
+          const querySnapshot = await getDocs(q);
+
+          if (querySnapshot.empty) {
+            const userDocRef = doc(collection(db, "users"));
+            const uid = userDocRef.id;
+            await setDoc(userDocRef, {
+              mobileNumber: phoneNumber,
+              uid: uid,
+              createdAt: Date.now(),
+            });
+
+            localStorage.setItem(
+              "user",
+              JSON.stringify({
+                mobileNumber: phoneNumber,
+                email: "",
+                uid: uid,
+              }),
+            );
+            setIsConfirmOtpLoading(false);
+            navigate("/create-profile");
+          } else {
+            // console.log("Phone number already exists in the database.");
+            // setOtpErrorMsg("Phone number already registered.");
+
+            localStorage.setItem(
+              "user",
+              JSON.stringify({
+                mobileNumber: phoneNumber,
+                email: querySnapshot.docs[0].data().email || "",
+                uid: querySnapshot.docs[0].id,
+              }),
+            );
+            setIsConfirmOtpLoading(false);
+            navigate("/user-profile");
+          }
+        } catch (error) {
+          // console.error("Error verifying OTP or storing phone number:", error);
+          setOtpErrorMsg("Invalid OTP.");
+        } finally {
+          setIsConfirmOtpLoading(false);
+        }
+      } else {
+        setOtpErrorMsg("Enter a valid 6-digit OTP.");
+        setIsConfirmOtpLoading(false);
+      }
+    }
+  };
+
+  const handleGmailRegister = async () => {
+    try {
+      setGmailError("");
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+
+      const email = result.user.email;
+      if (!email) throw new Error("No email found");
+
+      // Check if user already exists
+      const q = query(collection(db, "users"), where("email", "==", email));
+      const snapshot = await getDocs(q);
+
+      if (!snapshot.empty) {
+        // ✅ USER EXISTS → LOGIN
+        const docSnap = snapshot.docs[0];
+
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            uid: docSnap.id,
+            email: email,
+            mobileNumber: docSnap.data().mobileNumber || "",
+          }),
+        );
+
+        navigate("/user-profile");
+      } else {
+        // 🆕 USER DOES NOT EXIST → REGISTER
+        const userDocRef = doc(collection(db, "users"));
+        const uid = userDocRef.id;
+
+        await setDoc(userDocRef, {
+          uid: uid,
+          email: email,
+          mobileNumber: "",
+          createdAt: Date.now(),
+        });
+
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            uid: uid,
+            email: email,
+            mobileNumber: "",
+          }),
+        );
+
+        navigate("/create-profile");
+      }
+    } catch (error) {
+      console.error("Gmail registration error:", error);
+      setGmailError("Google sign-in failed. Please try again.");
+    }
+  };
+
+  return (
+    <Box
+      sx={{
+        height: "100vh",
+      }}
+    >
+      <Box
+        component="img"
+        alt="Company Logo"
+        src={companyLogo}
+        sx={{
+          width: "65px",
+          cursor: "pointer",
+          display: { md: "none", xs: "block" },
+          pl: 2,
+          paddingTop: "10px",
+        }}
+        onClick={() => navigate("/")}
+      />
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: { xs: "column", md: "row" },
+          justifyContent: "start",
+          height: { md: "100vh", xs: "calc(100vh - 68px)" },
+        }}
+      >
+        {/* left */}
+        <Box
+          sx={{
+            width: { xs: "100%", md: "50%" },
+            display: { xs: "none", md: "block" },
+          }}
+        >
+          {/* left */}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "100%",
+            }}
+          >
+            <Box
+              component="img"
+              alt="Company Logo"
+              src={companyLogo}
+              sx={{
+                width: "250px",
+                // ml: 2,
+                cursor: "pointer",
+              }}
+              onClick={() => navigate("/")}
+            />
+          </Box>
+        </Box>
+
+        {/* right */}
+        <Box
+          sx={{
+            width: { md: "50%" },
+            p: { xs: 2, md: 0 },
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "100%",
+            backgroundColor: { md: "#577fd8d9" },
+          }}
+        >
+          {!isOtpsent ? (
+            <Box sx={{ width: { md: "50%" } }}>
+              <Box sx={{ display: "flex", justifyContent: "center" }}>
+                <Box
+                  component="img"
+                  alt="otp page"
+                  src={sendOtpimg}
+                  sx={{
+                    width: "150px",
+                    height: "150px",
+                    // ml: 2,
+                    cursor: "pointer",
+                  }}
+                  onClick={() => navigate("/")}
+                />
+              </Box>
+              <Typography
+                gutterBottom
+                sx={{
+                  fontSize: { xs: "1.5rem", md: "2.5rem" },
+                  fontWeight: "bold",
+                  textAlign: "center",
+                  color: { md: "white" },
+                }}
+              >
+                Register Now
+              </Typography>
+              <Typography
+                variant="body1"
+                gutterBottom
+                sx={{ textAlign: "center", color: { md: "white" } }}
+              >
+                We will send you an One Time Password(OTP).
+              </Typography>
+              <Box p={1} />
+              <Typography
+                sx={{
+                  textAlign: "center",
+                  color: { md: "white" },
+                  width: "100%",
+                  fontWeight: "bold",
+                }}
+              >
+                Enter Phone Number
+              </Typography>
+              <Box p={0.5} />
+
+              <TextField
+                variant="standard"
+                fullWidth
+                required
+                placeholder="Enter Number"
+                value={phoneNumber}
+                inputProps={{
+                  maxLength: 10,
+                  inputMode: "numeric",
+                  style: { textAlign: "center", fontWeight: "bold" },
+                  sx: { color: { md: "white" } },
+                }}
+                onChange={(e) => {
+                  onTypingChange(e);
+                }}
+                onKeyDown={(e) => {
+                  if (
+                    e.key === "-" ||
+                    e.key === "." ||
+                    e.key === "e" ||
+                    e.key === "+"
+                  ) {
+                    e.preventDefault();
+                  }
+                }}
+              />
+              <Box p={0.5} />
+              {numErrorMsg !== "" ? (
+                <Typography
+                  sx={{ color: "red", fontSize: "11px", textAlign: "center" }}
+                >
+                  {numErrorMsg}
+                </Typography>
+              ) : (
+                <Box p={1} />
+              )}
+              <Box p={0.8} />
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                fullWidth
+                onClick={() => sendOtptoPhone()}
+                sx={{
+                  //  fontSize: { xs: "0.9rem", md: "1rem" },
+                  fontWeight: "bold",
+                }}
+                disabled={isOtpsentLoading || phoneNumber.length < 10}
+              >
+                {isOtpsentLoading ? (
+                  <Box sx={dotContainerStyle}>
+                    <Box sx={{ ...dotStyle, animationDelay: "0s" }}></Box>
+                    <Box sx={{ ...dotStyle, animationDelay: "0.2s" }}></Box>
+                    <Box sx={{ ...dotStyle, animationDelay: "0.4s" }}></Box>
+                    <Box sx={{ ...dotStyle, animationDelay: "0.6s" }}></Box>
+                    <Box sx={{ ...dotStyle, animationDelay: "0.8s" }}></Box>
+                  </Box>
+                ) : (
+                  "Send OTP"
+                )}
+              </Button>
+              <Box p={1} />
+              <Typography
+                variant="body1"
+                gutterBottom
+                sx={{ textAlign: "center", color: { md: "white" } }}
+              >
+                OR
+              </Typography>
+
+              <Box mt={2}>
+                <CustomButton
+                  title="Register with Gmail"
+                  onPressed={handleGmailRegister}
+                  fullWidth
+                  sx={{
+                    color: "black",
+                    backgroundColor: "white",
+                    fontSize: { sm: 15, xs: 12 },
+                    textTransform: "none",
+                  }}
+                  hoverColor="#1fd4af"
+                  hoverTxtColor="white"
+                  startIcon={
+                    <Box
+                      component="img"
+                      alt="Google Register"
+                      src={gicon}
+                      sx={{ width: 28 }}
+                    />
+                  }
+                />
+              </Box>
+
+              {gmailError && (
+                <Typography
+                  sx={{
+                    color: "red",
+                    mt: 1,
+                    textAlign: "center",
+                    fontSize: "12px",
+                  }}
+                >
+                  {gmailError}
+                </Typography>
+              )}
+            </Box>
+          ) : (
+            <Box sx={{ width: { md: "60%" } }}>
+              <Box sx={{ display: "flex", justifyContent: "center" }}>
+                <Box
+                  component="img"
+                  alt="otp page"
+                  src={otpimgSent}
+                  sx={{
+                    width: "150px",
+                    height: "150px",
+                    // ml: 2,
+                    cursor: "pointer",
+                  }}
+                  onClick={() => navigate("/")}
+                />
+              </Box>
+              <Typography
+                gutterBottom
+                sx={{
+                  fontSize: { xs: "1.5rem", md: "2.5rem" },
+                  fontWeight: "bold",
+                  textAlign: "center",
+                  color: { md: "white" },
+                }}
+              >
+                OTP Verification !
+              </Typography>
+              <Typography
+                variant="body1"
+                gutterBottom
+                sx={{ textAlign: "center", color: { md: "white" } }}
+              >
+                Enter the OTP sent to
+              </Typography>
+              <Typography
+                variant="body1"
+                gutterBottom
+                sx={{
+                  textAlign: "center",
+                  fontWeight: "bold",
+                  color: { md: "white" },
+                }}
+              >
+                +91 {phoneNumber}
+              </Typography>
+              <Box p={2} />
+              <Box sx={{ width: "100%" }}>
+                <PinInput
+                  length={6}
+                  type="numeric"
+                  inputMode="number"
+                  onComplete={(value) => {
+                    setOtpEntered(value);
+                  }}
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "space-between",
+                  }}
+                  inputStyle={{
+                    borderColor: "#2C2D3C",
+                    borderRadius: "6px",
+                    fontSize: 18,
+                    color: isMdScreen ? "white" : "black",
+                  }}
+                />
+              </Box>
+
+              <Box p={0.5} />
+              {otpErrorMsg !== "" ? (
+                <Typography
+                  sx={{ color: "red", fontSize: "12px", textAlign: "center" }}
+                >
+                  {otpErrorMsg}
+                </Typography>
+              ) : (
+                <Box p={1.1} />
+              )}
+              <Box p={0.8} />
+
+              {isActive ? (
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "1rem",
+                    justifyContent: "space-between",
+                    pl: 2,
+                    pr: 2,
+                  }}
+                >
+                  <Typography sx={{ color: { xs: "black", md: "white" } }}>
+                    Didn’t receive the OTP?
+                  </Typography>
+                  <Link
+                    onClick={(e) => handleResend(e)}
+                    sx={{
+                      color: { xs: "#1976d2", md: "white" },
+                      textDecoration: { xs: "none", md: "underline" },
+                      fontWeight: "Bold",
+                      cursor: "pointer",
+                    }}
+                  >
+                    Resend OTP
+                  </Link>
+                </Box>
+              ) : (
+                <Typography
+                  style={{
+                    color: { xs: "blue", md: "white" },
+                    textAlign: "center",
+                  }}
+                >
+                  Resend OTP in {timer}s
+                </Typography>
+              )}
+              <Box p={0.5} />
+              <Button
+                type="submit"
+                variant="contained"
+                color="primary"
+                fullWidth
+                onClick={() => handleSubmit()}
+                sx={{ fontWeight: "bold" }}
+                disabled={isConfirmOtpLoading}
+              >
+                {isConfirmOtpLoading ? (
+                  <Box sx={dotContainerStyle}>
+                    <Box sx={{ ...dotStyle, animationDelay: "0s" }}></Box>
+                    <Box sx={{ ...dotStyle, animationDelay: "0.2s" }}></Box>
+                    <Box sx={{ ...dotStyle, animationDelay: "0.4s" }}></Box>
+                    <Box sx={{ ...dotStyle, animationDelay: "0.6s" }}></Box>
+                    <Box sx={{ ...dotStyle, animationDelay: "0.8s" }}></Box>
+                  </Box>
+                ) : (
+                  "Confirm OTP"
+                )}
+              </Button>
+            </Box>
+          )}
+
+          <Typography
+            variant="body2"
+            align="center"
+            sx={{
+              mt: 2,
+              fontSize: { xs: "0.85rem", md: "0.9rem" },
+              color: { xs: "grey", md: "white" },
+            }}
+          >
+            Already have an account?{" "}
+            <Link
+              href="/login"
+              sx={{
+                textDecoration: { xs: "none", md: "underline" },
+                color: { md: "white" },
+                fontWeight: "bold",
+              }}
+            >
+              Login
+            </Link>
+            .
+          </Typography>
+        </Box>
+      </Box>
+    </Box>
+  );
+};
+
+export default SignupSMSGMPage;

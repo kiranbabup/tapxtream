@@ -39,6 +39,55 @@ Instead, it will copy all the configuration files and the transitive dependencie
 
 You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
 
+## Install Dependencies
+
+From the project root directory, install the main React app dependencies:
+
+```bash
+npm install
+```
+
+This command installs all packages listed in `package.json`, including MUI and the other libraries used by the app.
+
+### Install MUI packages explicitly
+
+```bash
+npm install @mui/material @mui/icons-material @mui/lab @mui/styled-engine-sc @emotion/react @emotion/styled
+```
+
+### Install other dependencies explicitly
+
+```bash
+npm install firebase react react-dom react-dropzone react-helmet-async react-hook-form react-pin-input react-qr-code react-redux react-router-dom redux redux-thunk styled-components swiper vcf web-vitals zod
+```
+
+### Install dev dependencies explicitly
+
+```bash
+npm install --save-dev @babel/plugin-proposal-private-property-in-object gh-pages
+```
+
+Then install the Firebase Cloud Functions dependencies:
+
+```bash
+cd functions
+npm install
+```
+
+If you want to use Firebase local emulators or deploy from the CLI, install the Firebase CLI globally:
+
+```bash
+npm install -g firebase-tools
+```
+
+If you prefer not to install globally, you can also run Firebase CLI commands from the root using `npx`:
+
+```bash
+npx firebase login
+npx firebase emulators:start --only functions
+npx firebase deploy --only functions
+```
+
 ## Learn More
 
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).

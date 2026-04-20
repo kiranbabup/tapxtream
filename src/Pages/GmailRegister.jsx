@@ -1,9 +1,5 @@
 import React, { useState } from "react";
-import {
-  Box,
-  Typography,
-  Link,
-} from "@mui/material";
+import { Box, Typography, Link } from "@mui/material";
 import {
   collection,
   query,
@@ -22,7 +18,7 @@ import gicon from "../data/images/GoogleGLogo.png";
 import CustomButton from "../components/CustomButton";
 
 const GmailRegister = () => {
-    const [gmailError, setGmailError] = useState("");
+  const [gmailError, setGmailError] = useState("");
   const auth = getAuth();
 
   const navigate = useNavigate();
@@ -50,7 +46,7 @@ const GmailRegister = () => {
             uid: docSnap.id,
             email: email,
             mobileNumber: docSnap.data().mobileNumber || "",
-          })
+          }),
         );
 
         navigate("/user-profile");
@@ -72,7 +68,7 @@ const GmailRegister = () => {
             uid: uid,
             email: email,
             mobileNumber: "",
-          })
+          }),
         );
 
         navigate("/create-profile");
@@ -184,7 +180,7 @@ const GmailRegister = () => {
             >
               Register With Gmail.
             </Typography>
-            
+
             <Box mt={2}>
               <CustomButton
                 title="Register with Gmail"
@@ -193,16 +189,16 @@ const GmailRegister = () => {
                 sx={{
                   color: "black",
                   backgroundColor: "white",
+                  fontSize: { sm: 15, xs: 12 },
                   textTransform: "none",
-                  fontWeight: "bold",
                 }}
                 hoverColor="#1fd4af"
                 hoverTxtColor="white"
                 startIcon={
                   <Box
                     component="img"
+                    alt="Google Register"
                     src={gicon}
-                    alt="Google"
                     sx={{ width: 28 }}
                   />
                 }

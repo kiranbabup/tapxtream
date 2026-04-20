@@ -59,52 +59,35 @@ const PhoneSignUp = () => {
     const sendOtptoPhone = async () => {
         if (phoneNumber.length < 10) {
             setNumErrorMsg("Please Enter Valid 10 Digits Phone Number");
-        } else {
-            setIsOtpsentLoading(true);
-            // added manual mode to be removed when sms live
-            // setSaveOtp("123456");
-            // setIsOtpsent(true);
-            // setIsOtpsentLoading(false);
-
-            // making manual all are in off from below
-            const otpsending = createOTP();
-            setSaveOtp(otpsending);
-
-            const sendValue = {
-                mobile: Number(phoneNumber),
-                username: "User",
-                otp: otpsending,
-            }
-            // console.log(sendValue);
-
-            try {
-                const resendResponse = await fetch('https://apiroutetapxtream.invtechnologies.in/send-sms', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ ...sendValue }),
-                });
-
-                if (!resendResponse.ok) {
-                    const errorData = await resendResponse.json();
-                    console.error("Error response:", errorData);
-                    setNumErrorMsg("Failed to Send OTP. Please Try Again!");
-                    throw new Error('Failed to send OTP');
-                } else {
-                    const messageData = await resendResponse.json();
-                    // console.log(messageData);
-                    setIsOtpsent(true);
-                }
-            } catch (error) {
-                console.error("Error sending OTP:", error.message);
-                setNumErrorMsg("Failed to Send OTP. Under maintenance!");
-                // alert(`Error: ${error.message}`);
-            } finally {
-                setIsOtpsentLoading(false);
-            }
+            return;
         }
+        setIsOtpsentLoading(true);
+        setNumErrorMsg("");
 
+        const otpCode = createOTP();
+        setSaveOtp(otpCode);
+
+        const username = "User, Welcome to TapXtream";
+        const message = `Dear ${username}, Your OTP for registration is ${otpCode}. The OTP is valid for 10 minutes. Do not share it with anyone. You will never receive any calls during for your OTP, Please be conscious. First Second Third Apple..`;
+        const encodedMessage = encodeURIComponent(message);
+        const smsUrl = `https://api.voicensms.in/SMSAPI/webresources/CreateSMSCampaignGet?ukey=IfbQrsFvMJV51oHPJwbTUOsph&msisdn=91${phoneNumber}&language=0&credittype=2&senderid=THDAMC&templateid=0&message=${encodedMessage}&filetype=2`;
+
+        try {
+            const response = await fetch(smsUrl, { method: "GET" });
+            if (!response.ok) {
+                const responseText = await response.text();
+                console.error("SMS API error:", response.status, responseText);
+                throw new Error("Failed to send OTP");
+            }
+            setIsOtpsent(true);
+            setTimer(120);
+            setIsActive(false);
+        } catch (error) {
+            console.error("Error sending OTP:", error);
+            setNumErrorMsg("Failed to send OTP. Please try again.");
+        } finally {
+            setIsOtpsentLoading(false);
+        }
     };
 
     const handleResend = (e) => {
